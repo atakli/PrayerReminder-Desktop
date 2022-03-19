@@ -50,20 +50,21 @@ Window::Window()
     setWindowTitle(tr("Change Computer Clock"));
     resize(400, 300);
 
-    titleEdit = new QLineEdit(tr("Saati değiştir kardeş. Başın ağrımasın"));    // sonradan koydum
+//    titleEdit = new QLineEdit(tr("Saati değiştir kardeş. Başın ağrımasın"));    // sonradan koydum
 
 	trayIcon->show();
     showMessage();
 }
-//void Window::degistir()
-//{
-//	for(uint8_t i=3; i>0; --i)
-//	{
-//		QThread::sleep(1);
-//		setIcon(i);
-//		trayIcon->show();
-//	}
-//}
+void Window::degistir()
+{
+	QJson
+	for(uint8_t i=3; i>0; --i)
+	{
+		QThread::sleep(1);
+		setIcon(i);
+		trayIcon->show();
+	}
+}
 void Window::zamaniHesapla()
 {
 	QDate dt = QDateTime::currentDateTime().date();
@@ -199,7 +200,7 @@ void Window::showMessage()
 //    }
 //    else
 //    {
-        trayIcon->showMessage(titleEdit->text(), "", msgIcon, 1 * 1000);   // durationSpinBox->value() 1 diye salladım. ne olduğu önemli değil
+		trayIcon->showMessage("Saati değiştir kardeş. Başın ağrımasın", "", msgIcon, 1 * 1000);   // durationSpinBox->value() 1 diye salladım. ne olduğu önemli değil
 //    }                                                                                         // normal message box açılmıyor çünkü şuan nedense
         // TODO: direk saat ayarlama penceresi açılsın. kendininki veya sisteminki. ordaki default değer de sistemin son açıldığı zamanki tarihe ayarlanmış olsun.
 }       // böylece tarih büyük ihtimalle doğru olmuş olur

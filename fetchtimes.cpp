@@ -1,4 +1,5 @@
 #include "fetchtimes.h"
+#include "prayertimesparser.h"
 
 #include "ui_authenticationdialog.h"
 
@@ -206,7 +207,7 @@ void HttpWindow::httpFinished()
         }
         return;
     }
-
+	PrayerTimesParser ptp;
 	//! [networkreply-error-handling-2]
 
 //    statusLabel->setText(tr("Downloaded %1 bytes to %2\nin\n%3").arg(fi.size()).arg(fi.fileName(), QDir::toNativeSeparators(fi.absolutePath())));

@@ -52,6 +52,7 @@ private:
     void createActions();
     void createTrayIcon();
 
+	void degistir();
 
     QElapsedTimer timer;
 
