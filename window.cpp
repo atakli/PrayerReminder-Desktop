@@ -32,10 +32,6 @@ Window::Window()
 
     createActions();
 	createTrayIcon();
-	PrayerTimesParser ptp;
-	int kalanVakit = ptp.nextDay();
-	if(kalanVakit <= 60)
-		setIcon(kalanVakit);
 
 //    connect(showMessageButton, &QAbstractButton::clicked, this, &Window::showMessage);
 //    connect(showIconCheckBox, &QAbstractButton::toggled, trayIcon, &QSystemTrayIcon::setVisible);
@@ -43,6 +39,9 @@ Window::Window()
 	connect(trayIcon, &QSystemTrayIcon::messageClicked, this, &Window::onClickedOK);
 //    connect(trayIcon, &QSystemTrayIcon::activated, this, &Window::iconActivated);
 //    connect(trayIcon, &QWidget::closeEvent, this, &Window::addClockToThread);
+//	addClockToThread();
+	timer.start();
+	QFuture<void> futureClock = QtConcurrent::run(this, &Window::repeatClockRequest);
 
 	/*QVBoxLayout *mainLayout = new QVBoxLayout;
 //    mainLayout->addWidget(iconGroupBox);
@@ -57,7 +56,35 @@ Window::Window()
 //    titleEdit = new QLineEdit(tr("Saati değiştir kardeş. Başın ağrımasın"));    // sonradan koydum
 
 	trayIcon->show();
-	showMessage();
+}
+void Window::kalanVakitDongusu()
+{
+	bool kalanVakitBesOldu = false;
+	PrayerTimesParser ptp;
+	qDebug() << "1";
+	while(1)
+	{
+		int kalanVakit = ptp.nextDay();
+		qDebug() << "kalan:" << kalanVakit;
+		if(kalanVakit <= 60)			// 60 dk'dan az kalmadıysa gösterme. bi de zaten ikiden fazla basamak göstermeye uygun değil şuan
+		{
+			setIcon(kalanVakit);
+			qDebug() << "2";
+			if((kalanVakit <= 5) & (!kalanVakitBesOldu))
+			{
+				qDebug() << "3";
+				kalanVakitBesOldu = true;
+				showMessage();
+			}
+		}
+		qDebug() << "4";
+		if(kalanVakit > 5)
+			kalanVakitBesOldu = false;
+		qDebug() << "5";
+		QThread::sleep(60);				// 60 saniyede bir kontrol et. ama bunu ayrı bit threde koysam iyi olur yoksa kitlenir
+		qDebug() << "6";
+	}
+	qDebug() << "7";
 }
 void Window::degistir()
 {
@@ -194,7 +221,7 @@ void Window::showMessage()
 {
 //    showIconCheckBox->setChecked(true);
 //    int selectedIcon = typeComboBox->itemData(typeComboBox->currentIndex()).toInt();
-	int selectedIcon = 3;   // üstteki yorum satırındaki toInt()'in sonucu 3. QSystemTrayIcon::Critical 3'e karşılık geliyor sanırım
+	/*int selectedIcon = 3;   // üstteki yorum satırındaki toInt()'in sonucu 3. QSystemTrayIcon::Critical 3'e karşılık geliyor sanırım
     QSystemTrayIcon::MessageIcon msgIcon = QSystemTrayIcon::MessageIcon(selectedIcon);
 
 //    if (selectedIcon == -1) // custom icon
@@ -206,14 +233,16 @@ void Window::showMessage()
 //    {
 		trayIcon->showMessage("Saati değiştir kardeş. Başın ağrımasın", "", msgIcon, 1 * 1000);   // durationSpinBox->value() 1 diye salladım. ne olduğu önemli değil
 //    }                                                                                         // normal message box açılmıyor çünkü şuan nedense
-        // TODO: direk saat ayarlama penceresi açılsın. kendininki veya sisteminki. ordaki default değer de sistemin son açıldığı zamanki tarihe ayarlanmış olsun.
-}       // böylece tarih büyük ihtimalle doğru olmuş olur
+	*/QMessageBox qmbox;
+	qmbox.information(nullptr, tr("Hayye alessaleh"), tr("5 dk'dan az kaldı!"));
+	QCoreApplication::instance()->quit();   //
+}
 //! [5]
 
 //! [6]
 void Window::onClickedOK()
 {
-	zamaniHesapla();
+//	zamaniHesapla();		// TODO: burda ne alaka lan.
     QMessageBox qmbox;
     qmbox.information(nullptr, tr("Clock"), tr("Saati değiştirdin değil mi?"));
     QCoreApplication::instance()->quit();   //
@@ -334,25 +363,69 @@ void Window::createTrayIcon()
 //    connect(trayIcon, &QAbstractButton::clicked, this, &Window::showMessage);
 }
 
-/*void Window::repeatClockRequest()
+void Window::repeatClockRequest()
 {
-    if(timer.elapsed() > 1000)
-    {
-        showMessage();
-        timer.restart();
-    }
+	PrayerTimesParser ptp;
+	bool kalanVakitBesOldu = false;
+		qDebug() << "1";
+		while(1)
+		{
+//			if(timer.elapsed() > 60000)
+//			{
+				qDebug() << "elapsed:" << timer.elapsed();
+				int kalanVakit = ptp.nextDay();
+				qDebug() << "kalan:" << kalanVakit;
+				if(kalanVakit <= 60)			// 60 dk'dan az kalmadıysa gösterme. bi de zaten ikiden fazla basamak göstermeye uygun değil şuan
+				{
+					setIcon(kalanVakit);
+					qDebug() << "2";
+					if((kalanVakit <= 5) & (!kalanVakitBesOldu))
+					{
+						qDebug() << "3";
+						kalanVakitBesOldu = true;
+						showMessage();
+					}
+				}
+				qDebug() << "4";
+				if(kalanVakit > 5)
+					kalanVakitBesOldu = false;
+				qDebug() << "5";
+//				QThread::sleep(60);				// 60 saniyede bir kontrol et. ama bunu ayrı bi threde koysam iyi olur yoksa kitlenir
+				if_oncesi:
+				if(timer.elapsed() < 60000)
+				{
+					QCoreApplication::processEvents();
+					goto if_oncesi;
+				}
+				else
+				{
+					timer.restart();
+					continue;
+				}
+				qDebug() << "6";
+//				showMessage();
+//				timer.restart();
+//			}
+//			else
+//				continue;
+		}
+		qDebug() << "7";
+
 }
 
 void Window::addClockToThread()
 {
-    timer.start();
+	timer.start();
+	qDebug() << "8";
 
-    QFuture<void> futureClock = QtConcurrent::run(this, &Window::repeatClockRequest);
+	QFuture<void> futureClock = QtConcurrent::run(this, &Window::repeatClockRequest);
+	qDebug() << "9";
 
-    while(!futureClock.isFinished())
-    {
-        QCoreApplication::processEvents();
-    }
-}*/
+	while(!futureClock.isFinished())
+	{
+		QCoreApplication::processEvents();
+	}
+	qDebug() << "10";
+}
 
 #endif

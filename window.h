@@ -31,14 +31,14 @@ public:
     Window();
 
 //    void setVisible(bool visible) override;
-
+	void kalanVakitDongusu();
 //protected:
 //    void closeEvent(QCloseEvent *event) override;
 
 private slots:
 //    void iconActivated(QSystemTrayIcon::ActivationReason reason);
 	void onClickedOK();
-//    void addClockToThread();
+	void addClockToThread();
 	void downloadTimes();
 public slots:
 	void showMessage();
@@ -46,7 +46,7 @@ public slots:
 private:
 	void zamaniHesapla();
 	void setIcon(uint8_t number);    // önceden slot'tu
-//    void repeatClockRequest();
+	void repeatClockRequest();
 //    void createIconGroupBox();
 //    void createMessageGroupBox();
     void createActions();

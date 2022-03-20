@@ -56,6 +56,7 @@
 #include "window.h"
 #include "fetchtimes.h"
 
+#include <QtConcurrent/QtConcurrent>
 #include <QApplication>
 #include <QDir>
 #include <QScreen>
@@ -76,12 +77,14 @@ int main(int argc, char *argv[])
 
     Window window;
 
-    HttpWindow httpWin;
+	HttpWindow httpWin;
 //    const QRect availableSize = httpWin.screen()->availableGeometry();
 //    httpWin.resize(availableSize.width() / 5, availableSize.height() / 5);
 //    httpWin.move((availableSize.width() - httpWin.width()) / 2, (availableSize.height() - httpWin.height()) / 2);
 //	httpWin.show();
-	httpWin.controlEvkatFile();
+//	QFuture<void> future = QtConcurrent::run(window,&Window::kalanVakitDongusu);
+//	future.waitForFinished();
+//	window.kalanVakitDongusu();
 
     return app.exec();
 }

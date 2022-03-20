@@ -82,6 +82,7 @@ HttpWindow::HttpWindow(QWidget *parent)
     mainLayout->addWidget(buttonBox);
 
 	urlLineEdit->setFocus();*/
+	controlEvkatFile();
 }
 HttpWindow::~HttpWindow() = default;
 
