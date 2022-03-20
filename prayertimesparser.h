@@ -7,12 +7,13 @@ class PrayerTimesParser
 {
 private:
 	QJsonDocument loadDoc;
-	void nextDay();
-	void nextPrayer();
-	void vakitleriCikar(QJsonValue value);
-public:
-    PrayerTimesParser();
+	int Min(QString vakit);
 	bool loadJson();
+	int kalan(QStringList list);
+public:
+	int nextDay();
+	int vakitleriCikar(QJsonValue value);
+    PrayerTimesParser();
 };
 
 #endif // PRAYERTIMESPARSER_H

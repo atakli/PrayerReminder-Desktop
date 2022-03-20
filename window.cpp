@@ -1,5 +1,6 @@
 #include "window.h"
 #include "calcTimes.h"
+#include "prayertimesparser.h"
 
 #ifndef QT_NO_SYSTEMTRAYICON
 
@@ -30,34 +31,37 @@ Window::Window()
 //    iconLabel->setMinimumWidth(durationLabel->sizeHint().width());
 
     createActions();
-    createTrayIcon();
-	setIcon(13);
+	createTrayIcon();
+	PrayerTimesParser ptp;
+	int kalanVakit = ptp.nextDay();
+	if(kalanVakit <= 60)
+		setIcon(kalanVakit);
 
 //    connect(showMessageButton, &QAbstractButton::clicked, this, &Window::showMessage);
 //    connect(showIconCheckBox, &QAbstractButton::toggled, trayIcon, &QSystemTrayIcon::setVisible);
 //    connect(iconComboBox, &QComboBox::currentIndexChanged, this, &Window::setIcon);   // hata veriyor. msvc'de sıkıntı çıkmamıştı
-    connect(trayIcon, &QSystemTrayIcon::messageClicked, this, &Window::onClickedOK);
+	connect(trayIcon, &QSystemTrayIcon::messageClicked, this, &Window::onClickedOK);
 //    connect(trayIcon, &QSystemTrayIcon::activated, this, &Window::iconActivated);
 //    connect(trayIcon, &QWidget::closeEvent, this, &Window::addClockToThread);
 
-    /*QVBoxLayout *mainLayout = new QVBoxLayout;
+	/*QVBoxLayout *mainLayout = new QVBoxLayout;
 //    mainLayout->addWidget(iconGroupBox);
 //    mainLayout->addWidget(messageGroupBox);
-    setLayout(mainLayout);*/
+	setLayout(mainLayout);*/
 
 //    iconComboBox->setCurrentIndex(1);
 
-    setWindowTitle(tr("Change Computer Clock"));
-    resize(400, 300);
+	setWindowTitle(tr("Change Computer Clock"));
+	resize(400, 300);
 
 //    titleEdit = new QLineEdit(tr("Saati değiştir kardeş. Başın ağrımasın"));    // sonradan koydum
 
 	trayIcon->show();
-    showMessage();
+	showMessage();
 }
 void Window::degistir()
 {
-	QJson
+//	QJson
 	for(uint8_t i=3; i>0; --i)
 	{
 		QThread::sleep(1);

@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 //    httpWin.resize(availableSize.width() / 5, availableSize.height() / 5);
 //    httpWin.move((availableSize.width() - httpWin.width()) / 2, (availableSize.height() - httpWin.height()) / 2);
 //	httpWin.show();
-	httpWin.downloadFile();
+	httpWin.controlEvkatFile();
 
     return app.exec();
 }

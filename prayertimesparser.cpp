@@ -9,7 +9,7 @@
 
 PrayerTimesParser::PrayerTimesParser()
 {
-
+	loadJson();
 }
 
 bool PrayerTimesParser::loadJson()
@@ -30,11 +30,42 @@ bool PrayerTimesParser::loadJson()
 
 	return true;
 }
-void PrayerTimesParser::vakitleriCikar(QJsonValue value)
-{
 
+int PrayerTimesParser::Min(QString vakit)
+{
+	return vakit.mid(0,2).toInt() * 60 + vakit.mid(3).toInt();
 }
-void PrayerTimesParser::nextDay()
+
+int PrayerTimesParser::kalan(QStringList list)
+{
+	QTime time = QDateTime::currentDateTime().time();
+	int now = time.hour() * 60 + time.minute();
+	for(QString l : list)
+	{
+		if((Min(l) - now) < 0)
+			list.removeOne(l);
+	}
+	QVector<int> listInt;
+	for(QString l : list)
+	{
+		listInt.push_back(Min(l));
+	}
+	int enUfagi = *std::min_element(listInt.begin(), listInt.end());
+	return enUfagi - now;
+}
+
+int PrayerTimesParser::vakitleriCikar(QJsonValue value)
+{
+	QString fajr = value["Imsak"].toString();
+	QString sunRise = value["Gunes"].toString();
+	QString zuhr = value["Ogle"].toString();
+	QString asr = value["Ikindi"].toString();
+	QString maghrib = value["Aksam"].toString();
+	QString isha = value["Yatsi"].toString();
+
+	return kalan({fajr, sunRise, zuhr, asr, maghrib, isha});
+}
+int PrayerTimesParser::nextDay()
 {
 	QDate dt = QDateTime::currentDateTime().date();
 
@@ -49,20 +80,16 @@ void PrayerTimesParser::nextDay()
 
 	uint8_t index = 0;
 	QJsonValue next;
+	int kalanVakit = 0;
 	while(!next.isUndefined())
 	{
 		next = loadDoc[index];
 		if(bugun == next["MiladiTarihKisa"].toString())
 		{
-			vakitleriCikar(next);
+			kalanVakit = vakitleriCikar(next);
 			break;
 		}
 		++index;
 	}
-
+	return kalanVakit;
 }
-void PrayerTimesParser::nextPrayer()
-{
-
-}
-

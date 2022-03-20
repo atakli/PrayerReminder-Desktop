@@ -115,6 +115,13 @@ void HttpWindow::startRequest(const QUrl &requestedUrl)
 //    statusLabel->setText(tr("Downloading %1...").arg(url.toString()));
 }
 
+void HttpWindow::controlEvkatFile()
+{
+	QString fileName = "/home/b720/evkatOnline.json";
+	if(!QFileInfo(fileName).exists())
+		downloadFile();
+}
+
 void HttpWindow::downloadFile()
 {
 	const QString urlSpec = defaultUrl;
@@ -207,7 +214,7 @@ void HttpWindow::httpFinished()
         }
         return;
     }
-	PrayerTimesParser ptp;
+
 	//! [networkreply-error-handling-2]
 
 //    statusLabel->setText(tr("Downloaded %1 bytes to %2\nin\n%3").arg(fi.size()).arg(fi.fileName(), QDir::toNativeSeparators(fi.absolutePath())));

@@ -39,7 +39,7 @@ public:
 
     void startRequest(const QUrl &requestedUrl);
 
-	void downloadFile();
+	void controlEvkatFile();
 private slots:
 //    void cancelDownload();
     void httpFinished();
@@ -52,6 +52,8 @@ private slots:
 
 private:
     std::unique_ptr<QFile> openFileForWrite(const QString &fileName);
+
+	void downloadFile();
 
     QLabel *statusLabel;
     QLineEdit *urlLineEdit;
