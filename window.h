@@ -37,9 +37,7 @@ public:
 
 private slots:
 //    void iconActivated(QSystemTrayIcon::ActivationReason reason);
-	void onClickedOK();
 	void onClickedOK5Dk();
-	void addClockToThread();
 	void downloadTimes();
 public slots:
 	bool showMessage();
@@ -48,13 +46,10 @@ public slots:
 private:
 	void zamaniHesapla();
 	void setIcon(uint8_t number);    // önceden slot'tu
-	void repeatClockRequest();
 //    void createIconGroupBox();
 //    void createMessageGroupBox();
     void createActions();
     void createTrayIcon();
-
-	void degistir();
 
     QElapsedTimer timer;
 
@@ -66,14 +61,14 @@ private:
     QGroupBox *messageGroupBox;
     QLabel *typeLabel;
     QLabel *durationLabel;
-    QLabel *durationWarningLabel;
+//    QLabel *durationWarningLabel;
     QLabel *titleLabel;
     QLabel *bodyLabel;
-    QComboBox *typeComboBox;
-    QSpinBox *durationSpinBox;
-    QLineEdit *titleEdit;
-    QTextEdit *bodyEdit;
-    QPushButton *showMessageButton;
+//    QComboBox *typeComboBox;
+//    QSpinBox *durationSpinBox;
+//    QLineEdit *titleEdit;
+//    QTextEdit *bodyEdit;
+//    QPushButton *showMessageButton;
 
 //    QAction *minimizeAction;
 //    QAction *maximizeAction;

@@ -36,7 +36,7 @@ Window::Window()
 //    connect(showMessageButton, &QAbstractButton::clicked, this, &Window::showMessage);
 //    connect(showIconCheckBox, &QAbstractButton::toggled, trayIcon, &QSystemTrayIcon::setVisible);
 //    connect(iconComboBox, &QComboBox::currentIndexChanged, this, &Window::setIcon);   // hata veriyor. msvc'de sıkıntı çıkmamıştı
-	connect(trayIcon, &QSystemTrayIcon::messageClicked, this, &Window::onClickedOK);
+//	connect(trayIcon, &QSystemTrayIcon::messageClicked, this, &Window::onClickedOK);
 //    connect(trayIcon, &QSystemTrayIcon::activated, this, &Window::iconActivated);
 //    connect(trayIcon, &QWidget::closeEvent, this, &Window::addClockToThread);
 //	addClockToThread();
@@ -93,16 +93,7 @@ void Window::kalanVakitDongusu()
 	}
 	qDebug() << "7";
 }
-void Window::degistir()
-{
-//	QJson
-	for(uint8_t i=3; i>0; --i)
-	{
-		QThread::sleep(1);
-		setIcon(i);
-		trayIcon->show();
-	}
-}
+
 void Window::zamaniHesapla()
 {
 	QDate dt = QDateTime::currentDateTime().date();
@@ -251,13 +242,6 @@ void Window::onClickedOK5Dk()
 	qmbox.information(nullptr, tr("اَلصَّلَاةُ خَيْرٌ  "), tr("Kıldın mı?"));
     QCoreApplication::instance()->quit();   //
 }
-void Window::onClickedOK()
-{
-//	zamaniHesapla();		// TODO: burda ne alaka lan.
-	QMessageBox qmbox;
-	qmbox.information(nullptr, tr("Clock"), tr("Saati değiştirdin değil mi?"));
-	QCoreApplication::instance()->quit();   //
-}
 
 //! [6]
 /*void Window::createIconGroupBox()
@@ -374,38 +358,6 @@ void Window::createTrayIcon()
 //    connect(trayIcon, &QAbstractButton::clicked, this, &Window::showMessage);
 }
 
-void Window::repeatClockRequest()
-{
-	PrayerTimesParser ptp;
-	bool kalanVakitBesOldu = false;
-	while(1)
-	{
-		int kalanVakit = ptp.nextDay();
-		if(kalanVakit <= 60)			// 60 dk'dan az kalmadıysa gösterme. bi de zaten ikiden fazla basamak göstermeye uygun değil şuan
-		{
-			setIcon(kalanVakit);
-			if((kalanVakit <= 5) & (!kalanVakitBesOldu))
-			{
-				kalanVakitBesOldu = true;
-				showMessage();
-			}
-		}
-		if(kalanVakit > 5)
-			kalanVakitBesOldu = false;
-//		QThread::sleep(60);				// 60 saniyede bir kontrol et. ama bunu ayrı bi threde koysam iyi olur yoksa kitlenir
-		if_oncesi:
-		if(timer.elapsed() < 60000)
-		{
-			QCoreApplication::processEvents();
-			goto if_oncesi;
-		}
-		else
-		{
-			timer.restart();
-			continue;
-		}
-	}
-}
 void Window::showTime()
 {
 	PrayerTimesParser ptp;
@@ -422,20 +374,6 @@ void Window::showTime()
 	}
 	if(kalanVakit > 5)
 		kalanVakitBesOldu = false;
-}
-void Window::addClockToThread()
-{
-	timer.start();
-	qDebug() << "8";
-
-	QFuture<void> futureClock = QtConcurrent::run(this, &Window::repeatClockRequest);
-	qDebug() << "9";
-
-	while(!futureClock.isFinished())
-	{
-		QCoreApplication::processEvents();
-	}
-	qDebug() << "10";
 }
 
 #endif
