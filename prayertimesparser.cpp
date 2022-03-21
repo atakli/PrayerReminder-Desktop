@@ -42,6 +42,7 @@ int PrayerTimesParser::kalan(QStringList list)
 {
 	QTime time = QDateTime::currentDateTime().time();
 	int now = time.hour() * 60 + time.minute();
+	QStringList listCopy = list;
 	for(QString l : list)
 	{
 		if((Min(l) - now) < 0)
@@ -53,7 +54,12 @@ int PrayerTimesParser::kalan(QStringList list)
 		listInt.push_back(Min(l));
 	}
 	int enUfagi = *std::min_element(listInt.begin(), listInt.end());
-	return enUfagi - now;
+	if(listInt.isEmpty())
+		enUfagi = Min(listCopy.first());
+	int sonuc = enUfagi - now;
+	if(sonuc < 0)
+		sonuc += 60 * 24;
+	return sonuc;
 }
 
 int PrayerTimesParser::vakitleriCikar(QJsonValue value)

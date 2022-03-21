@@ -48,7 +48,7 @@ Window::Window()
 	connect(timer, &QTimer::timeout, this, &Window::showTime);
 	timer->start(1000);
 
-	showTime();
+//	showTime();
 
 	/*QVBoxLayout *mainLayout = new QVBoxLayout;
 //    mainLayout->addWidget(iconGroupBox);
@@ -179,8 +179,26 @@ void Window::setIcon(uint8_t number)
 	QPixmap pixmap(30,30);
 	pixmap.fill(Qt::yellow);
 	QPainter painter(&pixmap);
+//	QFont font = painter.font();
+//	font.setPixelSize(28);
+//	painter.setFont(font);
 	QString string = QString::number(number);
+	const QRect rectangle = QRect(0, 0, 100, 50);
+	QRect boundingRect;
 	painter.drawText(0,0,16,16, Qt::TextDontClip, string);
+//	painter.drawText(0,0,16,16, Qt::AlignCenter, string); // olmadı
+//	painter.drawText(string); // olmadı
+
+	QPen pen = painter.pen();
+	pen.setStyle(Qt::DotLine);
+	painter.setPen(pen);
+	painter.drawRect(boundingRect.adjusted(0, 0, -pen.width(), -pen.width()));
+
+	pen.setStyle(Qt::DashLine);
+	painter.setPen(pen);
+	painter.drawRect(rectangle.adjusted(0, 0, -pen.width(), -pen.width()));
+
+	// Hala aynı gibi ve güzel
 
 	trayIcon->setIcon(QIcon(pixmap));
 //	trayIcon->show();
