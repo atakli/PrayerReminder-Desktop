@@ -141,7 +141,8 @@ void HttpWindow::downloadFile()
 //        fileName = defaultFileLineEdit->text().trimmed();
 //    if (fileName.isEmpty())
 //        fileName = defaultFileName;
-	QString downloadDirectory = "/home/b720";
+//	QString downloadDirectory = "/home/b720";
+	QString downloadDirectory = QDir::homePath();
 	bool useDirectory = !downloadDirectory.isEmpty() && QFileInfo(downloadDirectory).isDir();
 	if (useDirectory)
 		fileName.prepend(downloadDirectory + '/');

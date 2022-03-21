@@ -5,6 +5,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QFile>
+#include <QDir>
 
 
 PrayerTimesParser::PrayerTimesParser()
@@ -14,7 +15,8 @@ PrayerTimesParser::PrayerTimesParser()
 
 bool PrayerTimesParser::loadJson()
 {
-	QFile loadFile(QStringLiteral("/home/b720/evkatOnline.json"));
+//	QFile loadFile(QStringLiteral("/home/b720/evkatOnline.json"));
+	QFile loadFile(QDir::homePath() + "/evkatOnline.json");
 
 	if (!loadFile.open(QIODevice::ReadOnly))
 	{
