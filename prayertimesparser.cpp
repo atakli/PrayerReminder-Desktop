@@ -73,8 +73,8 @@ int PrayerTimesParser::nextDay()
 	int month = dt.month();
 	int day = dt.day();
 
-	QString dayWith0 = QString("0" + QString::number(day)).rightRef(2).toString();
-	QString monthWith0 = QString("0" + QString::number(month)).rightRef(2).toString();
+	QString dayWith0 = QString("0" + QString::number(day)).right(2);
+	QString monthWith0 = QString("0" + QString::number(month)).right(2);
 
 	QString bugun = dayWith0 + "." + monthWith0 + "." + QString::number(year);
 

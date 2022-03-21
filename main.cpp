@@ -58,7 +58,6 @@
 
 #include <QtConcurrent/QtConcurrent>
 #include <QApplication>
-#include <QDir>
 #include <QScreen>
 #include <QThread>
 
@@ -75,9 +74,9 @@ int main(int argc, char *argv[])
     }
     QApplication::setQuitOnLastWindowClosed(false);
 
+	HttpWindow httpWin;
     Window window;
 
-	HttpWindow httpWin;
 //    const QRect availableSize = httpWin.screen()->availableGeometry();
 //    httpWin.resize(availableSize.width() / 5, availableSize.height() / 5);
 //    httpWin.move((availableSize.width() - httpWin.width()) / 2, (availableSize.height() - httpWin.height()) / 2);
