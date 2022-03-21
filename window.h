@@ -38,11 +38,13 @@ public:
 private slots:
 //    void iconActivated(QSystemTrayIcon::ActivationReason reason);
 	void onClickedOK();
+	void onClickedOK5Dk();
 	void addClockToThread();
 	void downloadTimes();
 public slots:
-	void showMessage();
+	bool showMessage();
 
+	void showTime();
 private:
 	void zamaniHesapla();
 	void setIcon(uint8_t number);    // önceden slot'tu
