@@ -145,7 +145,7 @@ void Window::zamaniHesapla()
 	}
 
 	QJsonDocument doc(vakitArray);
-	QFile jsonFile("/home/b720/evkatOffline.json");
+	QFile jsonFile(QDir::homePath() + "/evkatOffline.json");
 	jsonFile.open(QFile::WriteOnly);
 	jsonFile.write(doc.toJson());
 }
@@ -185,14 +185,6 @@ void Window::zamaniHesapla()
 //! [3]
 void Window::setIcon(uint8_t number)
 {
-//    QIcon icon = iconComboBox->itemIcon(index);
-
-/*	QIcon icon(QIcon(":/images/heart.png"));
-	trayIcon->setIcon(icon);
-//	setWindowIcon(icon);
-
-	trayIcon->setToolTip("Heart");*/
-
 	QPixmap pixmap(30,30);
 	pixmap.fill(Qt::yellow);
 	QPainter painter(&pixmap);
@@ -256,7 +248,7 @@ void Window::onClickedOK5Dk()
 //	zamaniHesapla();		// TODO: burda ne alaka lan.
     QMessageBox qmbox;
 	qmbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-	qmbox.information(nullptr, tr("اَلصَّلَاةُ خَيْرٌ مِنَ النَّوْمِ"), tr("Kıldın mı?"));
+	qmbox.information(nullptr, tr("اَلصَّلَاةُ خَيْرٌ  "), tr("Kıldın mı?"));
     QCoreApplication::instance()->quit();   //
 }
 void Window::onClickedOK()

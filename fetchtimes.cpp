@@ -118,7 +118,7 @@ void HttpWindow::startRequest(const QUrl &requestedUrl)
 
 void HttpWindow::controlEvkatFile()
 {
-	QString fileName = "/home/b720/evkatOnline.json";
+	QString fileName = QDir::homePath() + "/evkatOnline.json";
 	if(!QFileInfo(fileName).exists())
 		downloadFile();
 }
