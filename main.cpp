@@ -56,10 +56,10 @@
 #include "window.h"
 #include "fetchtimes.h"
 
-#include <QtConcurrent/QtConcurrent>
+//#include <QtConcurrent/QtConcurrent>
 #include <QApplication>
-#include <QScreen>
-#include <QThread>
+//#include <QScreen>
+//#include <QThread>
 
 int main(int argc, char *argv[])
 {

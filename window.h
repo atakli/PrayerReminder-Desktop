@@ -31,7 +31,6 @@ public:
     Window();
 
 //    void setVisible(bool visible) override;
-	void kalanVakitDongusu();
 //protected:
 //    void closeEvent(QCloseEvent *event) override;
 

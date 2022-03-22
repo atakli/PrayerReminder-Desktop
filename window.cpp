@@ -5,23 +5,29 @@
 #ifndef QT_NO_SYSTEMTRAYICON
 
 #include <QAction>
+#include <QFile>
+#include <QDir>
 #include <QPainter>
-#include <QCheckBox>
-#include <QComboBox>
+//#include <QCheckBox>
+//#include <QComboBox>
 #include <QCoreApplication>
-#include <QCloseEvent>
-#include <QGroupBox>
-#include <QLabel>
-#include <QLineEdit>
+#include <QJsonObject>
+#include <QJsonArray>
+//#include <QCloseEvent>
+//#include <QGroupBox>
+//#include <QLabel>
+//#include <QLineEdit>
 #include <QMenu>
-#include <QPushButton>
-#include <QSpinBox>
-#include <QTextEdit>
-#include <QVBoxLayout>
+#include <QTimer>
+#include <QDateTime>
+//#include <QPushButton>
+//#include <QSpinBox>
+//#include <QTextEdit>
+//#include <QVBoxLayout>
 #include <QMessageBox>
 
 #include <QDebug>
-#include <QtConcurrent/QtConcurrent>
+//#include <QtConcurrent/QtConcurrent>
 //! [0]
 Window::Window()
 {
@@ -63,35 +69,6 @@ Window::Window()
 //    titleEdit = new QLineEdit(tr("Saati değiştir kardeş. Başın ağrımasın"));    // sonradan koydum
 
 	trayIcon->show();
-}
-void Window::kalanVakitDongusu()
-{
-	bool kalanVakitBesOldu = false;
-	PrayerTimesParser ptp;
-	qDebug() << "1";
-	while(1)
-	{
-		int kalanVakit = ptp.nextDay();
-		qDebug() << "kalan:" << kalanVakit;
-		if(kalanVakit <= 60)			// 60 dk'dan az kalmadıysa gösterme. bi de zaten ikiden fazla basamak göstermeye uygun değil şuan
-		{
-			setIcon(kalanVakit);
-			qDebug() << "2";
-			if((kalanVakit <= 5) & (!kalanVakitBesOldu))
-			{
-				qDebug() << "3";
-				kalanVakitBesOldu = true;
-				showMessage();
-			}
-		}
-		qDebug() << "4";
-		if(kalanVakit > 5)
-			kalanVakitBesOldu = false;
-		qDebug() << "5";
-		QThread::sleep(60);				// 60 saniyede bir kontrol et. ama bunu ayrı bit threde koysam iyi olur yoksa kitlenir
-		qDebug() << "6";
-	}
-	qDebug() << "7";
 }
 
 void Window::zamaniHesapla()
@@ -183,20 +160,20 @@ void Window::setIcon(uint8_t number)
 //	font.setPixelSize(28);
 //	painter.setFont(font);
 	QString string = QString::number(number);
-	const QRect rectangle = QRect(0, 0, 100, 50);
-	QRect boundingRect;
+//	const QRect rectangle = QRect(0, 0, 100, 50);
+//	QRect boundingRect;
 	painter.drawText(0,0,16,16, Qt::TextDontClip, string);
 //	painter.drawText(0,0,16,16, Qt::AlignCenter, string); // olmadı
 //	painter.drawText(string); // olmadı
 
-	QPen pen = painter.pen();
-	pen.setStyle(Qt::DotLine);
-	painter.setPen(pen);
-	painter.drawRect(boundingRect.adjusted(0, 0, -pen.width(), -pen.width()));
+//	QPen pen = painter.pen();
+//	pen.setStyle(Qt::DotLine);
+//	painter.setPen(pen);
+//	painter.drawRect(boundingRect.adjusted(0, 0, -pen.width(), -pen.width()));
 
-	pen.setStyle(Qt::DashLine);
-	painter.setPen(pen);
-	painter.drawRect(rectangle.adjusted(0, 0, -pen.width(), -pen.width()));
+//	pen.setStyle(Qt::DashLine);
+//	painter.setPen(pen);
+//	painter.drawRect(rectangle.adjusted(0, 0, -pen.width(), -pen.width()));
 
 	// Hala aynı gibi ve güzel
 
@@ -257,7 +234,7 @@ void Window::onClickedOK5Dk()
 //	zamaniHesapla();		// TODO: burda ne alaka lan.
     QMessageBox qmbox;
 	qmbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-	qmbox.information(nullptr, tr("اَلصَّلَاةُ خَيْرٌ  "), tr("Kıldın mı?"));
+	qmbox.information(nullptr, tr("اَلصَّلَاةُ خَيْرٌ"), tr("Kıldın mı?"));
     QCoreApplication::instance()->quit();   //
 }
 
@@ -381,12 +358,15 @@ void Window::showTime()
 	PrayerTimesParser ptp;
 	bool kalanVakitBesOldu = false;
 	int kalanVakit = ptp.nextDay();
-	if(kalanVakit <= 60)			// 60 dk'dan az kalmadıysa gösterme. bi de zaten ikiden fazla basamak göstermeye uygun değil şuan
+	if(kalanVakit <= 60)			// 60 dk'dan az kalmadıysa gösterme. bi de zaten ikiden fazla basamak göstermeye uygun değil ve gerek de yok
 	{
 		setIcon(kalanVakit);
 		if((kalanVakit <= 5) & (!kalanVakitBesOldu))
 		{
 			kalanVakitBesOldu = true;
+//			QFuture<void> future = QtConcurrent::run(this, &Window::showMessage);	// 5 dk uyarısı çıktığında ok'a basmadığım sürece sayaç akmaya devam etmiyor. o yüzden
+//			while(future.isFinished())												// yapmıştım ama olmadı
+//				QCoreApplication::processEvents();
 			showMessage();
 		}
 	}

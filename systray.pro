@@ -1,9 +1,9 @@
 CONFIG += c++17 console
 
 HEADERS       = window.h \
-    calcTimes.h \
-    fetchtimes.h \
-    prayertimesparser.h
+                calcTimes.h \
+                fetchtimes.h \
+                prayertimesparser.h
 SOURCES       = main.cpp \
                 calcTimes.cpp \
                 fetchtimes.cpp \
