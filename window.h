@@ -43,6 +43,7 @@ public slots:
 
 	void showTime();
 private:
+	bool kalanVakitBesOldu = false;
 	void zamaniHesapla();
 	void setIcon(uint8_t number);    // önceden slot'tu
 //    void createIconGroupBox();

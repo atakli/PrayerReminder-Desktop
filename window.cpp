@@ -219,11 +219,13 @@ bool Window::showMessage()
 		trayIcon->showMessage("Saati değiştir kardeş. Başın ağrımasın", "", msgIcon, 1 * 1000);   // durationSpinBox->value() 1 diye salladım. ne olduğu önemli değil
 //    }                                                                                         // normal message box açılmıyor çünkü şuan nedense
 	*/QMessageBox qmbox;
-	qmbox.information(nullptr, tr("حي على الصلاة"), tr("5 dk'dan az kaldı!"));
+//	qmbox.setWindowFlag(Qt::WindowStaysOnTopHint);
+	QMessageBox::StandardButton out = qmbox.information(nullptr, tr("حي على الصلاة"), tr("5 dk'dan az kaldı!"));
 //	connect(qmbox, &QMessageBox::Ok, this, &Window::onClickedOK5Dk);
 //	QCoreApplication::instance()->quit();   //
-	qmbox.close();
-	return true;
+	if(out == QMessageBox::Ok)
+//		qmbox.close();
+		return true;
 }
 //! [5]
 
@@ -356,7 +358,6 @@ void Window::createTrayIcon()
 void Window::showTime()
 {
 	PrayerTimesParser ptp;
-	bool kalanVakitBesOldu = false;
 	int kalanVakit = ptp.nextDay();
 	if(kalanVakit <= 60)			// 60 dk'dan az kalmadıysa gösterme. bi de zaten ikiden fazla basamak göstermeye uygun değil ve gerek de yok
 	{
