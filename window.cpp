@@ -155,6 +155,9 @@ void Window::zamaniHesapla()
 //! [3]
 void Window::setIcon(uint8_t number)
 {
+//	QSystemTrayIcon::NoIcon noo;
+//	trayIcon->setVisible()
+
 	QPixmap pixmap(30,30);
 	pixmap.fill(Qt::yellow);
 	QPainter painter(&pixmap);
@@ -363,6 +366,7 @@ void Window::showTime()
 	int kalanVakit = ptp.nextDay();
 	if(kalanVakit <= 60)			// 60 dk'dan az kalmadıysa gösterme. bi de zaten ikiden fazla basamak göstermeye uygun değil ve gerek de yok
 	{
+		trayIcon->setVisible(true);
 		setIcon(kalanVakit);
 		if((kalanVakit <= 5) & (!kalanVakitBesOldu))
 		{
@@ -373,6 +377,8 @@ void Window::showTime()
 			showMessage();
 		}
 	}
+	else
+		trayIcon->setVisible(false);
 	if(kalanVakit > 5)
 		kalanVakitBesOldu = false;
 }
