@@ -16,11 +16,17 @@ PrayerTimesParser::PrayerTimesParser()
 bool PrayerTimesParser::loadJson()
 {
 //	QFile loadFile(QStringLiteral("/home/b720/evkatOnline.json"));
-	QFile loadFile(QDir::homePath() + "/evkatOnline.json");
+	QString evkatOnline = QDir::homePath() + "/evkatOnline.json";
+	QString evkatOffline = QDir::homePath() + "/evkatOffline.json";
+	QFile loadFile(evkatOnline);
+
+	if(!loadFile.exists())
+		loadFile.setFileName(evkatOffline);
 
 	if (!loadFile.open(QIODevice::ReadOnly))
 	{
-		qWarning("Couldn't open save file.");
+		QString warningStr = "Couldn't open " + loadFile.fileName() + " save file.";
+		qWarning(warningStr.toStdString().data());
 		return false;
 	}
 
@@ -93,6 +99,7 @@ int PrayerTimesParser::nextDay()
 	{
 		next = loadDoc[index];
 		if(bugun == next["MiladiTarihKisa"].toString())
+//		if(bugun == next["Date"].toString())
 		{
 			kalanVakit = vakitleriCikar(next);
 			break;

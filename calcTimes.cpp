@@ -54,12 +54,12 @@ double CalcTimes::moreLess24(double value)
 }
 
 //convert the double number to Hours and Minutes
-QString CalcTimes::doubleToHrMin(double number, int &hours, int &minutes, int hangiVakit)
+QString CalcTimes::doubleToHrMin(double number, int hangiVakit)
 {
-    hours = floor(moreLess24(number));
-    minutes = floor(moreLess24(number - hours) * 60);
+	int hours = floor(moreLess24(number));
+	int minutes = floor(moreLess24(number - hours) * 60);
 	temkinEkle(&hours, &minutes, hangiVakit);
-	return QString::number(hours) + ":" + QString::number(minutes);
+	return QString("0" + QString::number(hours)).right(2) + ":" + QString("0" + QString::number(minutes)).right(2);
 }
 void CalcTimes::temkinEkle(int* hours, int* minutes, int hangiVakit)
 // TODO: her vakti ayrı bi fonksiyona koymak daha efficient olabilir. ama yeterli çünkü sürekli hesaplanmayacak. ayda bir. o da worst case :)
@@ -80,6 +80,11 @@ void CalcTimes::temkinEkle(int* hours, int* minutes, int hangiVakit)
 		*minutes -= 60;
 		*hours += 1;
 		// if(hours > 24) // TODO: en azından türkiyede yatsı namazı 24'ü geçmeyeceği için şimdilik bunla uğraşmıyorum
+	}
+	else if(*minutes < 0)
+	{
+		*minutes += 60;
+		*hours -= 1;
 	}
 }
 void CalcTimes::calcPrayerTimes(int year, int month, int day,

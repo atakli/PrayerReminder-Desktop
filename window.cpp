@@ -39,6 +39,9 @@ Window::Window()
     createActions();
 	createTrayIcon();
 
+	QString fileName = QDir::homePath() + "/evkatOffline.json";
+	if(!QFileInfo(fileName).exists())
+		zamaniHesapla();
 //    connect(showMessageButton, &QAbstractButton::clicked, this, &Window::showMessage);
 //    connect(showIconCheckBox, &QAbstractButton::toggled, trayIcon, &QSystemTrayIcon::setVisible);
 //    connect(iconComboBox, &QComboBox::currentIndexChanged, this, &Window::setIcon);   // hata veriyor. msvc'de sıkıntı çıkmamıştı
@@ -91,24 +94,23 @@ void Window::zamaniHesapla()
 
 		ct.calcPrayerTimes(year, month, day, 29.43333330, 40.80000000, 3, -18, -17, fajr, sunRise, zuhr, asr, maghrib, isha);
 
-		int hours, minutes;
+		QString dayWith0 = QString("0" + QString::number(day)).right(2);
+		QString monthWith0 = QString("0" + QString::number(month)).right(2);
 
-		QString toBeInserted = QString::number(day) + "/" + QString::number(month) + "/" + QString::number(year);
-		vakitObject.insert("Date", QJsonValue::fromVariant(toBeInserted));
-		QJsonObject recordObject;
-		toBeInserted = ct.doubleToHrMin(fajr, hours, minutes, 1);
-		recordObject.insert("Fajr", QJsonValue::fromVariant(toBeInserted));
-		toBeInserted = ct.doubleToHrMin(sunRise, hours, minutes, 0);
-		recordObject.insert("SunRise", QJsonValue::fromVariant(toBeInserted));
-		toBeInserted = ct.doubleToHrMin(zuhr, hours, minutes, 2);
-		recordObject.insert("Zuhr", QJsonValue::fromVariant(toBeInserted));
-		toBeInserted = ct.doubleToHrMin(asr, hours, minutes, 3);
-		recordObject.insert("Asr", QJsonValue::fromVariant(toBeInserted));
-		toBeInserted = ct.doubleToHrMin(maghrib, hours, minutes, 4);
-		recordObject.insert("Maghrib", QJsonValue::fromVariant(toBeInserted));
-		toBeInserted = ct.doubleToHrMin(isha, hours, minutes, 5);
-		recordObject.insert("Isha", QJsonValue::fromVariant(toBeInserted));
-		vakitObject.insert("Evkat",recordObject);
+		QString toBeInserted = dayWith0 + "." + monthWith0 + "." + QString::number(year);
+		vakitObject.insert("MiladiTarihKisa", QJsonValue::fromVariant(toBeInserted));
+		toBeInserted = ct.doubleToHrMin(fajr, 1);
+		vakitObject.insert("Imsak", QJsonValue::fromVariant(toBeInserted));
+		toBeInserted = ct.doubleToHrMin(sunRise, 0);
+		vakitObject.insert("Gunes", QJsonValue::fromVariant(toBeInserted));
+		toBeInserted = ct.doubleToHrMin(zuhr, 2);
+		vakitObject.insert("Ogle", QJsonValue::fromVariant(toBeInserted));
+		toBeInserted = ct.doubleToHrMin(asr, 3);
+		vakitObject.insert("Ikindi", QJsonValue::fromVariant(toBeInserted));
+		toBeInserted = ct.doubleToHrMin(maghrib, 4);
+		vakitObject.insert("Aksam", QJsonValue::fromVariant(toBeInserted));
+		toBeInserted = ct.doubleToHrMin(isha, 5);
+		vakitObject.insert("Yatsi", QJsonValue::fromVariant(toBeInserted));
 		vakitArray.push_back(vakitObject);
 	}
 
@@ -202,7 +204,7 @@ void Window::setIcon(uint8_t number)
 //! [4]
 
 //! [5]
-bool Window::showMessage()
+void Window::showMessage()
 {
 //    showIconCheckBox->setChecked(true);
 //    int selectedIcon = typeComboBox->itemData(typeComboBox->currentIndex()).toInt();
@@ -220,12 +222,12 @@ bool Window::showMessage()
 //    }                                                                                         // normal message box açılmıyor çünkü şuan nedense
 	*/QMessageBox qmbox;
 //	qmbox.setWindowFlag(Qt::WindowStaysOnTopHint);
-	QMessageBox::StandardButton out = qmbox.information(nullptr, tr("حي على الصلاة"), tr("5 dk'dan az kaldı!"));
+	/*QMessageBox::StandardButton out =*/ qmbox.information(nullptr, tr("حي على الصلاة"), tr("5 dk'dan az kaldı!"));
 //	connect(qmbox, &QMessageBox::Ok, this, &Window::onClickedOK5Dk);
 //	QCoreApplication::instance()->quit();   //
-	if(out == QMessageBox::Ok)
+//	if(out == QMessageBox::Ok)
 //		qmbox.close();
-		return true;
+//		return true;
 }
 //! [5]
 
@@ -328,16 +330,16 @@ void Window::createActions()
 
     quitAction = new QAction(tr("&Quit"), this);
     connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
-    downloadTimesAction = new QAction(tr("&Namaz Vakitlerini İndir"), this);
-    connect(downloadTimesAction, &QAction::triggered, this, &Window::downloadTimes);
+	sehirSecimiAction = new QAction(tr("&Şehir seç"), this);
+	connect(sehirSecimiAction, &QAction::triggered, this, &Window::sehirSec);
 }
-void Window::downloadTimes()
+void Window::sehirSec()
 {
     // ...
     QMessageBox qmbox;
 //    QIcon icon(QIcon(":/images/heart.png"));
 //    qmbox.setIcon(QMessageBox::Information);
-    qmbox.information(nullptr, tr("İşlem Başarılı"), tr("30 Günlük Vakitler İndirildi"));
+	qmbox.information(nullptr, tr("İşlem Başarılı"), QString("Seçilen şehir/ilçe: ") + ("Bir aylık vakitler indirildi ve offline vakitler hesaplandı"));
 }
 
 void Window::createTrayIcon()
@@ -348,7 +350,7 @@ void Window::createTrayIcon()
     trayIconMenu->addAction(restoreAction);
     trayIconMenu->addSeparator();*/
     trayIconMenu->addAction(quitAction);
-    trayIconMenu->addAction(downloadTimesAction);
+	trayIconMenu->addAction(sehirSecimiAction);
 
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setContextMenu(trayIconMenu);
@@ -357,7 +359,7 @@ void Window::createTrayIcon()
 
 void Window::showTime()
 {
-	PrayerTimesParser ptp;
+	PrayerTimesParser ptp;			// TODO: her saniye burdaki her işi yapmasına gerek yok aslında, sanırım
 	int kalanVakit = ptp.nextDay();
 	if(kalanVakit <= 60)			// 60 dk'dan az kalmadıysa gösterme. bi de zaten ikiden fazla basamak göstermeye uygun değil ve gerek de yok
 	{

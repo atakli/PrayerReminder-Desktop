@@ -10,8 +10,10 @@
 #include <algorithm>
 #include <memory>
 
+///usr/share/applications
+
 #if QT_CONFIG(ssl)
-const char defaultUrl[] = "https://ezanvakti.herokuapp.com/vakitler/9651"; // for gebze
+const char defaultUrl[] = "https://ezanvakti.herokuapp.com/vakitler/9651"; // note that times in this site are not updated everyday
 #else
 const char defaultUrl[] = "http://www.qt.io/";
 #endif
@@ -98,6 +100,8 @@ void HttpWindow::startRequest(const QUrl &requestedUrl)
     connect(reply.get(), &QNetworkReply::finished, this, &HttpWindow::httpFinished);
     //! [networkreply-readyread-1]
     connect(reply.get(), &QIODevice::readyRead, this, &HttpWindow::httpReadyRead);
+//	qDebug() << "j:" << reply.get()->readyRead();
+//	qDebug() << "debugMessage";
     //! [networkreply-readyread-1]
 #if QT_CONFIG(ssl)
     //! [sslerrors-1]
@@ -143,17 +147,17 @@ void HttpWindow::downloadFile()
 //        fileName = defaultFileName;
 //	QString downloadDirectory = "/home/b720";
 	QString downloadDirectory = QDir::homePath();
-	bool useDirectory = !downloadDirectory.isEmpty() && QFileInfo(downloadDirectory).isDir();
+	bool useDirectory = !downloadDirectory.isEmpty() && QFileInfo(downloadDirectory).isDir();	// TODO: bura ne
 	if (useDirectory)
 		fileName.prepend(downloadDirectory + '/');
 //	qDebug() << fileName;
     if (QFile::exists(fileName)) {
-        if (QMessageBox::question(this, tr("Overwrite Existing File"), tr("There already exists a file called %1%2. Overwrite?")
-                                     .arg(fileName, useDirectory ? QString() : QStringLiteral(" in the current directory")),
-                                     QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
-        {
-            return;
-        }
+		if (QMessageBox::question(this, tr("Overwrite Existing File"), tr("There already exists a file called %1%2. Overwrite?")
+									 .arg(fileName, useDirectory ? QString() : QStringLiteral(" in the current directory")),
+									 QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
+		{
+			return;
+		}
         QFile::remove(fileName);
     }
 
@@ -201,7 +205,10 @@ void HttpWindow::httpFinished()
     //! [networkreply-error-handling-1]
     reply.reset();
     //! [networkreply-error-handling-2]
-    if (error != QNetworkReply::NoError) {
+//	qDebug() << "error: " << error;					//  QNetworkReply::HostNotFoundError
+//	qDebug() << "errorString: " << errorString;		// Host ezanvakti.herokuapp.com not found
+	if (error != QNetworkReply::NoError) {
+//		qDebug() << "error var demek ki";
         QFile::remove(fi.absoluteFilePath());
         // For "request aborted" we handle the label and button in cancelDownload()
         if (!httpRequestAborted) {

@@ -37,9 +37,9 @@ public:
 private slots:
 //    void iconActivated(QSystemTrayIcon::ActivationReason reason);
 	void onClickedOK5Dk();
-	void downloadTimes();
+	void sehirSec();
 public slots:
-	bool showMessage();
+	void showMessage();
 
 	void showTime();
 private:
@@ -74,7 +74,7 @@ private:
 //    QAction *maximizeAction;
 //    QAction *restoreAction;
     QAction *quitAction;
-    QAction *downloadTimesAction;
+	QAction *sehirSecimiAction;
 
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;

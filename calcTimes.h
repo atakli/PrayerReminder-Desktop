@@ -10,7 +10,7 @@ private:
 	double moreLess360(double value);
 	double moreLess24(double value);
 public:
-	QString doubleToHrMin(double number, int &hours, int &minutes, int hangiVakit);
+	QString doubleToHrMin(double number, int hangiVakit);
 	void calcPrayerTimes(int year, int month, int day,
 						 double longitude, double latitude, int timeZone,
 						 double fajrTwilight, double ishaTwilight,
