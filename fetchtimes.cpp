@@ -101,7 +101,11 @@ void HttpWindow::startRequest(const QUrl &requestedUrl)
     //! [networkreply-readyread-1]
     connect(reply.get(), &QIODevice::readyRead, this, &HttpWindow::httpReadyRead);
 //	qDebug() << "j:" << reply.get()->readyRead();
+<<<<<<< HEAD
 //	qDebug() << "debugMessage";
+=======
+	qDebug() << "debugMessage";
+>>>>>>> 1257252b3f15fe81d0b5cbe0e317b8b72ead97d2
     //! [networkreply-readyread-1]
 #if QT_CONFIG(ssl)
     //! [sslerrors-1]
@@ -205,9 +209,13 @@ void HttpWindow::httpFinished()
     //! [networkreply-error-handling-1]
     reply.reset();
     //! [networkreply-error-handling-2]
+<<<<<<< HEAD
 //	qDebug() << "error: " << error;					//  QNetworkReply::HostNotFoundError
 //	qDebug() << "errorString: " << errorString;		// Host ezanvakti.herokuapp.com not found
 	if (error != QNetworkReply::NoError) {
+=======
+    if (error != QNetworkReply::NoError) {
+>>>>>>> 1257252b3f15fe81d0b5cbe0e317b8b72ead97d2
 //		qDebug() << "error var demek ki";
         QFile::remove(fi.absoluteFilePath());
         // For "request aborted" we handle the label and button in cancelDownload()
