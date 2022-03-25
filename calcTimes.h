@@ -16,6 +16,7 @@ public:
 						 double fajrTwilight, double ishaTwilight,
 						 double &fajrTime, double &sunRiseTime, double &zuhrTime,
 						 double &asrTime, double &maghribTime, double &ishaTime);
+	void hesapla();
 };
 
 #endif // CALCTIMES_H

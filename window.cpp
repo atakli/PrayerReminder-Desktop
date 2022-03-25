@@ -38,12 +38,16 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 
 //    iconLabel->setMinimumWidth(durationLabel->sizeHint().width());
 
+	ulkeKodu = "2";
+	sehirKodu = "551";
+	executeFileNames();
+
     createActions();
 	createTrayIcon();
 
 	QString fileName = QDir::homePath() + "/evkatOffline.json";
 	if(!QFileInfo(fileName).exists())
-		zamaniHesapla();
+		offlineVakitleriHesapla();
 //    connect(showIconCheckBox, &QAbstractButton::toggled, trayIcon, &QSystemTrayIcon::setVisible);
 //    connect(iconComboBox, &QComboBox::currentIndexChanged, this, &Window::setIcon);   // hata veriyor. msvc'de sıkıntı çıkmamıştı
 //	connect(trayIcon, &QSystemTrayIcon::messageClicked, this, &Window::onClickedOK);
@@ -59,6 +63,11 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 	connect(timer, &QTimer::timeout, this, &Window::showTime);
 	timer->start(1000);
 
+	connect(ui->hesaplaButton, &QAbstractButton::clicked, this, &Window::evkatCalculated);
+//	connect(this, &QWidget::close, ui->textLabel, &QLabel::clear);
+//    connect(ui->ulke, SIGNAL(currentTextChanged(QString)), [this](QString ulke) {fillCities(ulke);});
+	connect(ui->ulke, SIGNAL(currentIndexChanged(int)), SLOT(fillCities(int)));
+	connect(ui->sehir, SIGNAL(currentIndexChanged(int)), SLOT(fillTown(int)));
 //	showTime();
 
 	/*QVBoxLayout *mainLayout = new QVBoxLayout;
@@ -68,15 +77,20 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 
 //    iconComboBox->setCurrentIndex(1);
 
-	setWindowTitle(tr("Change Computer Clock"));
+	setWindowTitle(tr("Şehir Seçimi"));
 	resize(400, 300);
 
 //    titleEdit = new QLineEdit(tr("Saati değiştir kardeş. Başın ağrımasın"));    // sonradan koydum
 
 	trayIcon->show();
 }
-
-void Window::zamaniHesapla()
+void Window::executeFileNames()
+{
+	ulkeFile = QDir::homePath() + "/.namazVakitSehirKodlari/ulkeler.txt";
+	sehirFile = QDir::homePath() + "/.namazVakitSehirKodlari/sehirler/" + ulkeKodu + ".txt";
+	ilceFile = QDir::homePath() + "/.namazVakitSehirKodlari/sehirler/" + sehirKodu + ".txt";
+}
+void Window::offlineVakitleriHesapla()
 {
 	QDate dt = QDateTime::currentDateTime().date();
 	CalcTimes ct;
@@ -336,69 +350,65 @@ void Window::createActions()
     quitAction = new QAction(tr("&Quit"), this);
     connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
 	sehirSecimiAction = new QAction(tr("&Şehir seç"), this);
-    connect(sehirSecimiAction, &QAction::triggered, this, &Window::bolgeSec);
+//	connect(sehirSecimiAction, &QAction::triggered, this, &Window::bolgeSec);
+	connect(sehirSecimiAction, SIGNAL(triggered()), this, SLOT(bolgeSec()));
 	connect(this, &Window::son5Dk, this, &Window::showMessage);
 }
 QString dosyayiAc(QString fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly)
 {
 	QFile file(fileName);
 	if (!file.open(flag | QIODevice::Text))
-		return {};
+		return "";							// TODO: buraya girerse ne olcak?
 	QString text = file.readAll();
 	file.close();
 	return text;
 }
+void Window::ilkBolgeSecimi()
+{
+	ui->sehir->setCurrentText("KOCAELİ");
+	ui->ilce->setCurrentText("GEBZE");
+}
 void Window::fillCities(int ulkeIndex)
 {
-    QString ulkeFile = QDir::homePath() + "/.namazVakitSehirKodlari" + "/ulkeler.txt";
-    QString ulkeKodu = dosyayiAc(ulkeFile).split('\n').at(ulkeIndex).split("_").last();
+	executeFileNames();
+	ulkeKodu = dosyayiAc(ulkeFile).split('\n').at(ulkeIndex).split("_").last();
+	executeFileNames();
+	QStringList sehirler = dosyayiAc(sehirFile).split('\n');
 
-    QString sehirFile = QDir::homePath() + "/.namazVakitSehirKodlari" + "/sehirler/" + ulkeKodu + ".txt";
-    QStringList sehirler = dosyayiAc(sehirFile).split('\n');
-    for(QString sehir : sehirler)
+	ui->sehir->clear();
+	for(const QString& sehir : sehirler)
     {
         ui->sehir->addItem(sehir.split('_').at(0));
     }
-
-//    emit sehirSec(sehirKodu);
-    fillTown(sehirIndex);
 }
 void Window::fillTown(int sehirIndex)
 {
-    QString ulkeFile = QDir::homePath() + "/.namazVakitSehirKodlari" + "/ulkeler.txt";
-    QString ulkeKodu = dosyayiAc(ulkeFile).split('\n').at(ulkeIndex).split("_").last();
+	if(sehirIndex == -1)
+		return;
+	executeFileNames();
+	sehirKodu = dosyayiAc(sehirFile).split('\n').at(sehirIndex).split("_").last(); // 551
+	executeFileNames();
+	QStringList ilceler = dosyayiAc(ilceFile).split('\n');
 
-    QString sehirFile = QDir::homePath() + "/.namazVakitSehirKodlari" + "/sehirler/" + sehirIndex + ".txt";
-    QStringList sehirler = dosyayiAc(sehirFile).split('\n');
-
-    QString sehirKodu = sehir.split("_").last();
-    QString ilceFile = QDir::homePath() + "/.namazVakitSehirKodlari" + "/sehirler/" + sehirKodu + ".txt";
-    QStringList ilceler = dosyayiAc(ilceFile).split('\n');
-    for(QString ilce : ilceler)
-    {
-        ui->ilce->addItem(ilce.split('_').at(0));
-    }
+	ui->ilce->clear();
+	for(const QString& ilce : ilceler)
+	{
+		ui->ilce->addItem(ilce.split('_').at(0));
+	}
 }
 void Window::evkatCalculated()
 {
-    QMessageBox qmbox;
-    qmbox.information(nullptr, tr("İşlem Başarılı"), QString("Seçilen şehir/ilçe: ") + ("Bir aylık vakitler indirildi ve offline vakitler hesaplandı"));
+	ui->textLabel->setText(ui->ilce->currentText() + " için bir aylık vakitler indirildi ve offline vakitler hesaplandı");
 }
 
 void Window::bolgeSec()
 {
-    QString ulkeFile = QDir::homePath() + "/.namazVakitSehirKodlari" + "/ulkeler.txt";
-    QStringList ulkeler = dosyayiAc(ulkeFile).split('\n');
-    QString sehirler = QDir::homePath() + "/.namazVakitSehirKodlari" + "/sehirler";
-    QString ilceler = QDir::homePath() + "/.namazVakitSehirKodlari" + "";
-    for(QString ulke : ulkeler)
+	QStringList ulkeler = dosyayiAc(ulkeFile).split('\n');
+	for(const QString& ulke : ulkeler)
     {
         ui->ulke->addItem(ulke.split('_').at(0));
     }
-    connect(ui->hesaplaButton, &QAbstractButton::clicked, this, &Window::evkatCalculated);
-//    connect(ui->ulke, SIGNAL(currentTextChanged(QString)), [this](QString ulke) {fillCities(ulke);});
-    connect(ui->ulke, SIGNAL(currentIndexChanged(int)), SLOT(fillCities(int)));
-    connect(ui->sehir, SIGNAL(currentIndexChanged(int)), SLOT(fillTown(int)));
+	ilkBolgeSecimi();
     show();
 }
 

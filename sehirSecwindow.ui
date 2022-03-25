@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>448</width>
-    <height>150</height>
+    <width>817</width>
+    <height>271</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Sign Creator and Verifier</string>
+   <string/>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0">
@@ -45,6 +45,13 @@
       </layout>
      </item>
     </layout>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="textLabel">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

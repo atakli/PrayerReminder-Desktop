@@ -46,7 +46,7 @@ private slots:
 	void onClickedOK5Dk();
     void bolgeSec();
     void fillCities(int ulkeIndex);
-    void fillTown(int sehirIndex);
+	void fillTown(int sehirIndex);
 public slots:
 	void showMessage();
 
@@ -55,9 +55,13 @@ signals:
     void son5Dk();
     void sehirSec(QString sehirKodu);
 private:
+	QString ulkeFile, sehirFile, ilceFile;
+	QString ulkeKodu, sehirKodu, ilceKodu;
 	std::shared_ptr<Ui::Window> ui;
 	bool kalanVakitBesOldu = false;
-	void zamaniHesapla();
+	void executeFileNames();
+	void offlineVakitleriHesapla();
+	void ilkBolgeSecimi();
 	void setIcon(uint8_t number);    // önceden slot'tu
 //    void createIconGroupBox();
 //    void createMessageGroupBox();
