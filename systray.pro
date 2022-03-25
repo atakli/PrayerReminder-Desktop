@@ -3,11 +3,13 @@ CONFIG += c++17 console
 HEADERS       = window.h \
                 calcTimes.h \
                 fetchtimes.h \
-                prayertimesparser.h
+                prayertimesparser.h \
+                update.h
 SOURCES       = main.cpp \
                 calcTimes.cpp \
                 fetchtimes.cpp \
                 prayertimesparser.cpp \
+    update.cpp \
                 window.cpp \
 
 
@@ -20,5 +22,5 @@ requires(qtConfig(combobox))
 target.path = $$[QT_INSTALL_EXAMPLES]/widgets/desktop/systray
 INSTALLS += target
 
-#FORMS += \
-#    authenticationdialog.ui
+FORMS += \
+    sehirSecwindow.ui

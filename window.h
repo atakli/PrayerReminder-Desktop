@@ -6,6 +6,7 @@
 #ifndef QT_NO_SYSTEMTRAYICON
 
 #include <QDialog>
+#include <QWidget>
 
 #include <QElapsedTimer>
 
@@ -23,12 +24,17 @@ class QTextEdit;
 QT_END_NAMESPACE
 
 //! [0]
-class Window : public QDialog
+
+namespace Ui {
+class Window;
+}
+
+class Window : public QWidget
 {
     Q_OBJECT
 
 public:
-    Window();
+	Window(QWidget* parent=0);
 
 //    void setVisible(bool visible) override;
 //protected:
@@ -42,9 +48,13 @@ public slots:
 	void showMessage();
 
 	void showTime();
+signals:
+	void son5Dk();
 private:
+	std::shared_ptr<Ui::Window> ui;
 	bool kalanVakitBesOldu = false;
 	void zamaniHesapla();
+	void fillCities();
 	void setIcon(uint8_t number);    // önceden slot'tu
 //    void createIconGroupBox();
 //    void createMessageGroupBox();

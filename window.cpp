@@ -1,6 +1,7 @@
 #include "window.h"
 #include "calcTimes.h"
 #include "prayertimesparser.h"
+#include "ui_sehirSecwindow.h"
 
 #ifndef QT_NO_SYSTEMTRAYICON
 
@@ -29,8 +30,9 @@
 #include <QDebug>
 //#include <QtConcurrent/QtConcurrent>
 //! [0]
-Window::Window()
+Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Window>())
 {
+	ui->setupUi(this);
 //    createIconGroupBox();
 //    createMessageGroupBox();
 
@@ -42,7 +44,6 @@ Window::Window()
 	QString fileName = QDir::homePath() + "/evkatOffline.json";
 	if(!QFileInfo(fileName).exists())
 		zamaniHesapla();
-//    connect(showMessageButton, &QAbstractButton::clicked, this, &Window::showMessage);
 //    connect(showIconCheckBox, &QAbstractButton::toggled, trayIcon, &QSystemTrayIcon::setVisible);
 //    connect(iconComboBox, &QComboBox::currentIndexChanged, this, &Window::setIcon);   // hata veriyor. msvc'de sıkıntı çıkmamıştı
 //	connect(trayIcon, &QSystemTrayIcon::messageClicked, this, &Window::onClickedOK);
@@ -54,6 +55,7 @@ Window::Window()
 //	QFuture<void> futureClock = QtConcurrent::run(this, &Window::repeatClockRequest);
 
 	QTimer *timer = new QTimer(this);
+//	std::unique_ptr<QTimer> timer = std::make_unique<QTimer>(this);
 	connect(timer, &QTimer::timeout, this, &Window::showTime);
 	timer->start(1000);
 
@@ -225,7 +227,7 @@ void Window::showMessage()
 //    }                                                                                         // normal message box açılmıyor çünkü şuan nedense
 	*/QMessageBox qmbox;
 //	qmbox.setWindowFlag(Qt::WindowStaysOnTopHint);
-	/*QMessageBox::StandardButton out =*/ qmbox.information(nullptr, tr("حي على الصلاة"), tr("5 dk'dan az kaldı!"));
+	/*QMessageBox::StandardButton out =*/ qmbox.information(nullptr, tr("حي على الصلاة"), QString("5 dk'dan az kaldı!"));
 //	connect(qmbox, &QMessageBox::Ok, this, &Window::onClickedOK5Dk);
 //	QCoreApplication::instance()->quit();   //
 //	if(out == QMessageBox::Ok)
@@ -335,13 +337,37 @@ void Window::createActions()
     connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
 	sehirSecimiAction = new QAction(tr("&Şehir seç"), this);
 	connect(sehirSecimiAction, &QAction::triggered, this, &Window::sehirSec);
+	connect(this, &Window::son5Dk, this, &Window::showMessage);
 }
+QString dosyayiAc(QString fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly)
+{
+	QFile file(fileName);
+	if (!file.open(flag | QIODevice::Text))
+		return {};
+	QString text = file.readAll();
+	file.close();
+	return text;
+}
+void Window::fillCities()
+{
+	QString ulkeFile = QDir::homePath() + "/.namazVakitSehirKodlari" + "/ulkeler.txt";
+	QStringList ulkeler = dosyayiAc(ulkeFile).split('\n');
+	QString sehirler = QDir::homePath() + "/.namazVakitSehirKodlari" + "/sehirler";
+	QString ilceler = QDir::homePath() + "/.namazVakitSehirKodlari" + "";
+	for(QString ulke : ulkeler)
+	{
+		ui->ulke->addItem(ulke.split('_').at(0));
+	}
+	show();
+}
+
 void Window::sehirSec()
 {
     // ...
     QMessageBox qmbox;
 //    QIcon icon(QIcon(":/images/heart.png"));
 //    qmbox.setIcon(QMessageBox::Information);
+	fillCities();
 	qmbox.information(nullptr, tr("İşlem Başarılı"), QString("Seçilen şehir/ilçe: ") + ("Bir aylık vakitler indirildi ve offline vakitler hesaplandı"));
 }
 
@@ -374,7 +400,8 @@ void Window::showTime()
 //			QFuture<void> future = QtConcurrent::run(this, &Window::showMessage);	// 5 dk uyarısı çıktığında ok'a basmadığım sürece sayaç akmaya devam etmiyor. o yüzden
 //			while(future.isFinished())												// yapmıştım ama olmadı
 //				QCoreApplication::processEvents();
-			showMessage();
+//			showMessage();
+			emit son5Dk();
 		}
 	}
 	else

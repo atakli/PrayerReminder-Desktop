@@ -76,6 +76,7 @@ int main(int argc, char *argv[])
 
 	HttpWindow httpWin;
     Window window;
+//	window.show();
 
 //    const QRect availableSize = httpWin.screen()->availableGeometry();
 //    httpWin.resize(availableSize.width() / 5, availableSize.height() / 5);
