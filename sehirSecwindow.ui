@@ -36,9 +36,9 @@
         </layout>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="hesaplaButton">
          <property name="text">
-          <string>PushButton</string>
+          <string>Vakitleri Hesapla</string>
          </property>
         </widget>
        </item>

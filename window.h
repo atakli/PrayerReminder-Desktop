@@ -42,19 +42,22 @@ public:
 
 private slots:
 //    void iconActivated(QSystemTrayIcon::ActivationReason reason);
+    void evkatCalculated();
 	void onClickedOK5Dk();
-	void sehirSec();
+    void bolgeSec();
+    void fillCities(int ulkeIndex);
+    void fillTown(int sehirIndex);
 public slots:
 	void showMessage();
 
 	void showTime();
 signals:
-	void son5Dk();
+    void son5Dk();
+    void sehirSec(QString sehirKodu);
 private:
 	std::shared_ptr<Ui::Window> ui;
 	bool kalanVakitBesOldu = false;
 	void zamaniHesapla();
-	void fillCities();
 	void setIcon(uint8_t number);    // önceden slot'tu
 //    void createIconGroupBox();
 //    void createMessageGroupBox();

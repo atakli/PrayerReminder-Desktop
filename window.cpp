@@ -336,7 +336,7 @@ void Window::createActions()
     quitAction = new QAction(tr("&Quit"), this);
     connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
 	sehirSecimiAction = new QAction(tr("&Şehir seç"), this);
-	connect(sehirSecimiAction, &QAction::triggered, this, &Window::sehirSec);
+    connect(sehirSecimiAction, &QAction::triggered, this, &Window::bolgeSec);
 	connect(this, &Window::son5Dk, this, &Window::showMessage);
 }
 QString dosyayiAc(QString fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly)
@@ -348,27 +348,58 @@ QString dosyayiAc(QString fileName, QIODevice::OpenModeFlag flag=QIODevice::Read
 	file.close();
 	return text;
 }
-void Window::fillCities()
+void Window::fillCities(int ulkeIndex)
 {
-	QString ulkeFile = QDir::homePath() + "/.namazVakitSehirKodlari" + "/ulkeler.txt";
-	QStringList ulkeler = dosyayiAc(ulkeFile).split('\n');
-	QString sehirler = QDir::homePath() + "/.namazVakitSehirKodlari" + "/sehirler";
-	QString ilceler = QDir::homePath() + "/.namazVakitSehirKodlari" + "";
-	for(QString ulke : ulkeler)
-	{
-		ui->ulke->addItem(ulke.split('_').at(0));
-	}
-	show();
+    QString ulkeFile = QDir::homePath() + "/.namazVakitSehirKodlari" + "/ulkeler.txt";
+    QString ulkeKodu = dosyayiAc(ulkeFile).split('\n').at(ulkeIndex).split("_").last();
+
+    QString sehirFile = QDir::homePath() + "/.namazVakitSehirKodlari" + "/sehirler/" + ulkeKodu + ".txt";
+    QStringList sehirler = dosyayiAc(sehirFile).split('\n');
+    for(QString sehir : sehirler)
+    {
+        ui->sehir->addItem(sehir.split('_').at(0));
+    }
+
+//    emit sehirSec(sehirKodu);
+    fillTown(sehirIndex);
+}
+void Window::fillTown(int sehirIndex)
+{
+    QString ulkeFile = QDir::homePath() + "/.namazVakitSehirKodlari" + "/ulkeler.txt";
+    QString ulkeKodu = dosyayiAc(ulkeFile).split('\n').at(ulkeIndex).split("_").last();
+
+    QString sehirFile = QDir::homePath() + "/.namazVakitSehirKodlari" + "/sehirler/" + sehirIndex + ".txt";
+    QStringList sehirler = dosyayiAc(sehirFile).split('\n');
+
+    QString sehirKodu = sehir.split("_").last();
+    QString ilceFile = QDir::homePath() + "/.namazVakitSehirKodlari" + "/sehirler/" + sehirKodu + ".txt";
+    QStringList ilceler = dosyayiAc(ilceFile).split('\n');
+    for(QString ilce : ilceler)
+    {
+        ui->ilce->addItem(ilce.split('_').at(0));
+    }
+}
+void Window::evkatCalculated()
+{
+    QMessageBox qmbox;
+    qmbox.information(nullptr, tr("İşlem Başarılı"), QString("Seçilen şehir/ilçe: ") + ("Bir aylık vakitler indirildi ve offline vakitler hesaplandı"));
 }
 
-void Window::sehirSec()
+void Window::bolgeSec()
 {
-    // ...
-    QMessageBox qmbox;
-//    QIcon icon(QIcon(":/images/heart.png"));
-//    qmbox.setIcon(QMessageBox::Information);
-	fillCities();
-	qmbox.information(nullptr, tr("İşlem Başarılı"), QString("Seçilen şehir/ilçe: ") + ("Bir aylık vakitler indirildi ve offline vakitler hesaplandı"));
+    QString ulkeFile = QDir::homePath() + "/.namazVakitSehirKodlari" + "/ulkeler.txt";
+    QStringList ulkeler = dosyayiAc(ulkeFile).split('\n');
+    QString sehirler = QDir::homePath() + "/.namazVakitSehirKodlari" + "/sehirler";
+    QString ilceler = QDir::homePath() + "/.namazVakitSehirKodlari" + "";
+    for(QString ulke : ulkeler)
+    {
+        ui->ulke->addItem(ulke.split('_').at(0));
+    }
+    connect(ui->hesaplaButton, &QAbstractButton::clicked, this, &Window::evkatCalculated);
+//    connect(ui->ulke, SIGNAL(currentTextChanged(QString)), [this](QString ulke) {fillCities(ulke);});
+    connect(ui->ulke, SIGNAL(currentIndexChanged(int)), SLOT(fillCities(int)));
+    connect(ui->sehir, SIGNAL(currentIndexChanged(int)), SLOT(fillTown(int)));
+    show();
 }
 
 void Window::createTrayIcon()
