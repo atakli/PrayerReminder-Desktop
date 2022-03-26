@@ -39,7 +39,7 @@ public:
 
     void startRequest(const QUrl &requestedUrl);
 
-	void controlEvkatFile();
+	void downloadFile(QString ilceKodu = "9651");
 private slots:
 //    void cancelDownload();
     void httpFinished();
@@ -53,8 +53,7 @@ private slots:
 private:
     std::unique_ptr<QFile> openFileForWrite(const QString &fileName);
 
-	void downloadFile();
-
+	void controlEvkatFile();
     QLabel *statusLabel;
     QLineEdit *urlLineEdit;
     QPushButton *downloadButton;

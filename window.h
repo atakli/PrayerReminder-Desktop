@@ -47,6 +47,7 @@ private slots:
     void bolgeSec();
     void fillCities(int ulkeIndex);
 	void fillTown(int sehirIndex);
+	void executeIlceKodu(int ilceIndex);
 public slots:
 	void showMessage();
 

@@ -1,4 +1,5 @@
 #include "window.h"
+#include "fetchtimes.h"
 #include "calcTimes.h"
 #include "prayertimesparser.h"
 #include "ui_sehirSecwindow.h"
@@ -64,11 +65,12 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 	timer->start(1000);
 
 	connect(ui->hesaplaButton, &QAbstractButton::clicked, this, &Window::evkatCalculated);
-//	connect(this, &QWidget::close, ui->textLabel, &QLabel::clear);
+//	connect(this, &QWidget::close, ui->textLabel, &QLabel::clear);	// close fonksiyonu signal değil, slot
 //    connect(ui->ulke, SIGNAL(currentTextChanged(QString)), [this](QString ulke) {fillCities(ulke);});
 	connect(ui->ulke, SIGNAL(currentIndexChanged(int)), SLOT(fillCities(int)));
 	connect(ui->sehir, SIGNAL(currentIndexChanged(int)), SLOT(fillTown(int)));
-//	showTime();
+	connect(ui->ilce, SIGNAL(currentIndexChanged(int)), SLOT(executeIlceKodu(int)));
+	//	showTime();
 
 	/*QVBoxLayout *mainLayout = new QVBoxLayout;
 //    mainLayout->addWidget(iconGroupBox);
@@ -206,7 +208,6 @@ void Window::setIcon(uint8_t number)
 //! [4]
 /*void Window::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
-    qDebug() << "burda";
     switch (reason)
     {
     case QSystemTrayIcon::Trigger:
@@ -351,7 +352,7 @@ void Window::createActions()
     connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
 	sehirSecimiAction = new QAction(tr("&Şehir seç"), this);
 //	connect(sehirSecimiAction, &QAction::triggered, this, &Window::bolgeSec);
-	connect(sehirSecimiAction, SIGNAL(triggered()), this, SLOT(bolgeSec()));
+	connect(sehirSecimiAction, SIGNAL(triggered()), this, SLOT(bolgeSec()));	// sanırım this'i kaldırınca da aynı mana
 	connect(this, &Window::son5Dk, this, &Window::showMessage);
 }
 QString dosyayiAc(QString fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly)
@@ -396,8 +397,17 @@ void Window::fillTown(int sehirIndex)
 		ui->ilce->addItem(ilce.split('_').at(0));
 	}
 }
+void Window::executeIlceKodu(int ilceIndex)
+{
+	if(ilceIndex == -1)
+		return;
+	executeFileNames();
+	ilceKodu = dosyayiAc(ilceFile).split('\n').at(ilceIndex).split("_").last(); // 551
+}
 void Window::evkatCalculated()
 {
+	HttpWindow fetchTimes;
+	fetchTimes.downloadFile(ilceKodu);
 	ui->textLabel->setText(ui->ilce->currentText() + " için bir aylık vakitler indirildi ve offline vakitler hesaplandı");
 }
 
@@ -405,9 +415,9 @@ void Window::bolgeSec()
 {
 	QStringList ulkeler = dosyayiAc(ulkeFile).split('\n');
 	for(const QString& ulke : ulkeler)
-    {
-        ui->ulke->addItem(ulke.split('_').at(0));
-    }
+	{
+		ui->ulke->addItem(ulke.split('_').at(0));
+	}
 	ilkBolgeSecimi();
     show();
 }
