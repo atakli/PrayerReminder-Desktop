@@ -118,7 +118,7 @@ void HttpWindow::startRequest(const QUrl &requestedUrl)
 
 void HttpWindow::controlEvkatFile()
 {
-	QString fileName = QDir::homePath() + "/evkatOnline.json";
+    QString fileName = "namazVakitFiles/evkatOnline.json";
 	if(!QFileInfo(fileName).exists())
 		downloadFile();
 }
@@ -141,8 +141,7 @@ void HttpWindow::downloadFile(QString ilceKodu)
 //        fileName = defaultFileLineEdit->text().trimmed();
 //    if (fileName.isEmpty())
 //        fileName = defaultFileName;
-//	QString downloadDirectory = "/home/b720";
-	QString downloadDirectory = QDir::homePath();
+    QString downloadDirectory = "namazVakitFiles";
 	bool useDirectory = !downloadDirectory.isEmpty() && QFileInfo(downloadDirectory).isDir();	// TODO: bura ne
 	if (useDirectory)
 		fileName.prepend(downloadDirectory + '/');

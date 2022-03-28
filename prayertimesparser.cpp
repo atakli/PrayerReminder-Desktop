@@ -15,9 +15,8 @@ PrayerTimesParser::PrayerTimesParser()
 
 bool PrayerTimesParser::loadJson()
 {
-//	QFile loadFile(QStringLiteral("/home/b720/evkatOnline.json"));
-	QString evkatOnline = QDir::homePath() + "/evkatOnline.json";
-	QString evkatOffline = QDir::homePath() + "/evkatOffline.json";
+    QString evkatOnline = "namazVakitFiles/evkatOnline.json";
+    QString evkatOffline = "namazVakitFiles/evkatOffline.json";
 	QFile loadFile(evkatOnline);
 
 	if(!loadFile.exists())

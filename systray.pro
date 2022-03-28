@@ -25,8 +25,10 @@ QT += network widgets
 FORMS += \
     sehirSecwindow.ui
 
+# "C:\Qt\CustomInstallation\6.2.1\msvc2019_64\bin\windeployqt.exe"
 # --no-plugins deyince çalışmıyor. ama --no-plugins demeyince üretilen klasörlerden bi tek platforms klasörünü silince sıkıntı oluyor (içinde de sadece qwindows.dll var)
 # windeployqt ..\systray.exe --libdir . --plugindir . -no-translations --no-opengl-sw --no-system-d3d-compiler
+# hatırla: Why does it miss these files? -> these files are related to the mingw runtime library, they do not belong to Qt and that's why windeployqt does not add them by default.
 
 #contains(CONFIG, static)
 #{

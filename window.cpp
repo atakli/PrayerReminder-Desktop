@@ -46,7 +46,7 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
     createActions();
 	createTrayIcon();
 
-	QString fileName = QDir::homePath() + "/evkatOffline.json";
+    QString fileName = "namazVakitFiles/evkatOffline.json";
 	if(!QFileInfo(fileName).exists())
 		offlineVakitleriHesapla();
 //    connect(showIconCheckBox, &QAbstractButton::toggled, trayIcon, &QSystemTrayIcon::setVisible);
@@ -88,9 +88,9 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 }
 void Window::executeFileNames()
 {
-	ulkeFile = QDir::homePath() + "/.namazVakitSehirKodlari/ulkeler.txt";
-	sehirFile = QDir::homePath() + "/.namazVakitSehirKodlari/sehirler/" + ulkeKodu + ".txt";
-	ilceFile = QDir::homePath() + "/.namazVakitSehirKodlari/sehirler/" + sehirKodu + ".txt";
+    ulkeFile = "namazVakitFiles/ulkeler.txt";
+    sehirFile = "namazVakitFiles/sehirler/" + ulkeKodu + ".txt";
+    ilceFile = "namazVakitFiles/sehirler/" + sehirKodu + ".txt";
 }
 void Window::offlineVakitleriHesapla()
 {
@@ -133,7 +133,7 @@ void Window::offlineVakitleriHesapla()
 	}
 
 	QJsonDocument doc(vakitArray);
-	QFile jsonFile(QDir::homePath() + "/evkatOffline.json");
+    QFile jsonFile("namazVakitFiles/evkatOffline.json");
 	jsonFile.open(QFile::WriteOnly);
 	jsonFile.write(doc.toJson());
 }

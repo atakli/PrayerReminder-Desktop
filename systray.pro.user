@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 5.0.3, 2022-03-28T09:04:41. -->
+<!-- Written by QtCreator 5.0.3, 2022-03-28T16:10:13. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -245,6 +245,7 @@
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory">C:/Users/Emre ATAKLI/Documents/qt/build-systray-Desktop_Qt_6_2_1_MSVC2019_64bit-Release/</value>
     <value type="QString" key="RunConfiguration.WorkingDirectory.default">C:/Users/Emre ATAKLI/Documents/qt/build-systray-Desktop_Qt_6_2_1_MSVC2019_64bit-Release</value>
    </valuemap>
    <value type="int" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
