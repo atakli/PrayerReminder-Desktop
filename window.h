@@ -5,10 +5,11 @@
 
 #ifndef QT_NO_SYSTEMTRAYICON
 
+#include <QElapsedTimer>
 #include <QDialog>
 #include <QWidget>
 
-#include <QElapsedTimer>
+#include <memory>
 
 QT_BEGIN_NAMESPACE
 class QAction;

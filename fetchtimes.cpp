@@ -1,8 +1,6 @@
 #include "fetchtimes.h"
 #include "prayertimesparser.h"
 
-#include "ui_authenticationdialog.h"
-
 #include <QtWidgets>
 #include <QtNetwork>
 #include <QUrl>

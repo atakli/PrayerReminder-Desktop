@@ -63,7 +63,8 @@ private:
 
     QUrl url;
     QNetworkAccessManager qnam;
-    QScopedPointer<QNetworkReply, QScopedPointerDeleteLater> reply;
+//    QScopedPointer<QNetworkReply, QScopedPointerDeleteLater> reply;
+    std::unique_ptr<QNetworkReply> reply;
     std::unique_ptr<QFile> file;
     bool httpRequestAborted = false;
 };

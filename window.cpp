@@ -176,17 +176,23 @@ void Window::setIcon(uint8_t number)
 //	QSystemTrayIcon::NoIcon noo;
 //	trayIcon->setVisible()
 
-	QPixmap pixmap(30,30);
-	pixmap.fill(Qt::yellow);
-	QPainter painter(&pixmap);
+#ifdef linux                // TODO: hoş olmadı
+    QPixmap pixmap(30,30);
+#else
+    QPixmap pixmap(16,16);
+#endif
+    pixmap.fill(Qt::yellow);
+    QPainter painter(&pixmap);
+//    QPainter painter;
 //	QFont font = painter.font();
 //	font.setPixelSize(28);
 //	painter.setFont(font);
 	QString string = QString::number(number);
 //	const QRect rectangle = QRect(0, 0, 100, 50);
 //	QRect boundingRect;
-	painter.drawText(0,0,16,16, Qt::TextDontClip, string);
-//	painter.drawText(0,0,16,16, Qt::AlignCenter, string); // olmadı
+//    painter.drawText(0,0,16,16, Qt::TextDontClip, string);
+    painter.drawText(pixmap.rect(), Qt::TextDontClip | Qt::AlignCenter, string);
+//    painter.drawText(pixmap.rect(), Qt::AlignCenter, string); // olmadı
 //	painter.drawText(string); // olmadı
 
 //	QPen pen = painter.pen();
@@ -200,7 +206,7 @@ void Window::setIcon(uint8_t number)
 
 	// Hala aynı gibi ve güzel
 
-	trayIcon->setIcon(QIcon(pixmap));
+    trayIcon->setIcon(pixmap);  // QIcon(pixmap) desen de oluyor
 //	trayIcon->show();
 }
 //! [3]
