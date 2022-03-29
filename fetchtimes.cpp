@@ -34,54 +34,8 @@ void ProgressDialog::networkReplyProgress(qint64 bytesRead, qint64 totalBytes)
 	setValue(bytesRead);
 }*/
 
-HttpWindow::HttpWindow(QWidget *parent)
-	: QDialog(parent)
-//    , statusLabel(new QLabel(tr("Please enter the URL of a file you want to download.\n\n"), this))
-//    , urlLineEdit(new QLineEdit(defaultUrl))
-//    , downloadButton(new QPushButton(tr("Download")))
-//    , launchCheckBox(new QCheckBox("Launch file"))
-//    , defaultFileLineEdit(new QLineEdit(defaultFileName))
-//    , downloadDirectoryLineEdit(new QLineEdit)
+HttpWindow::HttpWindow(QWidget *parent) : QDialog(parent)
 {
-	/*setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
-	setWindowTitle(tr("HTTP"));
-
-	//! [qnam-auth-required-1]
-//    connect(&qnam, &QNetworkAccessManager::authenticationRequired, this, &HttpWindow::slotAuthenticationRequired);
-	//! [qnam-auth-required-1]
-
-	QFormLayout *formLayout = new QFormLayout;
-	urlLineEdit->setClearButtonEnabled(true);
-	connect(urlLineEdit, &QLineEdit::textChanged, this, &HttpWindow::enableDownloadButton);
-	formLayout->addRow(tr("&URL:"), urlLineEdit);
-	QString downloadDirectory = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-	if (downloadDirectory.isEmpty() || !QFileInfo(downloadDirectory).isDir())
-		downloadDirectory = QDir::currentPath();
-	downloadDirectoryLineEdit->setText(QDir::toNativeSeparators(downloadDirectory));
-	formLayout->addRow(tr("&Download directory:"), downloadDirectoryLineEdit);
-	formLayout->addRow(tr("Default &file:"), defaultFileLineEdit);
-	launchCheckBox->setChecked(true);
-	formLayout->addRow(launchCheckBox);
-
-	QVBoxLayout *mainLayout = new QVBoxLayout(this);
-	mainLayout->addLayout(formLayout);
-
-	mainLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Ignored, QSizePolicy::MinimumExpanding));
-
-	statusLabel->setWordWrap(true);
-	mainLayout->addWidget(statusLabel);
-
-	downloadButton->setDefault(true);
-	connect(downloadButton, &QAbstractButton::clicked, this, &HttpWindow::downloadFile);
-	QPushButton *quitButton = new QPushButton(tr("Quit"));
-	quitButton->setAutoDefault(false);
-	connect(quitButton, &QAbstractButton::clicked, this, &QWidget::close);
-	QDialogButtonBox *buttonBox = new QDialogButtonBox;
-	buttonBox->addButton(downloadButton, QDialogButtonBox::ActionRole);
-	buttonBox->addButton(quitButton, QDialogButtonBox::RejectRole);
-	mainLayout->addWidget(buttonBox);
-
-	urlLineEdit->setFocus();*/
 	controlEvkatFile();
 }
 HttpWindow::~HttpWindow() = default;
@@ -104,16 +58,6 @@ void HttpWindow::startRequest(const QUrl &requestedUrl)
 //    connect(reply.get(), &QNetworkReply::sslErrors, this, &HttpWindow::sslErrors);
 	//! [sslerrors-1]
 #endif
-	//! [connecting-reply-to-slots]
-
-	/*ProgressDialog *progressDialog = new ProgressDialog(url, this);
-	progressDialog->setAttribute(Qt::WA_DeleteOnClose);
-	connect(progressDialog, &QProgressDialog::canceled, this, &HttpWindow::cancelDownload);
-	connect(reply.get(), &QNetworkReply::downloadProgress, progressDialog, &ProgressDialog::networkReplyProgress);
-	connect(reply.get(), &QNetworkReply::finished, progressDialog, &ProgressDialog::hide);
-	progressDialog->show();*/
-
-//    statusLabel->setText(tr("Downloading %1...").arg(url.toString()));
 }
 
 void HttpWindow::controlEvkatFile()
@@ -137,14 +81,7 @@ void HttpWindow::downloadFile(QString ilceKodu)
 	}
 
     QString fileName = "namazVakitFiles/evkatOnline.json";
-//    if (fileName.isEmpty())
-//        fileName = defaultFileLineEdit->text().trimmed();
-//    if (fileName.isEmpty())
-//        fileName = defaultFileName;
-//    QString downloadDirectory = "namazVakitFiles";
-//	bool useDirectory = !downloadDirectory.isEmpty() && QFileInfo(downloadDirectory).isDir();	// TODO: bura ne
-//	if (useDirectory)
-//		fileName.prepend(downloadDirectory + '/');
+
 	if (QFile::exists(fileName))
 	{
         if (QMessageBox::question(this, tr("Overwrite Existing File"), tr("There already exists a file called %1%2. Overwrite?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
@@ -158,8 +95,6 @@ void HttpWindow::downloadFile(QString ilceKodu)
 	file = openFileForWrite(fileName);
 	if (!file)
 		return;
-
-//    downloadButton->setEnabled(false);
 
 	// schedule the request
 	startRequest(newUrl);
