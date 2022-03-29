@@ -119,8 +119,8 @@ void HttpWindow::startRequest(const QUrl &requestedUrl)
 void HttpWindow::controlEvkatFile()
 {
     QString fileName = "namazVakitFiles/evkatOnline.json";
-	if(!QFileInfo(fileName).exists())
-		downloadFile();
+    if(!QFileInfo::exists(fileName))
+        downloadFile();
 }
 
 void HttpWindow::downloadFile(QString ilceKodu)
@@ -136,20 +136,18 @@ void HttpWindow::downloadFile(QString ilceKodu)
 		return;
 	}
 
-	QString fileName = "evkatOnline.json";
+    QString fileName = "namazVakitFiles/evkatOnline.json";
 //    if (fileName.isEmpty())
 //        fileName = defaultFileLineEdit->text().trimmed();
 //    if (fileName.isEmpty())
 //        fileName = defaultFileName;
-    QString downloadDirectory = "namazVakitFiles";
-	bool useDirectory = !downloadDirectory.isEmpty() && QFileInfo(downloadDirectory).isDir();	// TODO: bura ne
-	if (useDirectory)
-		fileName.prepend(downloadDirectory + '/');
+//    QString downloadDirectory = "namazVakitFiles";
+//	bool useDirectory = !downloadDirectory.isEmpty() && QFileInfo(downloadDirectory).isDir();	// TODO: bura ne
+//	if (useDirectory)
+//		fileName.prepend(downloadDirectory + '/');
 	if (QFile::exists(fileName))
 	{
-		if (QMessageBox::question(this, tr("Overwrite Existing File"), tr("There already exists a file called %1%2. Overwrite?")
-									 .arg(fileName, useDirectory ? QString() : QStringLiteral(" in the current directory")),
-									 QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
+        if (QMessageBox::question(this, tr("Overwrite Existing File"), tr("There already exists a file called %1%2. Overwrite?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
 		{
 			return;
 		}

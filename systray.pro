@@ -4,12 +4,12 @@ HEADERS       = window.h \
                 calcTimes.h \
                 fetchtimes.h \
                 prayertimesparser.h \
-                update.h
+                updatecontroller.h
 SOURCES       = main.cpp \
                 calcTimes.cpp \
                 fetchtimes.cpp \
                 prayertimesparser.cpp \
-    update.cpp \
+                updatecontroller.cpp \
                 window.cpp \
 
 
