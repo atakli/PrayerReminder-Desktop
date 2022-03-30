@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     }
     QApplication::setQuitOnLastWindowClosed(false);
 
-	HttpWindow httpWin;
+//	HttpWindow httpWin;
     Window window;
 //	window.show();
 

@@ -18,6 +18,9 @@ class QCheckBox;
 
 QT_END_NAMESPACE
 
+extern const QString evkatOnlinePath;
+extern const QString evkatOfflinePath;
+
 class HttpWindow : public QDialog
 {
     Q_OBJECT
@@ -38,7 +41,7 @@ private:
 	const QString applicationDirPath = QCoreApplication::applicationDirPath();
     std::unique_ptr<QFile> openFileForWrite(const QString &fileName);
 
-    QNetworkAccessManager qnam;
+	QNetworkAccessManager qnam;
 //    QScopedPointer<QNetworkReply, QScopedPointerDeleteLater> reply;
     std::unique_ptr<QNetworkReply> reply;
     std::unique_ptr<QFile> file;

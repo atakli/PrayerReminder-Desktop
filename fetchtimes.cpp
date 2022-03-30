@@ -1,11 +1,10 @@
-#include "prayertimesparser.h"
+//#include "prayertimesparser.h"
 #include "fetchtimes.h"
 
 #include <QtWidgets>
 #include <QtNetwork>
 
 #include <algorithm>
-
 
 HttpWindow::HttpWindow(QWidget *parent) : QDialog(parent)
 {
@@ -62,7 +61,6 @@ std::unique_ptr<QFile> HttpWindow::openFileForWrite(const QString &fileName)
 
 void HttpWindow::httpFinished()
 {
-	qDebug() << "debugMessage:" << file->fileName();
 	QFileInfo fi;
 	if (file)
 	{
