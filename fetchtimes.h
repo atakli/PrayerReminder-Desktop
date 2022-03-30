@@ -1,11 +1,10 @@
 #ifndef HTTPWINDOW_H
 #define HTTPWINDOW_H
 
-#include <QProgressDialog>
 #include <QNetworkAccessManager>
+#include <QCoreApplication>
+#include <QProgressDialog>
 #include <QUrl>
-
-#include <memory>
 
 QT_BEGIN_NAMESPACE
 class QFile;
@@ -19,16 +18,6 @@ class QCheckBox;
 
 QT_END_NAMESPACE
 
-/*class ProgressDialog : public QProgressDialog {
-    Q_OBJECT
-
-public:
-    explicit ProgressDialog(const QUrl &url, QWidget *parent = nullptr);
-
-public slots:
-   void networkReplyProgress(qint64 bytesRead, qint64 totalBytes);
-};*/
-
 class HttpWindow : public QDialog
 {
     Q_OBJECT
@@ -36,37 +25,23 @@ class HttpWindow : public QDialog
 public:
     explicit HttpWindow(QWidget *parent = nullptr);
     ~HttpWindow();
-
     void startRequest(const QUrl &requestedUrl);
-
 	void downloadFile(QString ilceKodu = "9651");
 private slots:
-//    void cancelDownload();
     void httpFinished();
     void httpReadyRead();
-    void enableDownloadButton();
-//    void slotAuthenticationRequired(QNetworkReply *, QAuthenticator *authenticator);
 #if QT_CONFIG(ssl)
-//    void sslErrors(const QList<QSslError> &errors);
+	void sslErrors(const QList<QSslError> &errors);
 #endif
 
 private:
+	const QString applicationDirPath = QCoreApplication::applicationDirPath();
     std::unique_ptr<QFile> openFileForWrite(const QString &fileName);
 
-	void controlEvkatFile();
-    QLabel *statusLabel;
-    QLineEdit *urlLineEdit;
-    QPushButton *downloadButton;
-    QCheckBox *launchCheckBox;
-    QLineEdit *defaultFileLineEdit;
-    QLineEdit *downloadDirectoryLineEdit;
-
-    QUrl url;
     QNetworkAccessManager qnam;
 //    QScopedPointer<QNetworkReply, QScopedPointerDeleteLater> reply;
     std::unique_ptr<QNetworkReply> reply;
     std::unique_ptr<QFile> file;
-    bool httpRequestAborted = false;
 };
 
 #endif

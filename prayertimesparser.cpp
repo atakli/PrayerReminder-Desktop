@@ -1,12 +1,11 @@
 #include "prayertimesparser.h"
-#include <QJsonDocument>
+
 #include <QJsonObject>
 #include <QTextStream>
 #include <QDateTime>
 #include <QDebug>
 #include <QFile>
 #include <QDir>
-
 
 PrayerTimesParser::PrayerTimesParser()
 {
@@ -15,12 +14,10 @@ PrayerTimesParser::PrayerTimesParser()
 
 bool PrayerTimesParser::loadJson()
 {
-    QString evkatOnline = "namazVakitFiles/evkatOnline.json";
-    QString evkatOffline = "namazVakitFiles/evkatOffline.json";
-	QFile loadFile(evkatOnline);
+	QFile loadFile(applicationDirPath + evkatOnlinePath);
 
 	if(!loadFile.exists())
-		loadFile.setFileName(evkatOffline);
+		loadFile.setFileName(applicationDirPath + evkatOfflinePath);
 
 	if (!loadFile.open(QIODevice::ReadOnly))
 	{

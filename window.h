@@ -1,6 +1,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <QCoreApplication>
 #include <QSystemTrayIcon>
 
 #ifndef QT_NO_SYSTEMTRAYICON
@@ -57,6 +58,7 @@ signals:
     void son5Dk();
     void sehirSec(QString sehirKodu);
 private:
+	const QString applicationDirPath = QCoreApplication::applicationDirPath();
 	QString ulkeFile, sehirFile, ilceFile;
 	QString ulkeKodu, sehirKodu, ilceKodu;
 	std::shared_ptr<Ui::Window> ui;
@@ -65,33 +67,11 @@ private:
 	void offlineVakitleriHesapla();
 	void ilkBolgeSecimi();
 	void setIcon(uint8_t number);    // önceden slot'tu
-//    void createIconGroupBox();
-//    void createMessageGroupBox();
     void createActions();
     void createTrayIcon();
 
     QElapsedTimer timer;
 
-    QGroupBox *iconGroupBox;
-    QLabel *iconLabel;
-    QComboBox *iconComboBox;
-    QCheckBox *showIconCheckBox;
-
-    QGroupBox *messageGroupBox;
-    QLabel *typeLabel;
-    QLabel *durationLabel;
-//    QLabel *durationWarningLabel;
-    QLabel *titleLabel;
-    QLabel *bodyLabel;
-//    QComboBox *typeComboBox;
-//    QSpinBox *durationSpinBox;
-//    QLineEdit *titleEdit;
-//    QTextEdit *bodyEdit;
-//    QPushButton *showMessageButton;
-
-//    QAction *minimizeAction;
-//    QAction *maximizeAction;
-//    QAction *restoreAction;
     QAction *quitAction;
 	QAction *sehirSecimiAction;
 
