@@ -1,4 +1,3 @@
-//#include "prayertimesparser.h"
 #include "fetchtimes.h"
 
 #include <QtWidgets>
@@ -80,10 +79,7 @@ void HttpWindow::httpFinished()
 
 void HttpWindow::httpReadyRead()
 {
-	// This slot gets called every time the QNetworkReply has new data.
-	// We read all of its new data and write it into the file.
-	// That way we use less RAM than when reading it at the finished()
-	// signal of the QNetworkReply
+    // This slot gets called every time the QNetworkReply has new data. We read all of its new data and write it into the file. That way we use less RAM than when reading it at the finished() signal of the QNetworkReply
 	if (file)
 		file->write(reply->readAll());
 }
