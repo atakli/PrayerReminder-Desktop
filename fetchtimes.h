@@ -29,7 +29,7 @@ public:
     explicit HttpWindow(QWidget *parent = nullptr);
 	~HttpWindow();
     void startRequest(const QUrl &requestedUrl);
-	void downloadFile(QString fileName, QString urlSpec);
+    void downloadFile(QString fileName, QString urlSpec);
 	bool isNewVersionExists();
 private slots:
 	void httpFinished();

@@ -14,19 +14,20 @@ PrayerTimesParser::PrayerTimesParser()
 
 bool PrayerTimesParser::loadJson()
 {
-	QFile loadFile(applicationDirPath + evkatOnlinePath);
+    QFile loadFile(applicationDirPath + evkatOnlinePath);
 
-	if(!loadFile.exists())
-		loadFile.setFileName(applicationDirPath + evkatOfflinePath);
+    if(!loadFile.exists())
+        loadFile.setFileName(applicationDirPath + evkatOfflinePath);
 
-	if (!loadFile.open(QIODevice::ReadOnly))
-	{
-		QString warningStr = "Couldn't open " + loadFile.fileName() + " save file.";
-		qWarning(warningStr.toStdString().data());
-		return false;
-	}
+    if (!loadFile.open(QIODevice::ReadOnly))
+    {
+        QString warningStr = "Couldn't open " + loadFile.fileName() + " save file.";
+        qWarning(warningStr.toStdString().data());
+        return false;
+    }
 
-	QByteArray saveData = loadFile.readAll();
+    QByteArray saveData = loadFile.readAll();
+    loadFile.close();
 
 	loadDoc = QJsonDocument::fromJson(saveData);
 

@@ -41,8 +41,10 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
     createActions();
 	createTrayIcon();
 
-	if(!QFileInfo(applicationDirPath + evkatOfflinePath).exists())
-		offlineVakitleriHesapla();
+    if(!QFileInfo::exists(applicationDirPath + evkatOfflinePath))
+    {
+        offlineVakitleriHesapla();
+    }
 //    connect(showIconCheckBox, &QAbstractButton::toggled, trayIcon, &QSystemTrayIcon::setVisible);
 //    connect(iconComboBox, &QComboBox::currentIndexChanged, this, &Window::setIcon);   // hata veriyor. msvc'de sıkıntı çıkmamıştı
 //	connect(trayIcon, &QSystemTrayIcon::messageClicked, this, &Window::onClickedOK);
@@ -55,7 +57,13 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 	QTimer *timer = new QTimer(this);
 //	std::unique_ptr<QTimer> timer = std::make_unique<QTimer>(this);
 	connect(timer, &QTimer::timeout, this, &Window::showTime);
-	timer->start(1000);
+    timer->start(1000);
+
+    isNewVersionAvailable();
+
+    QTimer *timer1 = new QTimer(this);
+    connect(timer1, &QTimer::timeout, this, &Window::isNewVersionAvailable);
+    timer1->start(1000 * 60 * 60 * 24); // günde bir yeni versiyon kontrolü
 
 	connect(ui->hesaplaButton, &QAbstractButton::clicked, this, &Window::downloadEvkat);
 //	connect(this, &QWidget::close, ui->textLabel, &QLabel::clear);	// close fonksiyonu signal değil, slot
@@ -68,8 +76,6 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 
 	setWindowTitle(tr("Şehir Seçimi"));
 	resize(400, 300);
-
-//    titleEdit = new QLineEdit(tr("Saati değiştir kardeş. Başın ağrımasın"));    // sonradan koydum
 
 	trayIcon->show();
 }
@@ -307,10 +313,58 @@ void Window::downloadEvkat()
 	fetchTimes.downloadFile(fileName, urlSpec);
 	ui->textLabel->setText(ui->ilce->currentText() + " için bir aylık vakitler indirildi ve offline vakitler hesaplandı");
 }
-void Window::downloadLatestRelease()
+bool Window::compareTagVersion(QString tag, QString& currentTag)
+{
+    if(true)
+    {
+//        currentTag = tag;
+        return true;
+    }
+}
+
+void Window::isNewVersionAvailable()
 {
 //	https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest
-//	https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest/download/PrayerReminder.zip
+
+    QString apiPath = applicationDirPath + "/api.json";
+    QString url = "https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest";
+    fetchTimes.downloadFile(apiPath, url);
+
+    QFile loadFile(apiPath);
+    if (!loadFile.open(QIODevice::ReadOnly))
+    {
+        QString warningStr = "Couldn't open " + loadFile.fileName() + " save file.";
+        qWarning(warningStr.toStdString().data());
+        return;
+    }
+    QByteArray saveData = loadFile.readAll();
+    loadFile.close();
+
+    QFile loadFile1(applicationDirPath + "/namazVakitFiles/version.txt");
+    if (!loadFile1.open(QIODevice::ReadOnly))
+    {
+        QString warningStr = "Couldn't open " + loadFile1.fileName() + " save file.";
+        qWarning(warningStr.toStdString().data());
+        return;
+    }
+    QString currentTag = loadFile1.readAll();
+    loadFile1.close();
+
+    QJsonDocument loadDoc = QJsonDocument::fromJson(saveData);
+
+    uint8_t index = 0;
+    QJsonValue next;
+    while(!next.isUndefined())
+    {
+        next = loadDoc[index];
+        QString tag = next["tag_name"].toString();
+        if(compareTagVersion(tag, currentTag))
+        {
+            fetchTimes.downloadFile("", "https://github.com/atakli/PrayerReminder-Desktop/releases/latest/download/PrayerReminder.zip");
+            break;
+        }
+        ++index;
+    }
 }
 void Window::controlOnlineEvkatFileExistOtherwiseRequestDownload()
 {

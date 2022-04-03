@@ -2,6 +2,7 @@
 
 #include <QtWidgets>
 #include <QtNetwork>
+#include <QtGlobal>
 
 #include <algorithm>
 
@@ -15,7 +16,10 @@ void HttpWindow::startRequest(const QUrl &requestedUrl)
 {
 	url = requestedUrl;
 	QNetworkRequest req = QNetworkRequest(url);
-	req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+//#if QT_VERSION < QT_VERSION_CHECK(5,15,3)
+#if QT_VERSION < 393729                                                 // TODO: düzeltmem gerekli burayı. generic değil. sadece bana uygun
+    req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
 //	req.setHeader(QNetworkRequest::LocationHeader, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0");
 
 	reply.reset(qnam.get(req));
@@ -43,6 +47,13 @@ void HttpWindow::httpFinished1()
 
 void HttpWindow::downloadFile(QString fileName, QString urlSpec)
 {
+    QString directory = "";
+    if(fileName == "")
+    {
+        directory = QFileDialog::getExistingDirectory(this, tr("Yeni sürümü indireceğiniz klasörü seçin"));
+        fileName = directory + "/PrayerReminder.zip";
+    }
+
 	/*const*/ QUrl newUrl = QUrl::fromUserInput(urlSpec);
 
 //	if (QFile::exists(fileName))
