@@ -6,10 +6,8 @@
 
 #include <algorithm>
 
-HttpWindow::HttpWindow(QWidget *parent) : QDialog(parent)
-{
-	isNewVersionExists();
-}
+HttpWindow::HttpWindow(QWidget *parent) : QDialog(parent)	{}
+
 HttpWindow::~HttpWindow() = default;	// TODO: bu nasıl bir saçmalıktır: default'u niye burda yazmışım, class definition'da yazayım diye oraya alıp burayı tamamen kaldırınca hata verdi.
 
 void HttpWindow::startRequest(const QUrl &requestedUrl)
@@ -19,7 +17,7 @@ void HttpWindow::startRequest(const QUrl &requestedUrl)
 //#if QT_VERSION < QT_VERSION_CHECK(5,15,3)
 #if QT_VERSION < 393729                                                 // TODO: düzeltmem gerekli burayı. generic değil. sadece bana uygun
     req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-#endif
+#endif	// 331266 (linux)
 //	req.setHeader(QNetworkRequest::LocationHeader, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0");
 
 	reply.reset(qnam.get(req));
@@ -34,7 +32,6 @@ bool HttpWindow::isNewVersionExists()
 {
 	QUrl url1 = QUrl("https://github.com/atakli/PrayerReminder-Desktop/releases/download/v1.0.0-beta/PrayerReminder.zip");
 	QNetworkRequest req = QNetworkRequest(url1);
-//	req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 
 	reply1.reset(qnam1.get(req));
 	connect(reply1.get(), &QNetworkReply::finished, this, &HttpWindow::httpFinished1);
@@ -47,14 +44,13 @@ void HttpWindow::httpFinished1()
 
 void HttpWindow::downloadFile(QString fileName, QString urlSpec)
 {
-    QString directory = "";
     if(fileName == "")
     {
-        directory = QFileDialog::getExistingDirectory(this, tr("Yeni sürümü indireceğiniz klasörü seçin"));
+		QString directory = QFileDialog::getExistingDirectory(this, tr("Yeni sürümü indireceğiniz klasörü seçin"));
         fileName = directory + "/PrayerReminder.zip";
     }
 
-	/*const*/ QUrl newUrl = QUrl::fromUserInput(urlSpec);
+	QUrl newUrl = QUrl::fromUserInput(urlSpec);
 
 //	if (QFile::exists(fileName))
 //	{
@@ -62,7 +58,6 @@ void HttpWindow::downloadFile(QString fileName, QString urlSpec)
 //		{
 //			return;
 //		}
-////		QFile::remove(fileName);
 //	}
 	file = openFileForWrite(fileName);
 	if (!file)

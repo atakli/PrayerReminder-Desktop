@@ -59,7 +59,7 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 	connect(timer, &QTimer::timeout, this, &Window::showTime);
     timer->start(1000);
 
-    isNewVersionAvailable();
+	isNewVersionAvailable();
 
     QTimer *timer1 = new QTimer(this);
     connect(timer1, &QTimer::timeout, this, &Window::isNewVersionAvailable);
@@ -345,38 +345,21 @@ bool Window::compareTagVersion(QString tag, QString currentTag)
                 return false;
         }
     }
-
     return false;
 }
 
 void Window::isNewVersionAvailable()
 {
     QString apiPath = applicationDirPath + "/api.json";
-    QString url = "https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest";
-    fetchTimes.downloadFile(apiPath, url);
+//    QString url = "https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest";
+//    fetchTimes.downloadFile(apiPath, url);
 
-    QFile loadFile(apiPath);
-    if (!loadFile.open(QIODevice::ReadOnly))
-    {
-        QString warningStr = "Couldn't open " + loadFile.fileName() + " save file.";
-        qWarning(warningStr.toStdString().data());
-        return;
-    }
-    QByteArray saveData = loadFile.readAll();
-    loadFile.close();
+	QString saveData = dosyayiAc(apiPath);
+	QString currentTag = dosyayiAc(applicationDirPath + "/namazVakitFiles/version.txt");
 
-    QFile loadFile1(applicationDirPath + "/namazVakitFiles/version.txt");
-    if (!loadFile1.open(QIODevice::ReadOnly))
-    {
-        QString warningStr = "Couldn't open " + loadFile1.fileName() + " save file.";
-        qWarning(warningStr.toStdString().data());
-        return;
-    }
-    QString currentTag = loadFile1.readAll();
-    loadFile1.close();
-
-    QJsonDocument loadDoc = QJsonDocument::fromJson(saveData);
-    qDebug() << "load:" << loadDoc;
+//	QJsonDocument loadDoc = QJsonDocument::fromVariant(saveData);
+	QJsonDocument loadDoc = QJsonDocument::fromJson(QByteArray::fromStdString(saveData.toStdString()));
+	qDebug() << "load:" << loadDoc;
 
     uint8_t index = 0;
     QJsonValue next;
