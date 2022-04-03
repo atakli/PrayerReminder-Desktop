@@ -313,19 +313,44 @@ void Window::downloadEvkat()
 	fetchTimes.downloadFile(fileName, urlSpec);
 	ui->textLabel->setText(ui->ilce->currentText() + " için bir aylık vakitler indirildi ve offline vakitler hesaplandı");
 }
-bool Window::compareTagVersion(QString tag, QString& currentTag)
+bool Window::compareTagVersion(QString tag, QString currentTag)
 {
-    if(true)
-    {
-//        currentTag = tag;
+    QString tag1 = tag.split("-").at(0).mid(1);
+    qDebug() << tag;
+    qDebug() << tag1;
+
+    uint8_t ilkTagCurrent = currentTag.split(".").first().toUInt();
+    uint8_t ortaTagCurrent = currentTag.split(".").at(1).toUInt();
+    uint8_t sonTagCurrent = currentTag.split(".").last().toUInt();
+
+    uint8_t ilkTag = tag1.split(".").first().toUInt();
+    uint8_t ortaTag = tag1.split(".").at(1).toUInt();
+    uint8_t sonTag = tag1.split(".").last().toUInt();
+
+    if(ilkTag < ilkTagCurrent)
+        return false;
+    else if(ilkTag > ilkTagCurrent)
         return true;
+    else
+    {
+        if(ortaTag < ortaTagCurrent)
+            return false;
+        else if(ortaTag > ortaTagCurrent)
+            return true;
+        else
+        {
+            if(sonTag > sonTagCurrent)
+                return true;
+            else
+                return false;
+        }
     }
+
+    return false;
 }
 
 void Window::isNewVersionAvailable()
 {
-//	https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest
-
     QString apiPath = applicationDirPath + "/api.json";
     QString url = "https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest";
     fetchTimes.downloadFile(apiPath, url);
@@ -351,12 +376,14 @@ void Window::isNewVersionAvailable()
     loadFile1.close();
 
     QJsonDocument loadDoc = QJsonDocument::fromJson(saveData);
+    qDebug() << "load:" << loadDoc;
 
     uint8_t index = 0;
     QJsonValue next;
     while(!next.isUndefined())
     {
         next = loadDoc[index];
+        qDebug() << "next:" << next;
         QString tag = next["tag_name"].toString();
         if(compareTagVersion(tag, currentTag))
         {
