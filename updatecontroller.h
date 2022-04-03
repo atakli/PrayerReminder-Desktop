@@ -1,6 +1,8 @@
 #ifndef UPDATECONTROLLER_H
 #define UPDATECONTROLLER_H
 
+#include "fetchtimes.h"
+
 #include <QWidget>
 
 class UpdateController : public QObject

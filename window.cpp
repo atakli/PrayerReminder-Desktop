@@ -57,14 +57,14 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 	connect(timer, &QTimer::timeout, this, &Window::showTime);
 	timer->start(1000);
 
-	connect(ui->hesaplaButton, &QAbstractButton::clicked, this, &Window::calculateEvkat);
+	connect(ui->hesaplaButton, &QAbstractButton::clicked, this, &Window::downloadEvkat);
 //	connect(this, &QWidget::close, ui->textLabel, &QLabel::clear);	// close fonksiyonu signal değil, slot
 //    connect(ui->ulke, SIGNAL(currentTextChanged(QString)), [this](QString ulke) {fillCities(ulke);});
 	connect(ui->ulke, SIGNAL(currentIndexChanged(int)), SLOT(fillCities(int)));
 	connect(ui->sehir, SIGNAL(currentIndexChanged(int)), SLOT(fillTown(int)));
 	connect(ui->ilce, SIGNAL(currentIndexChanged(int)), SLOT(executeIlceKodu(int)));
 
-	isOnlineEvkatFileExist();
+	controlOnlineEvkatFileExistOtherwiseRequestDownload();
 
 	setWindowTitle(tr("Şehir Seçimi"));
 	resize(400, 300);
@@ -298,20 +298,24 @@ void Window::executeIlceKodu(int ilceIndex)
 	executeFileNames();
 	ilceKodu = dosyayiAc(ilceFile).split('\n').at(ilceIndex).split("_").last(); // 551
 }
-void Window::calculateEvkat()
+void Window::downloadEvkat()
 {
-	const QString urlSpec = "https://ezanvakti.herokuapp.com/vakitler/" + ilceKodu;	// note that times in this site are not updated everyday
+	QString urlSpec = "https://ezanvakti.herokuapp.com/vakitler/" + ilceKodu;	// note that times in this site are not updated everyday
 	QString fileName = applicationDirPath + evkatOnlinePath;
+//	fileName = applicationDirPath + "/releases.html";
+//	urlSpec = "https://github.com/atakli/PrayerReminder-Desktop/releases/";
 	fetchTimes.downloadFile(fileName, urlSpec);
 	ui->textLabel->setText(ui->ilce->currentText() + " için bir aylık vakitler indirildi ve offline vakitler hesaplandı");
 }
-void Window::isOnlineEvkatFileExist()
+void Window::downloadLatestRelease()
+{
+//	https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest
+//	https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest/download/PrayerReminder.zip
+}
+void Window::controlOnlineEvkatFileExistOtherwiseRequestDownload()
 {
 	if(!QFileInfo::exists(applicationDirPath + evkatOnlinePath))
-//		downloadFile();
-	{
 		bolgeSec();
-	}
 }
 
 void Window::bolgeSec()

@@ -5,7 +5,11 @@
 
 #include <algorithm>
 
-HttpWindow::HttpWindow(QWidget *parent) : QDialog(parent)	{}
+HttpWindow::HttpWindow(QWidget *parent) : QDialog(parent)
+{
+	isNewVersionExists();
+}
+HttpWindow::~HttpWindow() = default;	// TODO: bu nasıl bir saçmalıktır: default'u niye burda yazmışım, class definition'da yazayım diye oraya alıp burayı tamamen kaldırınca hata verdi.
 
 void HttpWindow::startRequest(const QUrl &requestedUrl)
 {
@@ -15,11 +19,26 @@ void HttpWindow::startRequest(const QUrl &requestedUrl)
 //	req.setHeader(QNetworkRequest::LocationHeader, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0");
 
 	reply.reset(qnam.get(req));
-	connect(reply.get(), &QNetworkReply::finished, this, &HttpWindow::httpFinished);
 	connect(reply.get(), &QIODevice::readyRead, this, &HttpWindow::httpReadyRead);
+	connect(reply.get(), &QNetworkReply::finished, this, &HttpWindow::httpFinished);
 #if QT_CONFIG(ssl)
 	connect(reply.get(), &QNetworkReply::sslErrors, this, &HttpWindow::sslErrors);
 #endif
+}
+
+bool HttpWindow::isNewVersionExists()
+{
+	QUrl url1 = QUrl("https://github.com/atakli/PrayerReminder-Desktop/releases/download/v1.0.0-beta/PrayerReminder.zip");
+	QNetworkRequest req = QNetworkRequest(url1);
+//	req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+
+	reply1.reset(qnam1.get(req));
+	connect(reply1.get(), &QNetworkReply::finished, this, &HttpWindow::httpFinished1);
+	return true;
+}
+void HttpWindow::httpFinished1()
+{
+	qDebug() << reply1->error();
 }
 
 void HttpWindow::downloadFile(QString fileName, QString urlSpec)
@@ -93,7 +112,6 @@ void HttpWindow::httpFinished()
 //		startRequest(redirectedUrl);
 //		return;
 //	}
-
 
 	/*QNetworkReply::NetworkError error = reply->error();				// QNetworkReply::ContentNotFoundError
 //	reply.reset();

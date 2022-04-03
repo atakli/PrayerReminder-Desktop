@@ -27,11 +27,13 @@ class HttpWindow : public QDialog
 
 public:
     explicit HttpWindow(QWidget *parent = nullptr);
-	~HttpWindow() = default;
+	~HttpWindow();
     void startRequest(const QUrl &requestedUrl);
 	void downloadFile(QString fileName, QString urlSpec);
+	bool isNewVersionExists();
 private slots:
-    void httpFinished();
+	void httpFinished();
+	void httpFinished1();
     void httpReadyRead();
 #if QT_CONFIG(ssl)
 	void sslErrors(const QList<QSslError> &errors);
@@ -43,8 +45,10 @@ private:
 
 	QUrl url;
 	QNetworkAccessManager qnam;
+	QNetworkAccessManager qnam1;
+	std::unique_ptr<QNetworkReply> reply;
+	std::unique_ptr<QNetworkReply> reply1;
 //    QScopedPointer<QNetworkReply, QScopedPointerDeleteLater> reply;
-    std::unique_ptr<QNetworkReply> reply;
     std::unique_ptr<QFile> file;
 };
 
