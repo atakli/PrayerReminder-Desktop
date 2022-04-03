@@ -49,7 +49,6 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 //    connect(trayIcon, &QSystemTrayIcon::activated, this, &Window::iconActivated);
 //    connect(trayIcon, &QWidget::closeEvent, this, &Window::addClockToThread);
 //	addClockToThread();
-
 //	timer.start();
 //	QFuture<void> futureClock = QtConcurrent::run(this, &Window::repeatClockRequest);
 
@@ -64,6 +63,8 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 	connect(ui->ulke, SIGNAL(currentIndexChanged(int)), SLOT(fillCities(int)));
 	connect(ui->sehir, SIGNAL(currentIndexChanged(int)), SLOT(fillTown(int)));
 	connect(ui->ilce, SIGNAL(currentIndexChanged(int)), SLOT(executeIlceKodu(int)));
+
+	isOnlineEvkatFileExist();
 
 	setWindowTitle(tr("Şehir Seçimi"));
 	resize(400, 300);
@@ -299,8 +300,18 @@ void Window::executeIlceKodu(int ilceIndex)
 }
 void Window::calculateEvkat()
 {
-	fetchTimes.downloadFile(ilceKodu);
+	const QString urlSpec = "https://ezanvakti.herokuapp.com/vakitler/" + ilceKodu;	// note that times in this site are not updated everyday
+	QString fileName = applicationDirPath + evkatOnlinePath;
+	fetchTimes.downloadFile(fileName, urlSpec);
 	ui->textLabel->setText(ui->ilce->currentText() + " için bir aylık vakitler indirildi ve offline vakitler hesaplandı");
+}
+void Window::isOnlineEvkatFileExist()
+{
+	if(!QFileInfo::exists(applicationDirPath + evkatOnlinePath))
+//		downloadFile();
+	{
+		bolgeSec();
+	}
 }
 
 void Window::bolgeSec()

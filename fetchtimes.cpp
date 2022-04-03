@@ -5,16 +5,16 @@
 
 #include <algorithm>
 
-HttpWindow::HttpWindow(QWidget *parent) : QDialog(parent)
-{
-	if(!QFileInfo::exists(applicationDirPath + evkatOnlinePath))
-		downloadFile();
-}
-HttpWindow::~HttpWindow() = default;
+HttpWindow::HttpWindow(QWidget *parent) : QDialog(parent)	{}
 
 void HttpWindow::startRequest(const QUrl &requestedUrl)
 {
-	reply.reset(qnam.get(QNetworkRequest(requestedUrl)));
+	url = requestedUrl;
+	QNetworkRequest req = QNetworkRequest(url);
+	req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+//	req.setHeader(QNetworkRequest::LocationHeader, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0");
+
+	reply.reset(qnam.get(req));
 	connect(reply.get(), &QNetworkReply::finished, this, &HttpWindow::httpFinished);
 	connect(reply.get(), &QIODevice::readyRead, this, &HttpWindow::httpReadyRead);
 #if QT_CONFIG(ssl)
@@ -22,23 +22,18 @@ void HttpWindow::startRequest(const QUrl &requestedUrl)
 #endif
 }
 
-void HttpWindow::downloadFile(QString ilceKodu)
+void HttpWindow::downloadFile(QString fileName, QString urlSpec)
 {
-	const char defaultUrl[] = "https://ezanvakti.herokuapp.com/vakitler/"; // note that times in this site are not updated everyday
-	const QString urlSpec = defaultUrl + ilceKodu;
+	/*const*/ QUrl newUrl = QUrl::fromUserInput(urlSpec);
 
-	const QUrl newUrl = QUrl::fromUserInput(urlSpec);
-
-	QString fileName = applicationDirPath + evkatOnlinePath;
-
-	if (QFile::exists(fileName))
-	{
-        if (QMessageBox::question(this, tr("Overwrite Existing File"), tr("There already exists a file called %1%2. Overwrite?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
-		{
-			return;
-		}
-//		QFile::remove(fileName);
-	}
+//	if (QFile::exists(fileName))
+//	{
+//        if (QMessageBox::question(this, tr("Overwrite Existing File"), tr("There already exists a file called %1%2. Overwrite?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
+//		{
+//			return;
+//		}
+////		QFile::remove(fileName);
+//	}
 	file = openFileForWrite(fileName);
 	if (!file)
 	{
@@ -68,13 +63,45 @@ void HttpWindow::httpFinished()
 		file.reset();
 	}
 
-	QNetworkReply::NetworkError error = reply->error();
-	reply.reset();
+//	if (httpRequestAborted) {
+//        reply->deleteLater();
+//        reply = nullptr;
+//        return;
+//    }
+
+//    if (reply->error()) {
+//        QFile::remove(fi.absoluteFilePath());
+//        reply->deleteLater();
+//        reply = nullptr;
+//        return;
+//    }
+
+//	const QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+
+//	reply->deleteLater();
+//	reply = nullptr;
+
+//	if (!redirectionTarget.isNull())
+//	{
+//		qDebug() << "redirect";
+//		const QUrl redirectedUrl = url.resolved(redirectionTarget.toUrl());
+//		file = openFileForWrite(fi.absoluteFilePath());
+//		if (!file)
+//		{
+//			return;
+//		}
+//		startRequest(redirectedUrl);
+//		return;
+//	}
+
+
+	/*QNetworkReply::NetworkError error = reply->error();				// QNetworkReply::ContentNotFoundError
+//	reply.reset();
 	if (error != QNetworkReply::NoError)
 	{
 		QFile::remove(fi.absoluteFilePath());
 		return;
-	}
+	}*/
 }
 
 void HttpWindow::httpReadyRead()

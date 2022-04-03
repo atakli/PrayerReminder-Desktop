@@ -63,6 +63,7 @@ private:
 	const QString applicationDirPath = QCoreApplication::applicationDirPath();
 	QString ulkeFile, sehirFile, ilceFile;
 	QString ulkeKodu, sehirKodu, ilceKodu;
+	void isOnlineEvkatFileExist();
 	HttpWindow fetchTimes;	// TODO: önceki hali gibi olup da signal slot ile filan HttpWindow'dan Window'a sinyal gönderip indirme işlemi bitmeden fetchTimes objesinin ömrünü doldurmasını
 	std::shared_ptr<Ui::Window> ui;	// men edebilirim
 	bool kalanVakitBesOldu = false;

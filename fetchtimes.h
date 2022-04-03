@@ -27,9 +27,9 @@ class HttpWindow : public QDialog
 
 public:
     explicit HttpWindow(QWidget *parent = nullptr);
-    ~HttpWindow();
+	~HttpWindow() = default;
     void startRequest(const QUrl &requestedUrl);
-	void downloadFile(QString ilceKodu = "9651");
+	void downloadFile(QString fileName, QString urlSpec);
 private slots:
     void httpFinished();
     void httpReadyRead();
@@ -41,6 +41,7 @@ private:
 	const QString applicationDirPath = QCoreApplication::applicationDirPath();
     std::unique_ptr<QFile> openFileForWrite(const QString &fileName);
 
+	QUrl url;
 	QNetworkAccessManager qnam;
 //    QScopedPointer<QNetworkReply, QScopedPointerDeleteLater> reply;
     std::unique_ptr<QNetworkReply> reply;
