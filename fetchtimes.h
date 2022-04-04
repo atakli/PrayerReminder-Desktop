@@ -8,14 +8,8 @@
 
 QT_BEGIN_NAMESPACE
 class QFile;
-class QLabel;
-class QLineEdit;
-class QPushButton;
 class QSslError;
-class QAuthenticator;
 class QNetworkReply;
-class QCheckBox;
-
 QT_END_NAMESPACE
 
 extern const QString evkatOnlinePath;
@@ -29,12 +23,12 @@ public:
     explicit HttpWindow(QWidget *parent = nullptr);
 	~HttpWindow();
     void startRequest(const QUrl &requestedUrl);
-    void downloadFile(QString fileName, QString urlSpec);
-	bool isNewVersionExists();
+	void downloadFile(QString fileName, QString urlSpec);
+	void downloadSynchronous(QString fileName, QString urlSpec);
 private slots:
+	void httpFinishedNewVersion();
 	void httpFinished();
-	void httpFinished1();
-    void httpReadyRead();
+	void httpReadyRead();
 #if QT_CONFIG(ssl)
 	void sslErrors(const QList<QSslError> &errors);
 #endif
@@ -43,11 +37,8 @@ private:
 	const QString applicationDirPath = QCoreApplication::applicationDirPath();
     std::unique_ptr<QFile> openFileForWrite(const QString &fileName);
 
-	QUrl url;
 	QNetworkAccessManager qnam;
-	QNetworkAccessManager qnam1;
 	std::unique_ptr<QNetworkReply> reply;
-	std::unique_ptr<QNetworkReply> reply1;
 //    QScopedPointer<QNetworkReply, QScopedPointerDeleteLater> reply;
     std::unique_ptr<QFile> file;
 };

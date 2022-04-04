@@ -5,37 +5,28 @@
 
 #ifndef QT_NO_SYSTEMTRAYICON
 
-#include <QAction>
-#include <QFile>
 #include <QDir>
-#include <QPainter>
-//#include <QCheckBox>
-//#include <QComboBox>
-#include <QCoreApplication>
-#include <QJsonObject>
-#include <QJsonArray>
-//#include <QCloseEvent>
-//#include <QGroupBox>
-//#include <QLabel>
-//#include <QLineEdit>
+#include <QFile>
 #include <QMenu>
 #include <QTimer>
+#include <QAction>
+#include <QPainter>
 #include <QDateTime>
-//#include <QPushButton>
-//#include <QSpinBox>
-//#include <QTextEdit>
-//#include <QVBoxLayout>
+#include <QJsonArray>
+#include <QJsonObject>
 #include <QMessageBox>
+#include <QCoreApplication>
 
 #include <QDebug>
 //#include <QtConcurrent/QtConcurrent>
-//! [0]
+QString dosyayiAc(QString fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly);
+
 Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Window>())
 {
 	ui->setupUi(this);
 
-	ulkeKodu = "2";
-	sehirKodu = "551";
+	ulkeKodu = "2";		// Türkiye
+	sehirKodu = "551";	// Kocaeli
 	executeFileNames();
 
     createActions();
@@ -43,15 +34,12 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 
     if(!QFileInfo::exists(applicationDirPath + evkatOfflinePath))
     {
-        offlineVakitleriHesapla();
+		CalcTimes calc;
+		calc.offlineVakitleriHesapla();
     }
-//    connect(showIconCheckBox, &QAbstractButton::toggled, trayIcon, &QSystemTrayIcon::setVisible);
-//    connect(iconComboBox, &QComboBox::currentIndexChanged, this, &Window::setIcon);   // hata veriyor. msvc'de sıkıntı çıkmamıştı
 //	connect(trayIcon, &QSystemTrayIcon::messageClicked, this, &Window::onClickedOK);
-//    connect(trayIcon, &QSystemTrayIcon::activated, this, &Window::iconActivated);
 //    connect(trayIcon, &QWidget::closeEvent, this, &Window::addClockToThread);
 //	addClockToThread();
-//	timer.start();
 //	QFuture<void> futureClock = QtConcurrent::run(this, &Window::repeatClockRequest);
 
 	QTimer *timer = new QTimer(this);
@@ -59,11 +47,11 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 	connect(timer, &QTimer::timeout, this, &Window::showTime);
     timer->start(1000);
 
-	isNewVersionAvailable();
+	update.isNewVersionAvailable();
 
-    QTimer *timer1 = new QTimer(this);
-    connect(timer1, &QTimer::timeout, this, &Window::isNewVersionAvailable);
-    timer1->start(1000 * 60 * 60 * 24); // günde bir yeni versiyon kontrolü
+//    QTimer *timer1 = new QTimer(this);
+//    connect(timer1, &QTimer::timeout, this, &Window::isNewVersionAvailable);
+//    timer1->start(1000 * 60 * 60 * 24); // günde bir yeni versiyon kontrolü
 
 	connect(ui->hesaplaButton, &QAbstractButton::clicked, this, &Window::downloadEvkat);
 //	connect(this, &QWidget::close, ui->textLabel, &QLabel::clear);	// close fonksiyonu signal değil, slot
@@ -85,73 +73,7 @@ void Window::executeFileNames()
 	sehirFile = applicationDirPath + "/namazVakitFiles/sehirler/" + ulkeKodu + ".txt";
 	ilceFile = applicationDirPath + "/namazVakitFiles/sehirler/" + sehirKodu + ".txt";
 }
-void Window::offlineVakitleriHesapla()
-{
-	QDate dt = QDateTime::currentDateTime().date();
-	CalcTimes ct;
 
-	double fajr, sunRise, zuhr, asr, maghrib, isha;
-
-	QJsonObject vakitObject;
-	QJsonArray vakitArray;
-
-	for(int i=0; i<30; ++i)
-	{
-		int year = dt.year();
-		int month = dt.month();
-		int day = dt.day();
-
-		dt = dt.addDays(1);
-
-		ct.calcPrayerTimes(year, month, day, 29.43333330, 40.80000000, 3, -18, -17, fajr, sunRise, zuhr, asr, maghrib, isha);
-
-		QString dayWith0 = QString("0" + QString::number(day)).right(2);
-		QString monthWith0 = QString("0" + QString::number(month)).right(2);
-
-		QString toBeInserted = dayWith0 + "." + monthWith0 + "." + QString::number(year);
-		vakitObject.insert("MiladiTarihKisa", QJsonValue::fromVariant(toBeInserted));
-		toBeInserted = ct.doubleToHrMin(fajr, 1);
-		vakitObject.insert("Imsak", QJsonValue::fromVariant(toBeInserted));
-		toBeInserted = ct.doubleToHrMin(sunRise, 0);
-		vakitObject.insert("Gunes", QJsonValue::fromVariant(toBeInserted));
-		toBeInserted = ct.doubleToHrMin(zuhr, 2);
-		vakitObject.insert("Ogle", QJsonValue::fromVariant(toBeInserted));
-		toBeInserted = ct.doubleToHrMin(asr, 3);
-		vakitObject.insert("Ikindi", QJsonValue::fromVariant(toBeInserted));
-		toBeInserted = ct.doubleToHrMin(maghrib, 4);
-		vakitObject.insert("Aksam", QJsonValue::fromVariant(toBeInserted));
-		toBeInserted = ct.doubleToHrMin(isha, 5);
-		vakitObject.insert("Yatsi", QJsonValue::fromVariant(toBeInserted));
-		vakitArray.push_back(vakitObject);
-	}
-
-	QJsonDocument doc(vakitArray);
-	QFile jsonFile(applicationDirPath + evkatOfflinePath);
-	jsonFile.open(QFile::WriteOnly);
-	jsonFile.write(doc.toJson());
-}
-
-/*void Window::closeEvent(QCloseEvent *event)
-{
-#ifdef Q_OS_MACOS
-    if (!event->spontaneous() || !isVisible()) {
-        return;
-    }
-#endif
-    if (trayIcon->isVisible())
-    {
-        QMessageBox::information(this, tr("Systray"),
-                                 tr("The program will keep running in the "
-                                    "system tray. To terminate the program, "
-                                    "choose <b>Quit</b> in the context menu "
-                                    "of the system tray entry."));
-        hide();
-        event->ignore();
-    }
-}*/
-//! [2]
-
-//! [3]
 void Window::setIcon(uint8_t number)
 {
 //	QSystemTrayIcon::NoIcon noo;
@@ -185,65 +107,14 @@ void Window::setIcon(uint8_t number)
 //	painter.setPen(pen);
 //	painter.drawRect(rectangle.adjusted(0, 0, -pen.width(), -pen.width()));
 
-	// Hala aynı gibi ve güzel
-
     trayIcon->setIcon(pixmap);  // QIcon(pixmap) desen de oluyor
-//	trayIcon->show();
 }
-//! [3]
 
-//! [4]
-/*void Window::iconActivated(QSystemTrayIcon::ActivationReason reason)
-{
-    switch (reason)
-    {
-    case QSystemTrayIcon::Trigger:
-    case QSystemTrayIcon::DoubleClick:
-        iconComboBox->setCurrentIndex((iconComboBox->currentIndex() + 1) % iconComboBox->count());
-        break;
-    case QSystemTrayIcon::MiddleClick:
-        showMessage();
-        break;
-    default:
-        ;
-    }
-}*/
-//! [4]
-
-//! [5]
 void Window::showMessage()
 {
-//    showIconCheckBox->setChecked(true);
-//    int selectedIcon = typeComboBox->itemData(typeComboBox->currentIndex()).toInt();
-	/*int selectedIcon = 3;   // üstteki yorum satırındaki toInt()'in sonucu 3. QSystemTrayIcon::Critical 3'e karşılık geliyor sanırım
-    QSystemTrayIcon::MessageIcon msgIcon = QSystemTrayIcon::MessageIcon(selectedIcon);
-
-//    if (selectedIcon == -1) // custom icon
-//    {
-//        QIcon icon(iconComboBox->itemIcon(iconComboBox->currentIndex()));
-//        trayIcon->showMessage(titleEdit->text(), bodyEdit->toPlainText(), icon, durationSpinBox->value() * 1000);
-//    }
-//    else
-//    {
-		trayIcon->showMessage("Saati değiştir kardeş. Başın ağrımasın", "", msgIcon, 1 * 1000);   // durationSpinBox->value() 1 diye salladım. ne olduğu önemli değil
-//    }                                                                                         // normal message box açılmıyor çünkü şuan nedense
-	*/QMessageBox qmbox;
+	QMessageBox qmbox;
 //	qmbox.setWindowFlag(Qt::WindowStaysOnTopHint);
 	/*QMessageBox::StandardButton out =*/ qmbox.information(nullptr, tr("حي على الصلاة"), QString("5 dk'dan az kaldı!"));
-//	connect(qmbox, &QMessageBox::Ok, this, &Window::onClickedOK5Dk);
-//	QCoreApplication::instance()->quit();   //
-//	if(out == QMessageBox::Ok)
-//		qmbox.close();
-//		return true;
-}
-
-void Window::onClickedOK5Dk()
-{
-//	zamaniHesapla();		// TODO: burda ne alaka lan.
-    QMessageBox qmbox;
-	qmbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-	qmbox.information(nullptr, tr("اَلصَّلَاةُ خَيْرٌ"), tr("Kıldın mı?"));
-    QCoreApplication::instance()->quit();   //
 }
 
 void Window::createActions()
@@ -255,15 +126,7 @@ void Window::createActions()
 	connect(sehirSecimiAction, SIGNAL(triggered()), this, SLOT(bolgeSec()));	// sanırım this'i kaldırınca da aynı mana
 	connect(this, &Window::son5Dk, this, &Window::showMessage);
 }
-QString dosyayiAc(QString fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly)
-{
-	QFile file(fileName);
-	if (!file.open(flag | QIODevice::Text))
-		return "";							// TODO: buraya girerse ne olcak?
-	QString text = file.readAll();
-	file.close();
-	return text;
-}
+
 void Window::ilkBolgeSecimi()
 {
 	ui->sehir->setCurrentText("KOCAELİ");
@@ -310,72 +173,10 @@ void Window::downloadEvkat()
 	QString fileName = applicationDirPath + evkatOnlinePath;
 //	fileName = applicationDirPath + "/releases.html";
 //	urlSpec = "https://github.com/atakli/PrayerReminder-Desktop/releases/";
-	fetchTimes.downloadFile(fileName, urlSpec);
+	fetchTimes.downloadSynchronous(fileName, urlSpec);
 	ui->textLabel->setText(ui->ilce->currentText() + " için bir aylık vakitler indirildi ve offline vakitler hesaplandı");
 }
-bool Window::compareTagVersion(QString tag, QString currentTag)
-{
-    QString tag1 = tag.split("-").at(0).mid(1);
-    qDebug() << tag;
-    qDebug() << tag1;
 
-    uint8_t ilkTagCurrent = currentTag.split(".").first().toUInt();
-    uint8_t ortaTagCurrent = currentTag.split(".").at(1).toUInt();
-    uint8_t sonTagCurrent = currentTag.split(".").last().toUInt();
-
-    uint8_t ilkTag = tag1.split(".").first().toUInt();
-    uint8_t ortaTag = tag1.split(".").at(1).toUInt();
-    uint8_t sonTag = tag1.split(".").last().toUInt();
-
-    if(ilkTag < ilkTagCurrent)
-        return false;
-    else if(ilkTag > ilkTagCurrent)
-        return true;
-    else
-    {
-        if(ortaTag < ortaTagCurrent)
-            return false;
-        else if(ortaTag > ortaTagCurrent)
-            return true;
-        else
-        {
-            if(sonTag > sonTagCurrent)
-                return true;
-            else
-                return false;
-        }
-    }
-    return false;
-}
-
-void Window::isNewVersionAvailable()
-{
-    QString apiPath = applicationDirPath + "/api.json";
-//    QString url = "https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest";
-//    fetchTimes.downloadFile(apiPath, url);
-
-	QString saveData = dosyayiAc(apiPath);
-	QString currentTag = dosyayiAc(applicationDirPath + "/namazVakitFiles/version.txt");
-
-//	QJsonDocument loadDoc = QJsonDocument::fromVariant(saveData);
-	QJsonDocument loadDoc = QJsonDocument::fromJson(QByteArray::fromStdString(saveData.toStdString()));
-	qDebug() << "load:" << loadDoc;
-
-    uint8_t index = 0;
-    QJsonValue next;
-    while(!next.isUndefined())
-    {
-        next = loadDoc[index];
-        qDebug() << "next:" << next;
-        QString tag = next["tag_name"].toString();
-        if(compareTagVersion(tag, currentTag))
-        {
-            fetchTimes.downloadFile("", "https://github.com/atakli/PrayerReminder-Desktop/releases/latest/download/PrayerReminder.zip");
-            break;
-        }
-        ++index;
-    }
-}
 void Window::controlOnlineEvkatFileExistOtherwiseRequestDownload()
 {
 	if(!QFileInfo::exists(applicationDirPath + evkatOnlinePath))

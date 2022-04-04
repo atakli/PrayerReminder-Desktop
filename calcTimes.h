@@ -1,6 +1,7 @@
 #ifndef CALCTIMES_H
 #define CALCTIMES_H
 #include <QString>
+#include <QCoreApplication>
 class CalcTimes
 {
 private:
@@ -9,7 +10,9 @@ private:
 	double radToDeg(double radian);
 	double moreLess360(double value);
 	double moreLess24(double value);
+	const QString applicationDirPath = QCoreApplication::applicationDirPath();
 public:
+	void offlineVakitleriHesapla();
 	QString doubleToHrMin(double number, int hangiVakit);
 	void calcPrayerTimes(int year, int month, int day,
 						 double longitude, double latitude, int timeZone,

@@ -1,23 +1,79 @@
 #include "updatecontroller.h"
 
+#include <QJsonDocument>
+#include <QFile>
+
 UpdateController::UpdateController()
 {
 
 }
+QString dosyayiAc(QString fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly)
+{
+	QFile file(fileName);
+	if (!file.open(flag | QIODevice::Text))
+		return "";							// TODO: buraya girerse ne olcak?
+	QString text = file.readAll();
+	file.close();
+	return text;
+}
+bool UpdateController::compareTagVersion(QString tag, QString currentTag)
+{
+	QString tag1 = tag.split("-").at(0).mid(1);
 
-//bool urlExists (QString url_string) {
-//    QUrl url(url_string);
-//    QTcpSocket socket;
-//    socket.connectToHost(url.host(), 80);
-//    if (socket.waitForConnected()) {
-//        socket.write("HEAD " + url.path().toUtf8() + " HTTP/1.1\r\n"
-//                     "Host: " + url.host().toUtf8() + "\r\n\r\n");
-//        if (socket.waitForReadyRead()) {
-//            QByteArray bytes = socket.readAll();
-//            if (bytes.contains("200 OK")) {
-//                return true;
-//            }
-//        }
-//    }
-//    return false;
-//}
+	uint8_t ilkTagCurrent = currentTag.split(".").first().toUInt();
+	uint8_t ortaTagCurrent = currentTag.split(".").at(1).toUInt();
+	uint8_t sonTagCurrent = currentTag.split(".").last().toUInt();
+
+	uint8_t ilkTag = tag1.split(".").first().toUInt();
+	uint8_t ortaTag = tag1.split(".").at(1).toUInt();
+	uint8_t sonTag = tag1.split(".").last().toUInt();
+
+	if(ilkTag < ilkTagCurrent)
+		return false;
+	else if(ilkTag > ilkTagCurrent)
+		return true;
+	else
+	{
+		if(ortaTag < ortaTagCurrent)
+			return false;
+		else if(ortaTag > ortaTagCurrent)
+			return true;
+		else
+		{
+			if(sonTag > sonTagCurrent)
+				return true;
+			else
+				return false;
+		}
+	}
+	return false;
+}
+
+void UpdateController::isNewVersionAvailable()
+{
+//	QString apiPath1 = applicationDirPath + "/api1.json";
+	QString apiPath = applicationDirPath + "/api.json";
+	QString newUrl = "https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest";
+	fetchTimes.downloadSynchronous(apiPath, newUrl);
+
+	QString saveData = dosyayiAc(apiPath);
+	QString currentTag = dosyayiAc(applicationDirPath + "/namazVakitFiles/version.txt");
+
+//	QJsonDocument loadDoc = QJsonDocument::fromVariant(saveData);
+	QJsonDocument loadDoc = QJsonDocument::fromJson(QByteArray::fromStdString(saveData.toStdString()));
+
+	uint8_t index = 0;
+	QJsonValue next;
+	while(!next.isUndefined())
+	{
+//		next = loadDoc[index];
+//		QString tag = next["tag_name"].toString();
+		QString tag = loadDoc["tag_name"].toString();
+		if(compareTagVersion(tag, currentTag))
+		{
+			fetchTimes.downloadSynchronous("", "https://github.com/atakli/PrayerReminder-Desktop/releases/latest/download/PrayerReminder.zip");
+			break;
+		}
+		++index;
+	}
+}

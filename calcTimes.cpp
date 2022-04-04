@@ -1,30 +1,28 @@
-/*
- * iste_bu.cpp
- *
- *  Created on: Jul 10, 2021
- *      Author: Emre ATAKLI
- */
 #include <calcTimes.h>
 #include <iostream>
 #include <math.h>
-/*
- Prayers calculator start
-*/
 
-//convert Degree to Radian
+#include <QDate>
+#include <QFile>
+#include <QVariant>
+#include <QDateTime>
+#include <QJsonArray>
+#include <QJsonValue>
+#include <QJsonObject>
+#include <QJsonDocument>
+
+extern const QString evkatOfflinePath;
+
 double CalcTimes::degToRad(double degree)
 {
     return ((3.1415926 / 180) * degree);
 }
 
-//convert Radian to Degree
 double CalcTimes::radToDeg(double radian)
 {
     return (radian * (180/3.1415926));
 }
-
-//make sure a value is between 0 and 360
-double CalcTimes::moreLess360(double value)
+double CalcTimes::moreLess360(double value)	//make sure a value is between 0 and 360
 {
     while(value > 360 || value < 0)
     {
@@ -34,12 +32,9 @@ double CalcTimes::moreLess360(double value)
         else if (value <0)
             value += 360;
     }
-
     return value;
 }
-
-//make sure a value is between 0 and 24
-double CalcTimes::moreLess24(double value)
+double CalcTimes::moreLess24(double value)	//make sure a value is between 0 and 24
 {
     while(value > 24 || value < 0)
     {
@@ -49,12 +44,9 @@ double CalcTimes::moreLess24(double value)
         else if (value <0)
             value += 24;
     }
-
     return value;
 }
-
-//convert the double number to Hours and Minutes
-QString CalcTimes::doubleToHrMin(double number, int hangiVakit)
+QString CalcTimes::doubleToHrMin(double number, int hangiVakit)	//convert the double number to Hours and Minutes
 {
 	int hours = floor(moreLess24(number));
 	int minutes = floor(moreLess24(number - hours) * 60);
@@ -156,7 +148,51 @@ void CalcTimes::calcPrayerTimes(int year, int month, int day,
 
     return;
 }
+void CalcTimes::offlineVakitleriHesapla()
+{
+	QDate dt = QDateTime::currentDateTime().date();
 
+	double fajr, sunRise, zuhr, asr, maghrib, isha;
+
+	QJsonObject vakitObject;
+	QJsonArray vakitArray;
+
+	for(int i=0; i<30; ++i)
+	{
+		int year = dt.year();
+		int month = dt.month();
+		int day = dt.day();
+
+		dt = dt.addDays(1);
+
+		calcPrayerTimes(year, month, day, 29.43333330, 40.80000000, 3, -18, -17, fajr, sunRise, zuhr, asr, maghrib, isha);
+
+		QString dayWith0 = QString("0" + QString::number(day)).right(2);
+		QString monthWith0 = QString("0" + QString::number(month)).right(2);
+
+		QString toBeInserted = dayWith0 + "." + monthWith0 + "." + QString::number(year);
+		vakitObject.insert("MiladiTarihKisa", QJsonValue::fromVariant(toBeInserted));
+		toBeInserted = doubleToHrMin(fajr, 1);
+		vakitObject.insert("Imsak", QJsonValue::fromVariant(toBeInserted));
+		toBeInserted = doubleToHrMin(sunRise, 0);
+		vakitObject.insert("Gunes", QJsonValue::fromVariant(toBeInserted));
+		toBeInserted = doubleToHrMin(zuhr, 2);
+		vakitObject.insert("Ogle", QJsonValue::fromVariant(toBeInserted));
+		toBeInserted = doubleToHrMin(asr, 3);
+		vakitObject.insert("Ikindi", QJsonValue::fromVariant(toBeInserted));
+		toBeInserted = doubleToHrMin(maghrib, 4);
+		vakitObject.insert("Aksam", QJsonValue::fromVariant(toBeInserted));
+		toBeInserted = doubleToHrMin(isha, 5);
+		vakitObject.insert("Yatsi", QJsonValue::fromVariant(toBeInserted));
+		vakitArray.push_back(vakitObject);
+	}
+
+	QJsonDocument doc(vakitArray);
+	QFile jsonFile(applicationDirPath + evkatOfflinePath);				// TODO: bütün qfile'lara bak close etmiş miyim
+	jsonFile.open(QFile::WriteOnly);
+	jsonFile.write(doc.toJson());
+	jsonFile.close();
+}
 /*
  Prayers calculator end
 */

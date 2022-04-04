@@ -12,8 +12,7 @@ HttpWindow::~HttpWindow() = default;	// TODO: bu nasıl bir saçmalıktır: defa
 
 void HttpWindow::startRequest(const QUrl &requestedUrl)
 {
-	url = requestedUrl;
-	QNetworkRequest req = QNetworkRequest(url);
+	QNetworkRequest req = QNetworkRequest(requestedUrl);
 //#if QT_VERSION < QT_VERSION_CHECK(5,15,3)
 #if QT_VERSION < 393729                                                 // TODO: düzeltmem gerekli burayı. generic değil. sadece bana uygun
     req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
@@ -21,36 +20,18 @@ void HttpWindow::startRequest(const QUrl &requestedUrl)
 //	req.setHeader(QNetworkRequest::LocationHeader, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0");
 
 	reply.reset(qnam.get(req));
+	QEventLoop eventLoop;
 	connect(reply.get(), &QIODevice::readyRead, this, &HttpWindow::httpReadyRead);
-	connect(reply.get(), &QNetworkReply::finished, this, &HttpWindow::httpFinished);
 #if QT_CONFIG(ssl)
 	connect(reply.get(), &QNetworkReply::sslErrors, this, &HttpWindow::sslErrors);
 #endif
+	connect(reply.get(), SIGNAL(finished()), &eventLoop, SLOT(quit()));
+	eventLoop.exec();
+	httpFinished();
 }
-
-bool HttpWindow::isNewVersionExists()
-{
-	QUrl url1 = QUrl("https://github.com/atakli/PrayerReminder-Desktop/releases/download/v1.0.0-beta/PrayerReminder.zip");
-	QNetworkRequest req = QNetworkRequest(url1);
-
-	reply1.reset(qnam1.get(req));
-	connect(reply1.get(), &QNetworkReply::finished, this, &HttpWindow::httpFinished1);
-	return true;
-}
-void HttpWindow::httpFinished1()
-{
-	qDebug() << reply1->error();
-}
-
 void HttpWindow::downloadFile(QString fileName, QString urlSpec)
 {
-    if(fileName == "")
-    {
-		QString directory = QFileDialog::getExistingDirectory(this, tr("Yeni sürümü indireceğiniz klasörü seçin"));
-        fileName = directory + "/PrayerReminder.zip";
-    }
-
-	QUrl newUrl = QUrl::fromUserInput(urlSpec);
+	QUrl url = QUrl::fromUserInput(urlSpec);
 
 //	if (QFile::exists(fileName))
 //	{
@@ -64,7 +45,35 @@ void HttpWindow::downloadFile(QString fileName, QString urlSpec)
 	{
 		return;
 	}
-	startRequest(newUrl);	// schedule the request
+	startRequest(url);	// schedule the request
+}
+void HttpWindow::downloadSynchronous(QString fileName, QString urlSpec)
+{
+	bool newVersion = false;
+	QString directory;
+	if(fileName == "")
+	{
+		newVersion = true;
+		directory = QFileDialog::getExistingDirectory(this, tr("Yeni sürümü indireceğiniz klasörü seçin"));
+		if(directory == "")
+			directory = applicationDirPath;
+		fileName = directory + "/PrayerReminder.zip";
+	}
+
+	QUrl url = QUrl::fromUserInput(urlSpec);
+
+	file = openFileForWrite(fileName);
+	if (!file)
+	{
+		return;
+	}
+	startRequest(url);
+
+	if(newVersion)
+	{
+		QMessageBox qmbox;
+		qmbox.information(nullptr, tr("Yeni versiyon"), QString(directory + " klasörüne indirildi."));
+	}
 }
 
 std::unique_ptr<QFile> HttpWindow::openFileForWrite(const QString &fileName)
@@ -77,7 +86,18 @@ std::unique_ptr<QFile> HttpWindow::openFileForWrite(const QString &fileName)
 	}
 	return file;
 }
-
+void HttpWindow::httpFinishedNewVersion()
+{
+	QFileInfo fi;
+	if (file)
+	{
+		fi.setFile(file->fileName());
+		file->close();
+		file.reset();
+	}
+	QMessageBox qmbox;
+	qmbox.information(nullptr, tr("حي على الصلاة"), QString("5 dk'dan az kaldı!"));
+}
 void HttpWindow::httpFinished()
 {
 	QFileInfo fi;
@@ -132,7 +152,9 @@ void HttpWindow::httpReadyRead()
 {
     // This slot gets called every time the QNetworkReply has new data. We read all of its new data and write it into the file. That way we use less RAM than when reading it at the finished() signal of the QNetworkReply
 	if (file)
+	{
 		file->write(reply->readAll());
+	}
 }
 
 #if QT_CONFIG(ssl)

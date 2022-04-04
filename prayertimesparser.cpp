@@ -96,7 +96,6 @@ int PrayerTimesParser::nextDay()
 	{
 		next = loadDoc[index];
 		if(bugun == next["MiladiTarihKisa"].toString())
-//		if(bugun == next["Date"].toString())
 		{
 			kalanVakit = vakitleriCikar(next);
 			break;
