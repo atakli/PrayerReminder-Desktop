@@ -1,12 +1,11 @@
 #include "updatecontroller.h"
 
 #include <QJsonDocument>
+#include <QMessageBox>
 #include <QFile>
 
-UpdateController::UpdateController()
-{
-
-}
+UpdateController::UpdateController()	{}
+//UpdateController::~UpdateController()	{}
 QString dosyayiAc(QString fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly)
 {
 	QFile file(fileName);
@@ -51,7 +50,6 @@ bool UpdateController::compareTagVersion(QString tag, QString currentTag)
 
 void UpdateController::isNewVersionAvailable()
 {
-//	QString apiPath1 = applicationDirPath + "/api1.json";
 	QString apiPath = applicationDirPath + "/api.json";
 	QString newUrl = "https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest";
 	fetchTimes.downloadSynchronous(apiPath, newUrl);
@@ -71,7 +69,12 @@ void UpdateController::isNewVersionAvailable()
 		QString tag = loadDoc["tag_name"].toString();
 		if(compareTagVersion(tag, currentTag))
 		{
-			fetchTimes.downloadSynchronous("", "https://github.com/atakli/PrayerReminder-Desktop/releases/latest/download/PrayerReminder.zip");
+//			if (QMessageBox::question(this, tr("Yeni sürüm bulundu"), tr("İndirilelim mi?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
+//			{
+//				return;
+//			}
+//			fetchTimes.downloadSynchronous("", "https://github.com/atakli/PrayerReminder-Desktop/releases/latest/download/PrayerReminder.zip");
+			fetchTimes.downloadSynchronous("", loadDoc["assets"][0]["browser_download_url"].toString()); // ismi PrayerReminder.zip'dan başka bişey olursa diye
 			break;
 		}
 		++index;

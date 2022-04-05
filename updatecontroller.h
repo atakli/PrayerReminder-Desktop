@@ -3,13 +3,15 @@
 
 #include "fetchtimes.h"
 
+#include <QWidget>
 #include <QObject>
 
 class UpdateController : public QObject
 {
     Q_OBJECT
 public:
-    UpdateController();
+	UpdateController();
+//	~UpdateController();
 	void isNewVersionAvailable();
 //	void checkNewVersionNow();
     bool isChecked;

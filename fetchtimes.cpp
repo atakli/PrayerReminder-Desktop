@@ -53,6 +53,7 @@ void HttpWindow::downloadSynchronous(QString fileName, QString urlSpec)
 	QString directory;
 	if(fileName == "")
 	{
+//		return;
 		newVersion = true;
 		directory = QFileDialog::getExistingDirectory(this, tr("Yeni sürümü indireceğiniz klasörü seçin"));
 		if(directory == "")
