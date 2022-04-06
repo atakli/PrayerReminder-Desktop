@@ -11,7 +11,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 
-extern const QString evkatOfflinePath;
+//extern const QString evkatOfflinePath;
 
 double CalcTimes::degToRad(double degree)
 {

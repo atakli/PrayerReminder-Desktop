@@ -10,6 +10,7 @@
 #include <QDialog>
 #include <QWidget>
 
+#include "prayertimesparser.h"
 #include "updatecontroller.h"
 #include "fetchtimes.h"
 
@@ -36,6 +37,7 @@ private slots:
     void fillCities(int ulkeIndex);
 	void fillTown(int sehirIndex);
 	void executeIlceKodu(int ilceIndex);
+	void controlUpdate();
 public slots:
 	void showMessage();
 
@@ -48,6 +50,7 @@ private:
 	QString ulkeFile, sehirFile, ilceFile;
 	QString ulkeKodu, sehirKodu, ilceKodu;
 	void controlOnlineEvkatFileExistOtherwiseRequestDownload();
+	PrayerTimesParser ptp;
 	UpdateController update;
     bool compareTagVersion(QString tag, QString currentTag);
 	HttpWindow fetchTimes;	// TODO: önceki hali gibi olup da signal slot ile filan HttpWindow'dan Window'a sinyal gönderip indirme işlemi bitmeden fetchTimes objesinin ömrünü doldurmasını
@@ -61,7 +64,9 @@ private:
 
     QElapsedTimer timer;
 
-    QAction *quitAction;
+	QAction *emailAction;
+	QAction *quitAction;
+	QAction *updateAction;
 	QAction *sehirSecimiAction;
 
     QSystemTrayIcon *trayIcon;

@@ -1,6 +1,5 @@
 #include "window.h"
 #include "calcTimes.h"
-#include "prayertimesparser.h"
 #include "ui_sehirSecwindow.h"
 
 #ifndef QT_NO_SYSTEMTRAYICON
@@ -119,14 +118,20 @@ void Window::showMessage()
 
 void Window::createActions()
 {
-    quitAction = new QAction(tr("&Quit"), this);
+	quitAction = new QAction(tr("&Çıkış"), this);
     connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
 	sehirSecimiAction = new QAction(tr("&Şehir seç"), this);
+	updateAction = new QAction(tr("&Yeni sürüm var mı?"), this);
+	emailAction = new QAction(tr("&Önerini Yaz"), this);
 //	connect(sehirSecimiAction, &QAction::triggered, this, &Window::bolgeSec);
 	connect(sehirSecimiAction, SIGNAL(triggered()), this, SLOT(bolgeSec()));	// sanırım this'i kaldırınca da aynı mana
+	connect(updateAction, SIGNAL(triggered()), this, SLOT(controlUpdate()));
 	connect(this, &Window::son5Dk, this, &Window::showMessage);
 }
-
+void Window::controlUpdate()
+{
+	update.isNewVersionAvailable();
+}
 void Window::ilkBolgeSecimi()
 {
 	ui->sehir->setCurrentText("KOCAELİ");
@@ -170,6 +175,8 @@ void Window::executeIlceKodu(int ilceIndex)
 void Window::downloadEvkat()
 {
 	QString urlSpec = "https://ezanvakti.herokuapp.com/vakitler/" + ilceKodu;	// note that times in this site are not updated everyday
+	CalcTimes calc;
+	calc.offlineVakitleriHesapla();
 	QString fileName = applicationDirPath + evkatOnlinePath;
 //	fileName = applicationDirPath + "/releases.html";
 //	urlSpec = "https://github.com/atakli/PrayerReminder-Desktop/releases/";
@@ -197,9 +204,11 @@ void Window::bolgeSec()
 void Window::createTrayIcon()
 {
     trayIconMenu = new QMenu(this);
-//    trayIconMenu->addSeparator();
-    trayIconMenu->addAction(quitAction);
 	trayIconMenu->addAction(sehirSecimiAction);
+	trayIconMenu->addSeparator();
+	trayIconMenu->addAction(updateAction);
+//	trayIconMenu->addAction(emailAction);
+	trayIconMenu->addAction(quitAction);
 
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setContextMenu(trayIconMenu);
@@ -207,7 +216,6 @@ void Window::createTrayIcon()
 
 void Window::showTime()
 {
-	PrayerTimesParser ptp;			// TODO: her saniye burdaki her işi yapmasına gerek yok aslında, sanırım
 	int kalanVakit = ptp.nextDay();
 	if(kalanVakit <= 60)			// 60 dk'dan az kalmadıysa gösterme. bi de zaten ikiden fazla basamak göstermeye uygun değil ve gerek de yok
 	{

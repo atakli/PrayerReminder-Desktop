@@ -12,9 +12,6 @@ class QSslError;
 class QNetworkReply;
 QT_END_NAMESPACE
 
-extern const QString evkatOnlinePath;
-extern const QString evkatOfflinePath;
-
 class HttpWindow : public QDialog
 {
     Q_OBJECT

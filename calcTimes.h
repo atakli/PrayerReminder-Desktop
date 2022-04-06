@@ -2,6 +2,9 @@
 #define CALCTIMES_H
 #include <QString>
 #include <QCoreApplication>
+
+const QString evkatOfflinePath = "/namazVakitFiles/evkatOffline.json";
+
 class CalcTimes
 {
 private:

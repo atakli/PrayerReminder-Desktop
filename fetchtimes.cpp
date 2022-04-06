@@ -6,6 +6,9 @@
 
 #include <algorithm>
 
+//extern const QString evkatOnlinePath;
+//extern const QString evkatOfflinePath;
+
 HttpWindow::HttpWindow(QWidget *parent) : QDialog(parent)	{}
 
 HttpWindow::~HttpWindow() = default;	// TODO: bu nasıl bir saçmalıktır: default'u niye burda yazmışım, class definition'da yazayım diye oraya alıp burayı tamamen kaldırınca hata verdi.
@@ -33,13 +36,6 @@ void HttpWindow::downloadFile(QString fileName, QString urlSpec)
 {
 	QUrl url = QUrl::fromUserInput(urlSpec);
 
-//	if (QFile::exists(fileName))
-//	{
-//        if (QMessageBox::question(this, tr("Overwrite Existing File"), tr("There already exists a file called %1%2. Overwrite?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
-//		{
-//			return;
-//		}
-//	}
 	file = openFileForWrite(fileName);
 	if (!file)
 	{
@@ -53,11 +49,10 @@ void HttpWindow::downloadSynchronous(QString fileName, QString urlSpec)
 	QString directory;
 	if(fileName == "")
 	{
-//		return;
 		newVersion = true;
 		directory = QFileDialog::getExistingDirectory(this, tr("Yeni sürümü indireceğiniz klasörü seçin"));
 		if(directory == "")
-			directory = applicationDirPath;
+			return;
 		fileName = directory + "/PrayerReminder.zip";
 	}
 

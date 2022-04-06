@@ -5,6 +5,7 @@
 
 #include <QWidget>
 #include <QObject>
+#include <QDialog>
 
 class UpdateController : public QObject
 {

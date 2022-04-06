@@ -5,20 +5,19 @@
 #include <QJsonDocument>
 
 const QString evkatOnlinePath = "/namazVakitFiles/evkatOnline.json";
-const QString evkatOfflinePath = "/namazVakitFiles/evkatOffline.json";
 
 class PrayerTimesParser
 {
 private:
 	const QString applicationDirPath = QCoreApplication::applicationDirPath();
+	bool loadJson();
 	QJsonDocument loadDoc;
 	int Min(QString vakit);
-	bool loadJson();
 	int kalan(QStringList list);
 public:
 	int nextDay();
-	int vakitleriCikar(QJsonValue value);
     PrayerTimesParser();
+	int vakitleriCikar(QJsonValue value);
 };
 
 #endif // PRAYERTIMESPARSER_H

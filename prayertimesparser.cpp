@@ -1,4 +1,5 @@
 #include "prayertimesparser.h"
+#include "calcTimes.h"
 
 #include <QJsonObject>
 #include <QTextStream>
@@ -7,10 +8,7 @@
 #include <QFile>
 #include <QDir>
 
-PrayerTimesParser::PrayerTimesParser()
-{
-	loadJson();
-}
+PrayerTimesParser::PrayerTimesParser() {}
 
 bool PrayerTimesParser::loadJson()
 {
@@ -30,8 +28,6 @@ bool PrayerTimesParser::loadJson()
     loadFile.close();
 
 	loadDoc = QJsonDocument::fromJson(saveData);
-
-//	QJsonObject object = loadDoc.object();
 
 	return true;
 }
@@ -78,6 +74,8 @@ int PrayerTimesParser::vakitleriCikar(QJsonValue value)
 }
 int PrayerTimesParser::nextDay()
 {
+	loadJson();
+
 	QDate dt = QDateTime::currentDateTime().date();
 
 	int year = dt.year();
