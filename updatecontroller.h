@@ -13,11 +13,12 @@ class UpdateController : public QObject
 public:
 	UpdateController();
 //	~UpdateController();
-	void isNewVersionAvailable();
+	void isNewVersionAvailable(bool uyariGoster=false);
 //	void checkNewVersionNow();
     bool isChecked;
     void checkForUpdates();
 private:
+	QString osName;
 	HttpWindow fetchTimes;
 	const QString applicationDirPath = QCoreApplication::applicationDirPath();
 	bool compareTagVersion(QString tag, QString currentTag);

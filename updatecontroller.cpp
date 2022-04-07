@@ -23,6 +23,8 @@ bool UpdateController::compareTagVersion(QString tag, QString currentTag)
 	uint8_t ortaTagCurrent = currentTag.split(".").at(1).toUInt();
 	uint8_t sonTagCurrent = currentTag.split(".").last().toUInt();
 
+	osName = currentTag.split(".").last().split("-").last().trimmed();
+
 	uint8_t ilkTag = tag1.split(".").first().toUInt();
 	uint8_t ortaTag = tag1.split(".").at(1).toUInt();
 	uint8_t sonTag = tag1.split(".").last().toUInt();
@@ -48,7 +50,7 @@ bool UpdateController::compareTagVersion(QString tag, QString currentTag)
 	return false;
 }
 
-void UpdateController::isNewVersionAvailable()
+void UpdateController::isNewVersionAvailable(bool uyariGoster)
 {
 	QString apiPath = applicationDirPath + "/api.json";
 	QString newUrl = "https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest";
@@ -60,28 +62,20 @@ void UpdateController::isNewVersionAvailable()
 //	QJsonDocument loadDoc = QJsonDocument::fromVariant(saveData);
 	QJsonDocument loadDoc = QJsonDocument::fromJson(QByteArray::fromStdString(saveData.toStdString()));
 
-	uint8_t index = 0;
 	QJsonValue next;
-	while(!next.isUndefined())
+	QString tag = loadDoc["tag_name"].toString();
+	if(compareTagVersion(tag, currentTag))
 	{
-//		next = loadDoc[index];
-//		QString tag = next["tag_name"].toString();
-		QString tag = loadDoc["tag_name"].toString();
-		if(compareTagVersion(tag, currentTag))
+		if (QMessageBox(QMessageBox::Question, "Namaz Vakti Hatırlatıcı", "Yeni sürüm bulundu\nİndirilelim mi?", QMessageBox::No|QMessageBox::Yes).exec() == QMessageBox::No)
 		{
-//			if (QMessageBox::question(this, tr("Yeni sürüm bulundu"), tr("İndirilelim mi?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
-//			{
-//				return;
-//			}
-
-			if (QMessageBox(QMessageBox::Question, "Namaz Vakti Hatırlatıcı", "Yeni sürüm bulundu\nİndirilelim mi?", QMessageBox::No|QMessageBox::Yes).exec() == QMessageBox::No)
-			{
-				return;
-			}
-//			fetchTimes.downloadSynchronous("", "https://github.com/atakli/PrayerReminder-Desktop/releases/latest/download/PrayerReminder.zip");
-			fetchTimes.downloadSynchronous("", loadDoc["assets"][0]["browser_download_url"].toString()); // ismi PrayerReminder.zip'dan başka bişey olursa diye
-			break;
+			return;
 		}
-		++index;
+//			fetchTimes.downloadSynchronous("", loadDoc["assets"][0]["browser_download_url"].toString()); // ismi PrayerReminder.zip'dan başka bişey olursa diye
+		fetchTimes.downloadSynchronous("", "https://github.com/atakli/PrayerReminder-Desktop/releases/latest/download/PrayerReminder-" + osName + ".zip");
+	}
+	if(uyariGoster)
+	{
+		QMessageBox qmbox;
+		qmbox.information(nullptr, tr("Namaz Vakti Hatırlatıcı"), QString("Program güncel"));
 	}
 }
