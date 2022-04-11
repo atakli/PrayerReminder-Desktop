@@ -8,7 +8,6 @@ const QString evkatOfflinePath = "/namazVakitFiles/evkatOffline.json";
 class CalcTimes
 {
 private:
-	void temkinEkle(int* hours, int* minutes, int hangiVakit);
 	double degToRad(double degree);
 	double radToDeg(double radian);
 	double moreLess360(double value);
@@ -16,7 +15,7 @@ private:
 	const QString applicationDirPath = QCoreApplication::applicationDirPath();
 public:
 	void offlineVakitleriHesapla();
-	QString doubleToHrMin(double number, int hangiVakit);
+	QString doubleToHrMin(double number);
 	void calcPrayerTimes(int year, int month, int day,
 						 double longitude, double latitude, int timeZone,
 						 double fajrTwilight, double ishaTwilight,

@@ -8,6 +8,7 @@
 #include <QFile>
 #include <QMenu>
 #include <QTimer>
+#include <QDebug>
 #include <QAction>
 #include <QPainter>
 #include <QDateTime>
@@ -16,8 +17,6 @@
 #include <QMessageBox>
 #include <QCoreApplication>
 
-#include <QDebug>
-//#include <QtConcurrent/QtConcurrent>
 QString dosyayiAc(QString fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly);
 
 Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Window>())
@@ -75,9 +74,6 @@ void Window::executeFileNames()
 
 void Window::setIcon(uint8_t number)
 {
-//	QSystemTrayIcon::NoIcon noo;
-//	trayIcon->setVisible()
-
 #ifdef linux                // TODO: hoş olmadı
 	QPixmap pixmap(35,35);
 #else
@@ -178,8 +174,6 @@ void Window::downloadEvkat()
 	CalcTimes calc;
 	calc.offlineVakitleriHesapla();
 	QString fileName = applicationDirPath + evkatOnlinePath;
-//	fileName = applicationDirPath + "/releases.html";
-//	urlSpec = "https://github.com/atakli/PrayerReminder-Desktop/releases/";
 	fetchTimes.downloadSynchronous(fileName, urlSpec);
 	ui->textLabel->setText(ui->ilce->currentText() + " için bir aylık vakitler indirildi ve offline vakitler hesaplandı");
 }
