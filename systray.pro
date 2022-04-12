@@ -15,7 +15,7 @@ SOURCES       = main.cpp \
 
 RESOURCES     = systray.qrc
 
-QT += network widgets positioning
+QT += network widgets # positioning
 #requires(qtConfig(combobox))
 
 ## install

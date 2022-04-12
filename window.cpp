@@ -30,11 +30,14 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
     createActions();
 	createTrayIcon();
 
-    if(!QFileInfo::exists(applicationDirPath + evkatOfflinePath))
-    {
-		CalcTimes calc;
-		calc.offlineVakitleriHesapla();
-    }
+//    if(!QFileInfo::exists(applicationDirPath + evkatOfflinePath))
+//    {
+//		CalcTimes calc;
+//		calc.offlineVakitleriHesapla();
+//    }
+
+    // offlinevakitler yok uyarısı verilebilir
+
 //	connect(trayIcon, &QSystemTrayIcon::messageClicked, this, &Window::onClickedOK);
 //    connect(trayIcon, &QWidget::closeEvent, this, &Window::addClockToThread);
 //	addClockToThread();
@@ -51,8 +54,9 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 //	connect(timer1, &QTimer::timeout, update, &UpdateController::isNewVersionAvailable);
 //	timer1->start(1000 * 60 * 60 * 24); // günde bir yeni versiyon kontrolü
 
+    ui->koordinatGroupBox->setChecked(false);
 	connect(ui->hesaplaButton, &QAbstractButton::clicked, this, &Window::downloadEvkat);
-	connect(ui->offlineCheckBox, &QAbstractButton::toggled, this, &Window::downloadEvkat);
+//	connect(ui->koordinatGroupBox, &QGroupBox::toggled, this, &Window::downloadEvkat);
 //	connect(this, &QWidget::close, ui->textLabel, &QLabel::clear);	// close fonksiyonu signal değil, slot
 //    connect(ui->ulke, SIGNAL(currentTextChanged(QString)), [this](QString ulke) {fillCities(ulke);});
 	connect(ui->ulke, SIGNAL(currentIndexChanged(int)), SLOT(fillCities(int)));
@@ -172,11 +176,18 @@ void Window::executeIlceKodu(int ilceIndex)
 void Window::downloadEvkat()
 {
 	QString urlSpec = "https://ezanvakti.herokuapp.com/vakitler/" + ilceKodu;	// note that times in this site are not updated everyday
-	CalcTimes calc;
-	calc.offlineVakitleriHesapla();
+    double boylam = ui->boylamLineEdit->text().toDouble();
+    double enlem = ui->enlemLineEdit->text().toDouble();
+    QString hasOfflineDownloaded = "";
+    if(ui->koordinatGroupBox->isChecked() & (boylam != 0.0) & (enlem != 0.0))
+    {
+        CalcTimes calc;
+        calc.offlineVakitleriHesapla(boylam, enlem);
+        hasOfflineDownloaded = " ve offline vakitler hesaplandı";
+    }
 	QString fileName = applicationDirPath + evkatOnlinePath;
 	fetchTimes.downloadSynchronous(fileName, urlSpec);
-	ui->textLabel->setText(ui->ilce->currentText() + " için bir aylık vakitler indirildi ve offline vakitler hesaplandı");
+    ui->textLabel->setText(ui->ilce->currentText() + " için bir aylık vakitler indirildi" + hasOfflineDownloaded);
 }
 
 void Window::controlOnlineEvkatFileExistOtherwiseRequestDownload()

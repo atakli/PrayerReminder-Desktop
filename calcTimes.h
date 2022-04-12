@@ -14,7 +14,7 @@ private:
 	double moreLess24(double value);
 	const QString applicationDirPath = QCoreApplication::applicationDirPath();
 public:
-	void offlineVakitleriHesapla();
+    void offlineVakitleriHesapla(double boylam=29.43333330, double enlem=40.80000000);
 	QString doubleToHrMin(double number);
 	void calcPrayerTimes(int year, int month, int day,
 						 double longitude, double latitude, int timeZone,

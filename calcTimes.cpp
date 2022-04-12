@@ -133,7 +133,7 @@ void CalcTimes::calcPrayerTimes(int year, int month, int day,
 
     return;
 }
-void CalcTimes::offlineVakitleriHesapla()
+void CalcTimes::offlineVakitleriHesapla(double boylam, double enlem)
 {
 	QDate dt = QDateTime::currentDateTime().date();
 
@@ -150,7 +150,7 @@ void CalcTimes::offlineVakitleriHesapla()
 
 		dt = dt.addDays(1);
 
-		calcPrayerTimes(year, month, day, 29.43333330, 40.80000000, 3, -18, -17, fajr, sunRise, zuhr, asr, maghrib, isha);
+        calcPrayerTimes(year, month, day, boylam, enlem, 3, -18, -17, fajr, sunRise, zuhr, asr, maghrib, isha);
 
 		QString dayWith0 = QString("0" + QString::number(day)).right(2);
 		QString monthWith0 = QString("0" + QString::number(month)).right(2);
