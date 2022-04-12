@@ -15,6 +15,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QMessageBox>
+#include <QStyleFactory>
 #include <QCoreApplication>
 
 QString dosyayiAc(QString fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly);
@@ -22,6 +23,8 @@ QString dosyayiAc(QString fileName, QIODevice::OpenModeFlag flag=QIODevice::Read
 Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Window>())
 {
 	ui->setupUi(this);
+
+    QApplication::setStyle(QStyleFactory::create("Fusion"));
 
 	ulkeKodu = "2";		// Türkiye
 	sehirKodu = "551";	// Kocaeli
