@@ -47,11 +47,12 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 
 	update.isNewVersionAvailable();
 
-//    QTimer *timer1 = new QTimer(this);
-//    connect(timer1, &QTimer::timeout, this, &Window::isNewVersionAvailable);
-//    timer1->start(1000 * 60 * 60 * 24); // günde bir yeni versiyon kontrolü
+//	QTimer *timer1 = new QTimer(this);
+//	connect(timer1, &QTimer::timeout, update, &UpdateController::isNewVersionAvailable);
+//	timer1->start(1000 * 60 * 60 * 24); // günde bir yeni versiyon kontrolü
 
 	connect(ui->hesaplaButton, &QAbstractButton::clicked, this, &Window::downloadEvkat);
+	connect(ui->offlineCheckBox, &QAbstractButton::toggled, this, &Window::downloadEvkat);
 //	connect(this, &QWidget::close, ui->textLabel, &QLabel::clear);	// close fonksiyonu signal değil, slot
 //    connect(ui->ulke, SIGNAL(currentTextChanged(QString)), [this](QString ulke) {fillCities(ulke);});
 	connect(ui->ulke, SIGNAL(currentIndexChanged(int)), SLOT(fillCities(int)));

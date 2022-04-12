@@ -13,7 +13,7 @@ class UpdateController : public QObject
 public:
 	UpdateController();
 //	~UpdateController();
-	void isNewVersionAvailable(bool uyariGoster=false);
+	void isNewVersionAvailable();
 //	void checkNewVersionNow();
     bool isChecked;
     void checkForUpdates();
