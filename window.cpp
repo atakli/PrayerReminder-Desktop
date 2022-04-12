@@ -24,7 +24,10 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 {
 	ui->setupUi(this);
 
-    QApplication::setStyle(QStyleFactory::create("Fusion"));
+//    QApplication::setStyle(QStyleFactory::create("Fusion"));
+#ifdef linux
+    this->setMaximumHeight(200);
+#endif
 
 	ulkeKodu = "2";		// Türkiye
 	sehirKodu = "551";	// Kocaeli
