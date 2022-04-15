@@ -32,7 +32,7 @@ void HttpWindow::startRequest(const QUrl &requestedUrl)
 	eventLoop.exec();
 	httpFinished();
 }
-void HttpWindow::downloadFile(QString fileName, QString urlSpec)
+void HttpWindow::downloadFile(QString fileName, QString urlSpec)	// TODO: ismini downloadAsynchronous yap
 {
 	QUrl url = QUrl::fromUserInput(urlSpec);
 
@@ -82,66 +82,14 @@ std::unique_ptr<QFile> HttpWindow::openFileForWrite(const QString &fileName)
 	}
 	return file;
 }
-void HttpWindow::httpFinishedNewVersion()
-{
-	QFileInfo fi;
-	if (file)
-	{
-		fi.setFile(file->fileName());
-		file->close();
-		file.reset();
-	}
-	QMessageBox qmbox;
-	qmbox.information(nullptr, tr("حي على الصلاة"), QString("5 dk'dan az kaldı!"));
-}
+
 void HttpWindow::httpFinished()
 {
-	QFileInfo fi;
 	if (file)
 	{
-		fi.setFile(file->fileName());
 		file->close();
 		file.reset();
 	}
-
-//	if (httpRequestAborted) {
-//        reply->deleteLater();
-//        reply = nullptr;
-//        return;
-//    }
-
-//    if (reply->error()) {
-//        QFile::remove(fi.absoluteFilePath());
-//        reply->deleteLater();
-//        reply = nullptr;
-//        return;
-//    }
-
-//	const QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
-
-//	reply->deleteLater();
-//	reply = nullptr;
-
-//	if (!redirectionTarget.isNull())
-//	{
-//		qDebug() << "redirect";
-//		const QUrl redirectedUrl = url.resolved(redirectionTarget.toUrl());
-//		file = openFileForWrite(fi.absoluteFilePath());
-//		if (!file)
-//		{
-//			return;
-//		}
-//		startRequest(redirectedUrl);
-//		return;
-//	}
-
-	/*QNetworkReply::NetworkError error = reply->error();				// QNetworkReply::ContentNotFoundError
-//	reply.reset();
-	if (error != QNetworkReply::NoError)
-	{
-		QFile::remove(fi.absoluteFilePath());
-		return;
-	}*/
 }
 
 void HttpWindow::httpReadyRead()

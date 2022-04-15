@@ -12,7 +12,6 @@ SOURCES       = main.cpp \
                 updatecontroller.cpp \
                 window.cpp \
 
-
 RESOURCES     = systray.qrc
 
 QT += network widgets # positioning

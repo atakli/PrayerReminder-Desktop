@@ -56,15 +56,13 @@ void UpdateController::isNewVersionAvailable()
 	QString newUrl = "https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest";
 	fetchTimes.downloadSynchronous(apiPath, newUrl);
 
-	QString saveData = dosyayiAc(apiPath);
-	QString currentTag = dosyayiAc(applicationDirPath + "/namazVakitFiles/version.txt");
 
+	QString saveData = dosyayiAc(apiPath);
 //	QJsonDocument loadDoc = QJsonDocument::fromVariant(saveData);
 	QJsonDocument loadDoc = QJsonDocument::fromJson(QByteArray::fromStdString(saveData.toStdString()));
 
-	QJsonValue next;
-	QString tag = loadDoc["tag_name"].toString();
-	if(compareTagVersion(tag, currentTag))
+	QString currentTag = dosyayiAc(applicationDirPath + "/namazVakitFiles/version.txt");
+	if(QString tag = loadDoc["tag_name"].toString(); compareTagVersion(tag, currentTag))
 	{
 		if (QMessageBox(QMessageBox::Question, "Namaz Vakti Hatırlatıcı", "Yeni sürüm bulundu\nİndirilelim mi?", QMessageBox::No|QMessageBox::Yes).exec() == QMessageBox::No)
 		{
@@ -73,7 +71,6 @@ void UpdateController::isNewVersionAvailable()
 //			fetchTimes.downloadSynchronous("", loadDoc["assets"][0]["browser_download_url"].toString()); // ismi PrayerReminder.zip'dan başka bişey olursa diye
 		fetchTimes.downloadSynchronous("", "https://github.com/atakli/PrayerReminder-Desktop/releases/latest/download/PrayerReminder-" + osName + ".zip");
 	}
-//	if(uyariGoster)
 	else
 	{
 		QMessageBox qmbox;

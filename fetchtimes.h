@@ -23,7 +23,6 @@ public:
 	void downloadFile(QString fileName, QString urlSpec);
 	void downloadSynchronous(QString fileName, QString urlSpec);
 private slots:
-	void httpFinishedNewVersion();
 	void httpFinished();
 	void httpReadyRead();
 #if QT_CONFIG(ssl)
