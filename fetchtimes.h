@@ -20,7 +20,7 @@ public:
     explicit HttpWindow(QWidget *parent = nullptr);
 	~HttpWindow();
     void startRequest(const QUrl &requestedUrl);
-	void downloadFile(QString fileName, QString urlSpec);
+	void downloadFile(const QString fileName, const QString urlSpec);
 	void downloadSynchronous(QString fileName, QString urlSpec);
 private slots:
 	void httpFinished();

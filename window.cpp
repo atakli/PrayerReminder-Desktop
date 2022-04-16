@@ -96,7 +96,7 @@ void Window::setIcon(uint8_t number)
 //	QFont font = painter.font();
 //	font.setPixelSize(28);
 //	painter.setFont(font);
-	QString string = QString::number(number);
+	const QString string = QString::number(number);
 //	const QRect rectangle = QRect(0, 0, 100, 50);
 //	QRect boundingRect;
 //    painter.drawText(0,0,16,16, Qt::TextDontClip, string);

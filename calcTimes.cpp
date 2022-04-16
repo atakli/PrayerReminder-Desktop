@@ -15,7 +15,7 @@
 
 enum class Temkin : int8_t
 {
-	sunRise = -7, zuhr = 5, asr = 4, maghrib = 7, noTamkin = 0
+	sunRise = -7, zuhr = 5, asr = 4, maghrib = 7
 };
 
 double CalcTimes::degToRad(double degree)
@@ -53,45 +53,38 @@ double CalcTimes::moreLess24(double value)	//make sure a value is between 0 and 
 }
 QString CalcTimes::doubleToHrMin(double number)
 {
-	int hours = floor(moreLess24(number));
-	int minutes = floor(moreLess24(number - hours) * 60);
+	const int hours = floor(moreLess24(number));
+	const int minutes = floor(moreLess24(number - hours) * 60);
 	return QString("0" + QString::number(hours)).right(2) + ":" + QString("0" + QString::number(minutes)).right(2);
 }
 
-void CalcTimes::calcPrayerTimes(int year, int month, int day,
-                     double longitude, double latitude, int timeZone,
-                     double fajrTwilight, double ishaTwilight,
+void CalcTimes::calcPrayerTimes(const int year, const int month, const int day,
+					 const double longitude, const double latitude, const int timeZone,
+					 const double fajrTwilight, const double ishaTwilight,
                      double &fajrTime, double &sunRiseTime, double &zuhrTime,
                      double &asrTime, double &maghribTime, double &ishaTime)
 {
-    double D = (367 * year) - ((year + (int)((month + 9) / 12)) * 7 / 4) + (((int)(275 * month / 9)) + day - 730531.5);
+	const double D = (367 * year) - ((year + (int)((month + 9) / 12)) * 7 / 4) + (((int)(275 * month / 9)) + day - 730531.5);
 
-    double L = 280.461 + 0.9856474 * D;
-    L = moreLess360(L);
+	const double L = moreLess360(280.461 + 0.9856474 * D);
 
-    double M = 357.528 + (0.9856003) * D;
-    M = moreLess360(M);
+	const double M = moreLess360(357.528 + (0.9856003) * D);
 
-    double Lambda = L + 1.915 * sin(degToRad(M)) + 0.02 * sin(degToRad(2 * M));
-    Lambda = moreLess360(Lambda);
+	const double Lambda = moreLess360(L + 1.915 * sin(degToRad(M)) + 0.02 * sin(degToRad(2 * M)));
 
-    double Obliquity = 23.439 - 0.0000004 * D;
-    double Alpha = radToDeg(atan((cos(degToRad(Obliquity)) * tan(degToRad(Lambda)))));
-    Alpha = moreLess360(Alpha);
+	const double Obliquity = 23.439 - 0.0000004 * D;
+	double Alpha = moreLess360(radToDeg(atan((cos(degToRad(Obliquity)) * tan(degToRad(Lambda))))));
 
-    Alpha = Alpha - (360 * (int)(Alpha / 360));
+	Alpha = Alpha - (360 * static_cast<int>(Alpha / 360));
     Alpha = Alpha + 90 * (floor(Lambda / 90) - floor(Alpha / 90));
 
-    double ST = 100.46 + 0.985647352 * D;
-    double Dec = radToDeg(asin(sin(degToRad(Obliquity)) * sin(degToRad(Lambda))));
-    double Durinal_Arc = radToDeg(acos((sin(degToRad(-0.8333)) - sin(degToRad(Dec)) * sin(degToRad(latitude))) / (cos(degToRad(Dec)) * cos(degToRad(latitude)))));
+	const double ST = 100.46 + 0.985647352 * D;
+	const double Dec = radToDeg(asin(sin(degToRad(Obliquity)) * sin(degToRad(Lambda))));
+	const double Durinal_Arc = radToDeg(acos((sin(degToRad(-0.8333)) - sin(degToRad(Dec)) * sin(degToRad(latitude))) / (cos(degToRad(Dec)) * cos(degToRad(latitude)))));
 
-    double Noon = Alpha - ST;
-    Noon = moreLess360(Noon);
+	const double Noon = moreLess360(Alpha - ST);
 
-
-    double UT_Noon = Noon - longitude;
-
+	const double UT_Noon = Noon - longitude;
 
     ////////////////////////////////////////////
     // Calculating Prayer Times Arcs & Times //
@@ -101,12 +94,11 @@ void CalcTimes::calcPrayerTimes(int year, int month, int day,
     zuhrTime = UT_Noon / 15 + timeZone;
 
     // Asr Hanafi
-    //double Asr_Alt =radToDeg(atan(2 + tan(degToRad(abs(latitude - Dec)))));
+	//double Asr_Alt = radToDeg(atan(2 + tan(degToRad(abs(latitude - Dec)))));
 
     // Asr Shafii
     double Asr_Alt = radToDeg(atan(1 + tan(degToRad(abs(latitude - Dec)))));
-    double Asr_Arc = radToDeg(acos((sin(degToRad(90 - Asr_Alt)) - sin(degToRad(Dec)) * sin(degToRad(latitude))) / (cos(degToRad(Dec)) * cos(degToRad(latitude)))));
-    Asr_Arc = Asr_Arc / 15;
+	const double Asr_Arc = radToDeg(acos((sin(degToRad(90 - Asr_Alt)) - sin(degToRad(Dec)) * sin(degToRad(latitude))) / (cos(degToRad(Dec)) * cos(degToRad(latitude))))) / 15;
     // 3) Asr Time
     asrTime = zuhrTime + Asr_Arc;
 
@@ -116,13 +108,12 @@ void CalcTimes::calcPrayerTimes(int year, int month, int day,
     // 4) Maghrib Time
     maghribTime = zuhrTime + (Durinal_Arc / 15);
 
-
-    double Esha_Arc = radToDeg(acos((sin(degToRad(ishaTwilight)) - sin(degToRad(Dec)) * sin(degToRad(latitude))) / (cos(degToRad(Dec)) * cos(degToRad(latitude)))));
+	const double Esha_Arc = radToDeg(acos((sin(degToRad(ishaTwilight)) - sin(degToRad(Dec)) * sin(degToRad(latitude))) / (cos(degToRad(Dec)) * cos(degToRad(latitude)))));
     // 5) Isha Time
     ishaTime = zuhrTime + (Esha_Arc / 15);
 
     // 0) Fajr Time
-    double Fajr_Arc = radToDeg(acos((sin(degToRad(fajrTwilight)) - sin(degToRad(Dec)) * sin(degToRad(latitude))) / (cos(degToRad(Dec)) * cos(degToRad(latitude)))));
+	const double Fajr_Arc = radToDeg(acos((sin(degToRad(fajrTwilight)) - sin(degToRad(Dec)) * sin(degToRad(latitude))) / (cos(degToRad(Dec)) * cos(degToRad(latitude)))));
     fajrTime = zuhrTime - (Fajr_Arc / 15);
 
 	// https://vakithesaplama.diyanet.gov.tr/temkin.php // imsak ve yatsıda temkin yok
@@ -130,10 +121,8 @@ void CalcTimes::calcPrayerTimes(int year, int month, int day,
 	zuhrTime += static_cast<double>(Temkin::zuhr) / 60;			// kardeş bunu optimize ediyodur muhtemelen. çünkü her zaman aynı sonucu veriyor
 	asrTime += static_cast<double>(Temkin::asr) / 60;
 	maghribTime += static_cast<double>(Temkin::maghrib) / 60;
-
-    return;
 }
-void CalcTimes::offlineVakitleriHesapla(double boylam, double enlem)
+void CalcTimes::offlineVakitleriHesapla(const double boylam, const double enlem)
 {
 	QDate dt = QDateTime::currentDateTime().date();
 
@@ -144,16 +133,16 @@ void CalcTimes::offlineVakitleriHesapla(double boylam, double enlem)
 
 	for(int i=0; i<30; ++i)
 	{
-		int year = dt.year();
-		int month = dt.month();
-		int day = dt.day();
+		const int year = dt.year();
+		const int month = dt.month();
+		const int day = dt.day();
 
 		dt = dt.addDays(1);
 
         calcPrayerTimes(year, month, day, boylam, enlem, 3, -18, -17, fajr, sunRise, zuhr, asr, maghrib, isha);
 
-		QString dayWith0 = QString("0" + QString::number(day)).right(2);
-		QString monthWith0 = QString("0" + QString::number(month)).right(2);
+		const QString dayWith0 = QString("0" + QString::number(day)).right(2);
+		const QString monthWith0 = QString("0" + QString::number(month)).right(2);
 
 		QString toBeInserted = dayWith0 + "." + monthWith0 + "." + QString::number(year);
 		vakitObject.insert("MiladiTarihKisa", QJsonValue::fromVariant(toBeInserted));

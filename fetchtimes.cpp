@@ -32,7 +32,7 @@ void HttpWindow::startRequest(const QUrl &requestedUrl)
 	eventLoop.exec();
 	httpFinished();
 }
-void HttpWindow::downloadFile(QString fileName, QString urlSpec)	// TODO: ismini downloadAsynchronous yap
+void HttpWindow::downloadFile(const QString fileName, const QString urlSpec)	// TODO: ismini downloadAsynchronous yap
 {
 	QUrl url = QUrl::fromUserInput(urlSpec);
 
