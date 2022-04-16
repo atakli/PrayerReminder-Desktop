@@ -21,7 +21,7 @@ private:
 	QString osName;
 	HttpWindow fetchTimes;
 	const QString applicationDirPath = QCoreApplication::applicationDirPath();
-	bool compareTagVersion(QString tag, QString currentTag);
+	bool compareTagVersion(const QString& tag, QString currentTag);
 };
 
 #endif // UPDATECONTROLLER_H

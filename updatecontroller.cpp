@@ -6,7 +6,7 @@
 
 UpdateController::UpdateController()	{}
 //UpdateController::~UpdateController()	{}
-QString dosyayiAc(QString fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly)
+QString dosyayiAc(const QString& fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly)
 {
 	QFile file(fileName);
 	if (!file.open(flag | QIODevice::Text))
@@ -15,19 +15,19 @@ QString dosyayiAc(QString fileName, QIODevice::OpenModeFlag flag=QIODevice::Read
 	file.close();
 	return text;
 }
-bool UpdateController::compareTagVersion(QString tag, QString currentTag)
+bool UpdateController::compareTagVersion(const QString& tag, QString currentTag)
 {
-	QString tag1 = tag.split("-").at(0).mid(1);
+	const QString tag1 = tag.split("-").at(0).mid(1);
 
-	uint8_t ilkTagCurrent = currentTag.split(".").first().toUInt();
-	uint8_t ortaTagCurrent = currentTag.split(".").at(1).toUInt();
-	uint8_t sonTagCurrent = currentTag.split(".").last().toUInt();
+	const uint8_t ilkTagCurrent = currentTag.split(".").first().toUInt();
+	const uint8_t ortaTagCurrent = currentTag.split(".").at(1).toUInt();
+	const uint8_t sonTagCurrent = currentTag.split(".").last().toUInt();
 
 	osName = currentTag.split(".").last().split("-").last().trimmed();
 
-	uint8_t ilkTag = tag1.split(".").first().toUInt();
-	uint8_t ortaTag = tag1.split(".").at(1).toUInt();
-	uint8_t sonTag = tag1.split(".").last().toUInt();
+	const uint8_t ilkTag = tag1.split(".").first().toUInt();
+	const uint8_t ortaTag = tag1.split(".").at(1).toUInt();
+	const uint8_t sonTag = tag1.split(".").last().toUInt();
 
 	if(ilkTag < ilkTagCurrent)
 		return false;
@@ -52,17 +52,16 @@ bool UpdateController::compareTagVersion(QString tag, QString currentTag)
 
 void UpdateController::isNewVersionAvailable()
 {
-	QString apiPath = applicationDirPath + "/api.json";
-	QString newUrl = "https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest";
+	const QString apiPath = applicationDirPath + "/api.json";
+	const QString newUrl = "https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest";
 	fetchTimes.downloadSynchronous(apiPath, newUrl);
 
-
-	QString saveData = dosyayiAc(apiPath);
+	const QString saveData = dosyayiAc(apiPath);
 //	QJsonDocument loadDoc = QJsonDocument::fromVariant(saveData);
-	QJsonDocument loadDoc = QJsonDocument::fromJson(QByteArray::fromStdString(saveData.toStdString()));
+	const QJsonDocument loadDoc = QJsonDocument::fromJson(QByteArray::fromStdString(saveData.toStdString()));
 
-	QString currentTag = dosyayiAc(applicationDirPath + "/namazVakitFiles/version.txt");
-	if(QString tag = loadDoc["tag_name"].toString(); compareTagVersion(tag, currentTag))
+	const QString currentTag = dosyayiAc(applicationDirPath + "/namazVakitFiles/version.txt");
+	if(const QString tag = loadDoc["tag_name"].toString(); compareTagVersion(tag, currentTag))
 	{
 		if (QMessageBox(QMessageBox::Question, "Namaz Vakti Hatırlatıcı", "Yeni sürüm bulundu\nİndirilelim mi?", QMessageBox::No|QMessageBox::Yes).exec() == QMessageBox::No)
 		{

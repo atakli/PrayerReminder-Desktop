@@ -18,7 +18,7 @@
 #include <QStyleFactory>
 #include <QCoreApplication>
 
-QString dosyayiAc(QString fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly);
+QString dosyayiAc(const QString& fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly);
 
 Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Window>())
 {

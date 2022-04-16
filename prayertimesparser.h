@@ -12,8 +12,8 @@ private:
 	const QString applicationDirPath = QCoreApplication::applicationDirPath();
 	bool loadJson();
 	QJsonDocument loadDoc;
-	int Min(QString vakit);
-	int kalan(QStringList list);
+	int Min(const QString& vakit);
+	int kalan(QStringList&& list);
 public:
 	int nextDay();
     PrayerTimesParser();

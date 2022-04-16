@@ -19,12 +19,12 @@ bool PrayerTimesParser::loadJson()
 
     if (!loadFile.open(QIODevice::ReadOnly))
     {
-        QString warningStr = "Couldn't open " + loadFile.fileName() + " save file.";
+		const QString warningStr = "Couldn't open " + loadFile.fileName() + " save file.";
         qWarning(warningStr.toStdString().data());
         return false;
     }
 
-    QByteArray saveData = loadFile.readAll();
+	const QByteArray saveData = loadFile.readAll();
     loadFile.close();
 
 	loadDoc = QJsonDocument::fromJson(saveData);
@@ -32,16 +32,16 @@ bool PrayerTimesParser::loadJson()
 	return true;
 }
 
-int PrayerTimesParser::Min(QString vakit)
+int PrayerTimesParser::Min(const QString& vakit)
 {
 	return vakit.mid(0,2).toInt() * 60 + vakit.mid(3).toInt();
 }
 
-int PrayerTimesParser::kalan(QStringList list)
+int PrayerTimesParser::kalan(QStringList&& list)				// TODO: doğru mu
 {
-	QTime time = QDateTime::currentDateTime().time();
-	int now = time.hour() * 60 + time.minute();
-	QStringList listCopy = list;
+	const QTime time = QDateTime::currentDateTime().time();
+	const int now = time.hour() * 60 + time.minute();
+	const QStringList listCopy = list;
 	for(QString l : list)
 	{
 		if((Min(l) - now) < 0)
@@ -63,12 +63,12 @@ int PrayerTimesParser::kalan(QStringList list)
 
 int PrayerTimesParser::vakitleriCikar(QJsonValue value)
 {
-	QString fajr = value["Imsak"].toString();
-	QString sunRise = value["Gunes"].toString();
-	QString zuhr = value["Ogle"].toString();
-	QString asr = value["Ikindi"].toString();
-	QString maghrib = value["Aksam"].toString();
-	QString isha = value["Yatsi"].toString();
+	const QString fajr = value["Imsak"].toString();
+	const QString sunRise = value["Gunes"].toString();
+	const QString zuhr = value["Ogle"].toString();
+	const QString asr = value["Ikindi"].toString();
+	const QString maghrib = value["Aksam"].toString();
+	const QString isha = value["Yatsi"].toString();
 
 	return kalan({fajr, sunRise, zuhr, asr, maghrib, isha});
 }
@@ -76,16 +76,16 @@ int PrayerTimesParser::nextDay()
 {
 	loadJson();
 
-	QDate dt = QDateTime::currentDateTime().date();
+	const QDate dt = QDateTime::currentDateTime().date();
 
-	int year = dt.year();
-	int month = dt.month();
-	int day = dt.day();
+	const int year = dt.year();
+	const int month = dt.month();
+	const int day = dt.day();
 
-	QString dayWith0 = QString("0" + QString::number(day)).right(2);
-	QString monthWith0 = QString("0" + QString::number(month)).right(2);
+	const QString dayWith0 = QString("0" + QString::number(day)).right(2);
+	const QString monthWith0 = QString("0" + QString::number(month)).right(2);
 
-	QString bugun = dayWith0 + "." + monthWith0 + "." + QString::number(year);
+	const QString bugun = dayWith0 + "." + monthWith0 + "." + QString::number(year);
 
 	uint8_t index = 0;
 	QJsonValue next;
