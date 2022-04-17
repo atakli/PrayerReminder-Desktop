@@ -11,12 +11,14 @@
 #include <QDebug>
 #include <QAction>
 #include <QPainter>
+#include <QFuture>
 #include <QDateTime>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QMessageBox>
 #include <QStyleFactory>
 #include <QCoreApplication>
+#include <QtConcurrent/QtConcurrent>
 
 QString dosyayiAc(const QString& fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly);
 
@@ -118,11 +120,26 @@ void Window::setIcon(uint8_t number)
 
 void Window::showMessage()
 {
-	QMessageBox qmbox;
-//	qmbox.setWindowFlag(Qt::WindowStaysOnTopHint);
-	/*QMessageBox::StandardButton out =*/ qmbox.information(nullptr, tr("حي على الصلاة"), QString("5 dk'dan az kaldı!"));
-}
+//    qmbox.setText("حي على الصلاة");
+    qmbox.setWindowTitle("حي على الصلاة");
+    qmbox.setText("5 dk'dan az kaldı!");
+//    qmbox.resize(1200,12);
+//    qmbox.setInformativeText("5 dk'dan az kaldı!");
+//    qmbox.setWindowFlag(Qt::WindowStaysOnTopHint);
+//	QMessageBox::StandardButton out =
+    qmbox.setWindowModality(Qt::NonModal);
+//    qmbox.information(nullptr, tr("حي على الصلاة"), QString("5 dk'dan az kaldı!"));
+//    msgBox.setWindowFlags(Qt::WindowStaysOnTopHint);
+//    msgBox->setAttribute(Qt::WA_DeleteOnClose);
+//    qmbox.exec();
+//    while (1)
+//    {
+//        QCoreApplication::processEvents();
+        qmbox.show();
+//        QCoreApplication::processEvents();
+//    }
 
+}
 void Window::createActions()
 {
 	quitAction = new QAction(tr("&Çıkış"), this);
@@ -236,11 +253,11 @@ void Window::showTime()
 		if((kalanVakit <= 5) & (!kalanVakitBesOldu))
 		{
 			kalanVakitBesOldu = true;
-//			QFuture<void> future = QtConcurrent::run(this, &Window::showMessage);	// 5 dk uyarısı çıktığında ok'a basmadığım sürece sayaç akmaya devam etmiyor. o yüzden
-//			while(future.isFinished())												// yapmıştım ama olmadı
-//				QCoreApplication::processEvents();
-//			showMessage();
-			emit son5Dk();
+//            QFuture<void> future = QtConcurrent::run(this, &Window::showMessage);	// 5 dk uyarısı çıktığında ok'a basmadığım sürece sayaç akmaya devam etmiyor. o yüzden
+//            while(future.isFinished())												// yapmıştım ama olmadı
+//                QCoreApplication::processEvents();
+//            showMessage();
+            emit son5Dk();
 		}
 	}
 	else

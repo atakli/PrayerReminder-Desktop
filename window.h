@@ -7,6 +7,7 @@
 #ifndef QT_NO_SYSTEMTRAYICON
 
 #include <QElapsedTimer>
+#include <QMessageBox>
 #include <QDialog>
 #include <QWidget>
 
@@ -39,13 +40,13 @@ private slots:
 	void executeIlceKodu(int ilceIndex);
 	void controlUpdate();
 public slots:
-	void showMessage();
-
-	void showTime();
+    void showMessage();
+    void showTime();
 signals:
     void son5Dk();
     void sehirSec(QString sehirKodu);
 private:
+    QMessageBox qmbox;
 	const QString applicationDirPath = QCoreApplication::applicationDirPath();
 	QString ulkeFile, sehirFile, ilceFile;
 	QString ulkeKodu, sehirKodu, ilceKodu;
