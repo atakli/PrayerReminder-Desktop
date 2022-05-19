@@ -205,7 +205,7 @@ void Window::downloadEvkat()
     if(ui->koordinatGroupBox->isChecked() & (boylam != 0.0) & (enlem != 0.0))
     {
         CalcTimes calc;
-        calc.offlineVakitleriHesapla(boylam, enlem);
+        calc.offlineVakitleriHesapla(boylam, enlem);                // TODO: CalcTimes{}.offlineVakitleriHesapla(boylam, enlem); daha mantıklı olabilir
         hasOfflineDownloaded = " ve offline vakitler hesaplandı";
     }
 	QString fileName = applicationDirPath + evkatOnlinePath;
