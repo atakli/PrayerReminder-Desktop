@@ -1,9 +1,7 @@
 #ifndef CALCTIMES_H
 #define CALCTIMES_H
-#include <QString>
-#include <QCoreApplication>
 
-const QString evkatOfflinePath = "/namazVakitFiles/evkatOffline.json";
+#include <QString>
 
 class CalcTimes
 {
@@ -12,7 +10,10 @@ private:
 	double radToDeg(double radian);
 	double moreLess360(double value);
 	double moreLess24(double value);
-	const QString applicationDirPath = QCoreApplication::applicationDirPath();
+    enum class Temkin : int8_t
+    {
+        sunRise = -7, zuhr = 5, asr = 4, maghrib = 7
+    };
 public:
 	void offlineVakitleriHesapla(const double boylam=29.43333330, const double enlem=40.80000000);
 	QString doubleToHrMin(double number);

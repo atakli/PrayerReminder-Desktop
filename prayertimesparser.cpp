@@ -1,5 +1,6 @@
 #include "prayertimesparser.h"
 #include "calcTimes.h"
+#include "util.h"
 
 #include <QJsonObject>
 #include <QTextStream>
@@ -12,10 +13,10 @@ PrayerTimesParser::PrayerTimesParser() {}
 
 bool PrayerTimesParser::loadJson()
 {
-    QFile loadFile(applicationDirPath + evkatOnlinePath);
+    QFile loadFile(Paths::applicationDirPath + Paths::evkatOnlinePath);
 
     if(!loadFile.exists())
-        loadFile.setFileName(applicationDirPath + evkatOfflinePath);
+        loadFile.setFileName(Paths::applicationDirPath + Paths::evkatOfflinePath);
 
     if (!loadFile.open(QIODevice::ReadOnly))
     {
@@ -74,8 +75,10 @@ int PrayerTimesParser::vakitleriCikar(QJsonValue value)
 }
 int PrayerTimesParser::nextDay()
 {
-	loadJson();
-
+    if (!loadJson())
+    {
+        return -1;
+    }
 	const QDate dt = QDateTime::currentDateTime().date();
 
 	const int year = dt.year();

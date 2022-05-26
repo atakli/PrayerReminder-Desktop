@@ -1,15 +1,11 @@
 #ifndef PRAYERTIMESPARSER_H
 #define PRAYERTIMESPARSER_H
 
-#include <QCoreApplication>
 #include <QJsonDocument>
-
-const QString evkatOnlinePath = "/namazVakitFiles/evkatOnline.json";
 
 class PrayerTimesParser
 {
 private:
-	const QString applicationDirPath = QCoreApplication::applicationDirPath();
 	bool loadJson();
 	QJsonDocument loadDoc;
 	int Min(const QString& vakit);

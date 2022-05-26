@@ -2,7 +2,6 @@
 #define HTTPWINDOW_H
 
 #include <QNetworkAccessManager>
-#include <QCoreApplication>
 #include <QProgressDialog>
 #include <QUrl>
 
@@ -15,7 +14,6 @@ QT_END_NAMESPACE
 class HttpWindow : public QDialog
 {
     Q_OBJECT
-
 public:
     explicit HttpWindow(QWidget *parent = nullptr);
 	~HttpWindow();
@@ -30,7 +28,6 @@ private slots:
 #endif
 
 private:
-	const QString applicationDirPath = QCoreApplication::applicationDirPath();
     std::unique_ptr<QFile> openFileForWrite(const QString &fileName);
 
 	QNetworkAccessManager qnam;

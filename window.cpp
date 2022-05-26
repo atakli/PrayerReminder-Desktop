@@ -1,3 +1,4 @@
+#include "util.h"
 #include "window.h"
 #include "calcTimes.h"
 #include "ui_sehirSecwindow.h"
@@ -80,9 +81,9 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 }
 void Window::executeFileNames()
 {
-	ulkeFile = applicationDirPath + "/namazVakitFiles/ulkeler.txt";
-	sehirFile = applicationDirPath + "/namazVakitFiles/sehirler/" + ulkeKodu + ".txt";
-	ilceFile = applicationDirPath + "/namazVakitFiles/sehirler/" + sehirKodu + ".txt";
+    ulkeFile =  Paths::applicationDirPath + "/namazVakitFiles/ulkeler.txt";
+    sehirFile = Paths::applicationDirPath + "/namazVakitFiles/sehirler/" + ulkeKodu + ".txt";
+    ilceFile =  Paths::applicationDirPath + "/namazVakitFiles/sehirler/" + sehirKodu + ".txt";
 }
 
 void Window::setIcon(uint8_t number)
@@ -208,14 +209,14 @@ void Window::downloadEvkat()
         calc.offlineVakitleriHesapla(boylam, enlem);                // TODO: CalcTimes{}.offlineVakitleriHesapla(boylam, enlem); daha mantıklı olabilir
         hasOfflineDownloaded = " ve offline vakitler hesaplandı";
     }
-	QString fileName = applicationDirPath + evkatOnlinePath;
+    QString fileName = Paths::applicationDirPath + Paths::evkatOnlinePath;
 	fetchTimes.downloadSynchronous(fileName, urlSpec);
     ui->textLabel->setText(ui->ilce->currentText() + " için bir aylık vakitler indirildi" + hasOfflineDownloaded);
 }
 
 void Window::controlOnlineEvkatFileExistOtherwiseRequestDownload()
 {
-	if(!QFileInfo::exists(applicationDirPath + evkatOnlinePath))
+    if(!QFileInfo::exists(Paths::applicationDirPath + Paths::evkatOnlinePath))
 		bolgeSec();
 }
 
@@ -246,6 +247,11 @@ void Window::createTrayIcon()
 void Window::showTime()
 {
 	int kalanVakit = ptp.nextDay();
+    if (kalanVakit == -1)
+    {
+        QMessageBox qmbox;
+        qmbox.warning(nullptr, tr("Namaz Vakti Hatırlatıcı"), QString("Dosya acilma hatasi!"));
+    }
 	if(kalanVakit <= 60)			// 60 dk'dan az kalmadıysa gösterme. bi de zaten ikiden fazla basamak göstermeye uygun değil ve gerek de yok
 	{
 		trayIcon->setVisible(true);

@@ -53,7 +53,9 @@
 #ifndef QT_NO_SYSTEMTRAYICON
 
 #include <QMessageBox>
+#include <QFileInfo>
 #include "window.h"
+#include "util.h"
 #include "fetchtimes.h"
 
 //#include <QtConcurrent/QtConcurrent>
@@ -71,6 +73,8 @@ int main(int argc, char *argv[])
     Q_INIT_RESOURCE(systray);
 
 	QApplication app(argc, argv);
+
+    Paths::applicationDirPath = QFileInfo(argv[0]).absolutePath();
 
 	if (!QSystemTrayIcon::isSystemTrayAvailable())
 	{

@@ -1,7 +1,6 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include <QCoreApplication>
 #include <QSystemTrayIcon>
 
 #ifndef QT_NO_SYSTEMTRAYICON
@@ -47,16 +46,15 @@ signals:
     void sehirSec(QString sehirKodu);
 private:
     QMessageBox qmbox;
-	const QString applicationDirPath = QCoreApplication::applicationDirPath();
 	QString ulkeFile, sehirFile, ilceFile;
 	QString ulkeKodu, sehirKodu, ilceKodu;
 	void controlOnlineEvkatFileExistOtherwiseRequestDownload();
 	PrayerTimesParser ptp;
 	UpdateController update;
     bool compareTagVersion(QString tag, QString currentTag);
-	HttpWindow fetchTimes;	// TODO: önceki hali gibi olup da signal slot ile filan HttpWindow'dan Window'a sinyal gönderip indirme işlemi bitmeden fetchTimes objesinin ömrünü doldurmasını
-	std::shared_ptr<Ui::Window> ui;	// men edebilirim
-	bool kalanVakitBesOldu = false;
+    HttpWindow fetchTimes;	// TODO: önceki hali gibi olup da signal slot ile filan HttpWindow'dan Window'a sinyal gönderip indirme işlemi bitmeden fetchTimes objesinin ömrünü doldurmasını men edebilirim
+    std::shared_ptr<Ui::Window> ui;
+    bool kalanVakitBesOldu = false;
 	void executeFileNames();
 	void ilkBolgeSecimi();
 	void setIcon(uint8_t number);    // önceden slot'tu

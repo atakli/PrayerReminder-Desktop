@@ -1,4 +1,6 @@
 #include "updatecontroller.h"
+#include "calcTimes.h"
+#include "util.h"
 
 #include <QJsonDocument>
 #include <QMessageBox>
@@ -52,7 +54,7 @@ bool UpdateController::compareTagVersion(const QString& tag, QString currentTag)
 
 void UpdateController::isNewVersionAvailable()
 {
-	const QString apiPath = applicationDirPath + "/api.json";
+    const QString apiPath = Paths::applicationDirPath + "/api.json";
 	const QString newUrl = "https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest";
 	fetchTimes.downloadSynchronous(apiPath, newUrl);
 
@@ -60,7 +62,7 @@ void UpdateController::isNewVersionAvailable()
 //	QJsonDocument loadDoc = QJsonDocument::fromVariant(saveData);
 	const QJsonDocument loadDoc = QJsonDocument::fromJson(QByteArray::fromStdString(saveData.toStdString()));
 
-	const QString currentTag = dosyayiAc(applicationDirPath + "/namazVakitFiles/version.txt");
+    const QString currentTag = dosyayiAc(Paths::applicationDirPath + "/namazVakitFiles/version.txt");
 	if(const QString tag = loadDoc["tag_name"].toString(); compareTagVersion(tag, currentTag))
 	{
 		if (QMessageBox(QMessageBox::Question, "Namaz Vakti Hatırlatıcı", "Yeni sürüm bulundu\nİndirilelim mi?", QMessageBox::No|QMessageBox::Yes).exec() == QMessageBox::No)

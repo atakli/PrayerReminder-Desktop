@@ -20,7 +20,6 @@ public:
 private:
 	QString osName;
 	HttpWindow fetchTimes;
-	const QString applicationDirPath = QCoreApplication::applicationDirPath();
 	bool compareTagVersion(const QString& tag, QString currentTag);
 };
 

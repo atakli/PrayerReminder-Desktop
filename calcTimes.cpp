@@ -1,4 +1,6 @@
-#include <calcTimes.h>
+#include "calcTimes.h"
+#include "util.h"
+
 #include <iostream>
 #include <math.h>
 
@@ -12,11 +14,6 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 //#include <QGeoCoordinate>
-
-enum class Temkin : int8_t
-{
-	sunRise = -7, zuhr = 5, asr = 4, maghrib = 7
-};
 
 double CalcTimes::degToRad(double degree)
 {
@@ -162,7 +159,7 @@ void CalcTimes::offlineVakitleriHesapla(const double boylam, const double enlem)
 	}
 
 	QJsonDocument doc(vakitArray);
-	QFile jsonFile(applicationDirPath + evkatOfflinePath);				// TODO: bütün qfile'lara bak close etmiş miyim
+    QFile jsonFile(Paths::applicationDirPath + Paths::evkatOfflinePath);				// TODO: bütün qfile'lara bak close etmiş miyim
 	jsonFile.open(QFile::WriteOnly);
 	jsonFile.write(doc.toJson());
 	jsonFile.close();
