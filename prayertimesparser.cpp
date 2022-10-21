@@ -1,6 +1,5 @@
 #include "prayertimesparser.h"
 #include "calcTimes.h"
-#include "util.h"
 
 #include <QJsonObject>
 #include <QTextStream>
@@ -11,12 +10,15 @@
 
 PrayerTimesParser::PrayerTimesParser() {}
 
+extern QString evkatOnlinePath;
+extern QString evkatOfflinePath;
+
 bool PrayerTimesParser::loadJson()
 {
-    QFile loadFile(Paths::applicationDirPath + Paths::evkatOnlinePath);
+    QFile loadFile(evkatOnlinePath);
 
     if(!loadFile.exists())
-        loadFile.setFileName(Paths::applicationDirPath + Paths::evkatOfflinePath);
+        loadFile.setFileName(evkatOfflinePath);
 
     if (!loadFile.open(QIODevice::ReadOnly))
     {
@@ -43,13 +45,13 @@ int PrayerTimesParser::kalan(QStringList&& list)				// TODO: doğru mu
 	const QTime time = QDateTime::currentDateTime().time();
 	const int now = time.hour() * 60 + time.minute();
 	const QStringList listCopy = list;
-	for(QString l : list)
+    for(const QString& l : list)
 	{
 		if((Min(l) - now) < 0)
 			list.removeOne(l);
 	}
 	QVector<int> listInt;
-	for(QString l : list)
+    for(const QString& l : list)
 	{
 		listInt.push_back(Min(l));
 	}

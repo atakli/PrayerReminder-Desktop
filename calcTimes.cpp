@@ -15,6 +15,13 @@
 #include <QJsonDocument>
 //#include <QGeoCoordinate>
 
+
+#ifdef WIN32
+QString evkatOfflinePath = "%userprofile%\\documents\\.namazVakitFiles\\evkatOffline.json";
+#elif __linux__
+QString evkatOnlinePath = "~/.namazVakitFiles/evkatOnline.json";
+#endif
+
 double CalcTimes::degToRad(double degree)
 {
     return ((3.1415926 / 180) * degree);
@@ -48,6 +55,7 @@ double CalcTimes::moreLess24(double value)	//make sure a value is between 0 and 
     }
     return value;
 }
+
 QString CalcTimes::doubleToHrMin(double number)
 {
 	const int hours = floor(moreLess24(number));
@@ -128,7 +136,7 @@ void CalcTimes::offlineVakitleriHesapla(const double boylam, const double enlem)
 	QJsonObject vakitObject;
 	QJsonArray vakitArray;
 
-	for(int i=0; i<30; ++i)
+    for(int i = 0; i < number_of_days_to_calculate; ++i)
 	{
 		const int year = dt.year();
 		const int month = dt.month();
@@ -159,7 +167,7 @@ void CalcTimes::offlineVakitleriHesapla(const double boylam, const double enlem)
 	}
 
 	QJsonDocument doc(vakitArray);
-    QFile jsonFile(Paths::applicationDirPath + Paths::evkatOfflinePath);				// TODO: bütün qfile'lara bak close etmiş miyim
+    QFile jsonFile(evkatOfflinePath);				// TODO: bütün qfile'lara bak close etmiş miyim
 	jsonFile.open(QFile::WriteOnly);
 	jsonFile.write(doc.toJson());
 	jsonFile.close();

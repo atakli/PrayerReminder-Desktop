@@ -1,7 +1,7 @@
 #ifndef UPDATECONTROLLER_H
 #define UPDATECONTROLLER_H
 
-#include "fetchtimes.h"
+#include "httpmanager.h"
 
 #include <QWidget>
 #include <QObject>
@@ -11,16 +11,25 @@ class UpdateController : public QObject
 {
     Q_OBJECT
 public:
-	UpdateController();
-//	~UpdateController();
-	void isNewVersionAvailable();
-//	void checkNewVersionNow();
-    bool isChecked;
-    void checkForUpdates();
+    void isNewVersionAvailable();
+    void setParameters(const QString& apiUrl, const QString& appName, const QString& downloadFileName);
+    void downloadFile(QString fileName, QString urlSpec, const QString& downloadFileName);
 private:
-	QString osName;
-	HttpWindow fetchTimes;
-	bool compareTagVersion(const QString& tag, QString currentTag);
+    QString osName;
+    QString apiUrl;
+    QString appName;
+    HttpManager httpManager;
+    QString downloadFileName;
+    bool isParametersSet = false;
+#ifdef WIN32
+    QString apiPath = "%userprofile%\\documents\\.namazVakitFiles\\api.json";
+    QString versionFileName = "%userprofile%\\documents\\.namazVakitFiles\\version.txt";
+#elif __linux__
+    QString apiPath = "~/.namazVakitFiles/api.json";
+    QString versionFileName = "~/.namazVakitFiles/version.txt";
+#endif
+    bool compareTagVersion(const QString& tag, const QString& currentTag);
+    QString openFile(const QString& fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly);
 };
 
 #endif // UPDATECONTROLLER_H

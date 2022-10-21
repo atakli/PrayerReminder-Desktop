@@ -12,7 +12,7 @@
 
 #include "prayertimesparser.h"
 #include "updatecontroller.h"
-#include "fetchtimes.h"
+//#include "fetchtimes.h"
 
 #include <memory>
 
@@ -46,13 +46,14 @@ signals:
     void sehirSec(QString sehirKodu);
 private:
     QMessageBox qmbox;
+    const char* appName = "Namaz Vakti Hatırlatıcı";
 	QString ulkeFile, sehirFile, ilceFile;
 	QString ulkeKodu, sehirKodu, ilceKodu;
 	void controlOnlineEvkatFileExistOtherwiseRequestDownload();
 	PrayerTimesParser ptp;
-	UpdateController update;
+    UpdateController update;
     bool compareTagVersion(QString tag, QString currentTag);
-    HttpWindow fetchTimes;	// TODO: önceki hali gibi olup da signal slot ile filan HttpWindow'dan Window'a sinyal gönderip indirme işlemi bitmeden fetchTimes objesinin ömrünü doldurmasını men edebilirim
+//    HttpWindow fetchTimes;	// TODO: önceki hali gibi olup da signal slot ile filan HttpWindow'dan Window'a sinyal gönderip indirme işlemi bitmeden fetchTimes objesinin ömrünü doldurmasını men edebilirim
     std::shared_ptr<Ui::Window> ui;
     bool kalanVakitBesOldu = false;
 	void executeFileNames();

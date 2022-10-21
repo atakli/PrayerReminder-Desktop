@@ -6,7 +6,6 @@
 struct Paths
 {
     inline static const QString evkatOfflinePath = "/namazVakitFiles/evkatOffline.json";
-//    inline static const QString applicationDirPath = QApplication::applicationDirPath();
     inline static QString applicationDirPath;
     inline static const QString evkatOnlinePath = "/namazVakitFiles/evkatOnline.json";
 };

@@ -10,6 +10,7 @@ private:
 	double radToDeg(double radian);
 	double moreLess360(double value);
 	double moreLess24(double value);
+    const static int number_of_days_to_calculate = 30;
     enum class Temkin : int8_t
     {
         sunRise = -7, zuhr = 5, asr = 4, maghrib = 7

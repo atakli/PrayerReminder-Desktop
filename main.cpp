@@ -56,7 +56,7 @@
 #include <QFileInfo>
 #include "window.h"
 #include "util.h"
-#include "fetchtimes.h"
+//#include "fetchtimes.h"
 
 //#include <QtConcurrent/QtConcurrent>
 #include <QApplication>
@@ -73,8 +73,6 @@ int main(int argc, char *argv[])
     Q_INIT_RESOURCE(systray);
 
 	QApplication app(argc, argv);
-
-    Paths::applicationDirPath = QFileInfo(argv[0]).absolutePath();
 
 	if (!QSystemTrayIcon::isSystemTrayAvailable())
 	{
