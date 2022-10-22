@@ -12,7 +12,6 @@ private:
 	int kalan(QStringList&& list);
 public:
 	int nextDay();
-    PrayerTimesParser();
 	int vakitleriCikar(QJsonValue value);
 };
 

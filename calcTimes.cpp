@@ -12,63 +12,37 @@
 #include <QJsonArray>
 #include <QJsonValue>
 #include <QJsonObject>
+#include <QMessageBox>
 #include <QJsonDocument>
 //#include <QGeoCoordinate>
 
-
-#ifdef WIN32
-QString evkatOfflinePath = "%userprofile%\\documents\\.namazVakitFiles\\evkatOffline.json";
-#elif __linux__
-QString evkatOnlinePath = "~/.namazVakitFiles/evkatOnline.json";
-#endif
-
-double CalcTimes::degToRad(double degree)
-{
-    return ((3.1415926 / 180) * degree);
-}
-
-double CalcTimes::radToDeg(double radian)
-{
-    return (radian * (180/3.1415926));
-}
-double CalcTimes::moreLess360(double value)	//make sure a value is between 0 and 360
-{
-    while(value > 360 || value < 0)
-    {
-        if(value > 360)
-            value -= 360;
-
-        else if (value <0)
-            value += 360;
-    }
-    return value;
-}
-double CalcTimes::moreLess24(double value)	//make sure a value is between 0 and 24
-{
-    while(value > 24 || value < 0)
-    {
-        if(value > 24)
-            value -= 24;
-
-        else if (value <0)
-            value += 24;
-    }
-    return value;
-}
-
-QString CalcTimes::doubleToHrMin(double number)
-{
-	const int hours = floor(moreLess24(number));
-	const int minutes = floor(moreLess24(number - hours) * 60);
-	return QString("0" + QString::number(hours)).right(2) + ":" + QString("0" + QString::number(minutes)).right(2);
-}
+const static int number_of_days_to_calculate = 30;
+QString evkatOfflinePath = "namazVakitFiles/evkatOnline.json";
 
 void CalcTimes::calcPrayerTimes(const int year, const int month, const int day,
 					 const double longitude, const double latitude, const int timeZone,
-					 const double fajrTwilight, const double ishaTwilight,
-                     double &fajrTime, double &sunRiseTime, double &zuhrTime,
-                     double &asrTime, double &maghribTime, double &ishaTime)
+                     const double fajrTwilight, const double ishaTwilight, std::array<double, 6>& vakitler)
 {
+    auto degToRad = [](double degree)
+    {
+        return ((3.1415926 / 180) * degree);
+    };
+    auto radToDeg = [](double radian)
+    {
+        return (radian * (180/3.1415926));
+    };
+    auto moreLess360 = [](double value)	//make sure a value is between 0 and 360
+    {
+        while(value > 360 || value < 0)
+        {
+            if(value > 360)
+                value -= 360;
+
+            else if (value <0)
+                value += 360;
+        }
+        return value;
+    };
 	const double D = (367 * year) - ((year + (int)((month + 9) / 12)) * 7 / 4) + (((int)(275 * month / 9)) + day - 730531.5);
 
 	const double L = moreLess360(280.461 + 0.9856474 * D);
@@ -96,7 +70,7 @@ void CalcTimes::calcPrayerTimes(const int year, const int month, const int day,
     //////////////////////////////////////////
 
     // 2) Zuhr Time [Local noon]
-    zuhrTime = UT_Noon / 15 + timeZone;
+    double zuhrTime = UT_Noon / 15 + timeZone;
 
     // Asr Hanafi
 	//double Asr_Alt = radToDeg(atan(2 + tan(degToRad(abs(latitude - Dec)))));
@@ -105,33 +79,52 @@ void CalcTimes::calcPrayerTimes(const int year, const int month, const int day,
     double Asr_Alt = radToDeg(atan(1 + tan(degToRad(abs(latitude - Dec)))));
 	const double Asr_Arc = radToDeg(acos((sin(degToRad(90 - Asr_Alt)) - sin(degToRad(Dec)) * sin(degToRad(latitude))) / (cos(degToRad(Dec)) * cos(degToRad(latitude))))) / 15;
     // 3) Asr Time
-    asrTime = zuhrTime + Asr_Arc;
+    vakitler[3] = zuhrTime + Asr_Arc;
 
     // 1) Shorouq Time
-    sunRiseTime = zuhrTime - (Durinal_Arc / 15);
+    vakitler[1] = zuhrTime - (Durinal_Arc / 15);
 
     // 4) Maghrib Time
-    maghribTime = zuhrTime + (Durinal_Arc / 15);
+    vakitler[4] = zuhrTime + (Durinal_Arc / 15);
 
 	const double Esha_Arc = radToDeg(acos((sin(degToRad(ishaTwilight)) - sin(degToRad(Dec)) * sin(degToRad(latitude))) / (cos(degToRad(Dec)) * cos(degToRad(latitude)))));
     // 5) Isha Time
-    ishaTime = zuhrTime + (Esha_Arc / 15);
+    vakitler[5] = zuhrTime + (Esha_Arc / 15);
 
     // 0) Fajr Time
 	const double Fajr_Arc = radToDeg(acos((sin(degToRad(fajrTwilight)) - sin(degToRad(Dec)) * sin(degToRad(latitude))) / (cos(degToRad(Dec)) * cos(degToRad(latitude)))));
-    fajrTime = zuhrTime - (Fajr_Arc / 15);
+    vakitler[0] = zuhrTime - (Fajr_Arc / 15);
 
 	// https://vakithesaplama.diyanet.gov.tr/temkin.php // imsak ve yatsıda temkin yok
-	sunRiseTime+= static_cast<double>(Temkin::sunRise) / 60;	// böyle uzun uzun yazmayayım dedim ama o zaman da readability azalır. hem zaten şimdi compiler
+    vakitler[1] += static_cast<double>(Temkin::sunRise) / 60;	// böyle uzun uzun yazmayayım dedim ama o zaman da readability azalır. hem zaten şimdi compiler
 	zuhrTime += static_cast<double>(Temkin::zuhr) / 60;			// kardeş bunu optimize ediyodur muhtemelen. çünkü her zaman aynı sonucu veriyor
-	asrTime += static_cast<double>(Temkin::asr) / 60;
-	maghribTime += static_cast<double>(Temkin::maghrib) / 60;
+    vakitler[3] += static_cast<double>(Temkin::asr) / 60;
+    vakitler[4] += static_cast<double>(Temkin::maghrib) / 60;
+    vakitler[2] = zuhrTime;
 }
 void CalcTimes::offlineVakitleriHesapla(const double boylam, const double enlem)
 {
+    auto moreLess24 = [](double value)	//make sure a value is between 0 and 24
+    {
+        while(value > 24 || value < 0)
+        {
+            if(value > 24)
+                value -= 24;
+            else if (value < 0)
+                value += 24;
+        }
+        return value;
+    };
+    auto doubleToHrMin = [&moreLess24](double number)
+    {
+        const int hours = floor(moreLess24(number));
+        const int minutes = floor(moreLess24(number - hours) * 60);
+        return QString("0" + QString::number(hours)).right(2) + ":" + QString("0" + QString::number(minutes)).right(2);
+    };
+
 	QDate dt = QDateTime::currentDateTime().date();
 
-	double fajr, sunRise, zuhr, asr, maghrib, isha;
+    std::array<double, 6> vakitler;
 
 	QJsonObject vakitObject;
 	QJsonArray vakitArray;
@@ -144,31 +137,29 @@ void CalcTimes::offlineVakitleriHesapla(const double boylam, const double enlem)
 
 		dt = dt.addDays(1);
 
-        calcPrayerTimes(year, month, day, boylam, enlem, 3, -18, -17, fajr, sunRise, zuhr, asr, maghrib, isha);
+        calcPrayerTimes(year, month, day, boylam, enlem, 3, -18, -17, vakitler);
 
 		const QString dayWith0 = QString("0" + QString::number(day)).right(2);
 		const QString monthWith0 = QString("0" + QString::number(month)).right(2);
 
 		QString toBeInserted = dayWith0 + "." + monthWith0 + "." + QString::number(year);
 		vakitObject.insert("MiladiTarihKisa", QJsonValue::fromVariant(toBeInserted));
-		toBeInserted = doubleToHrMin(fajr);
-		vakitObject.insert("Imsak", QJsonValue::fromVariant(toBeInserted));
-		toBeInserted = doubleToHrMin(sunRise);
-		vakitObject.insert("Gunes", QJsonValue::fromVariant(toBeInserted));
-		toBeInserted = doubleToHrMin(zuhr);
-		vakitObject.insert("Ogle", QJsonValue::fromVariant(toBeInserted));
-		toBeInserted = doubleToHrMin(asr);
-		vakitObject.insert("Ikindi", QJsonValue::fromVariant(toBeInserted));
-		toBeInserted = doubleToHrMin(maghrib);
-		vakitObject.insert("Aksam", QJsonValue::fromVariant(toBeInserted));
-		toBeInserted = doubleToHrMin(isha);
-		vakitObject.insert("Yatsi", QJsonValue::fromVariant(toBeInserted));
+
+        std::array<QString, 6> vakitNames = {"Imsak", "Gunes", "Ogle", "Ikindi", "Aksam", "Yatsi"};
+        for (int i = 0; i < vakitler.size(); ++i)
+        {
+            toBeInserted = doubleToHrMin(vakitler[i]);
+            vakitObject.insert(vakitNames[i], QJsonValue::fromVariant(toBeInserted));
+        }
 		vakitArray.push_back(vakitObject);
 	}
-
 	QJsonDocument doc(vakitArray);
     QFile jsonFile(evkatOfflinePath);				// TODO: bütün qfile'lara bak close etmiş miyim
-	jsonFile.open(QFile::WriteOnly);
+    if (!jsonFile.open(QFile::WriteOnly))
+    {
+        std::cout << "cannot open " << evkatOfflinePath.toStdString() << std::endl;
+        QMessageBox{}.critical(nullptr, evkatOfflinePath, "Program güncel");
+    }
 	jsonFile.write(doc.toJson());
 	jsonFile.close();
 }

@@ -8,8 +8,6 @@
 #include <QFile>
 #include <QDir>
 
-PrayerTimesParser::PrayerTimesParser() {}
-
 extern QString evkatOnlinePath;
 extern QString evkatOfflinePath;
 

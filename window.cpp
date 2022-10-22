@@ -25,23 +25,21 @@ QString dosyayiAc(const QString& fileName, QIODevice::OpenModeFlag flag=QIODevic
 {
     QFile file(fileName);
     if (!file.open(flag | QIODevice::Text))
+    {
+        qDebug() << "cannot open " << fileName;
         return "";							// TODO: buraya girerse ne olcak?
+    }
     QString text = file.readAll();
     file.close();
     return text;
 }
 
-#ifdef WIN32
-QString evkatOnlinePath = "%userprofile%\\documents\\.namazVakitFiles\\evkatOnline.json";
-#elif __linux__
-QString evkatOnlinePath = "~/.namazVakitFiles/evkatOnline.json";
-#endif
+QString evkatOnlinePath = "namazVakitFiles/evkatOnline.json";
 
 Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Window>())
 {
 	ui->setupUi(this);
 
-//    QApplication::setStyle(QStyleFactory::create("Fusion"));
 #ifdef linux
     this->setMaximumHeight(200);
 #endif
@@ -53,36 +51,15 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
     createActions();
     createTrayIcon();
 
-//    if(!QFileInfo::exists(applicationDirPath + evkatOfflinePath))
-//    {
-//		CalcTimes calc;
-//		calc.offlineVakitleriHesapla();
-//    }
-
-    // offlinevakitler yok uyarısı verilebilir
-
-//	connect(trayIcon, &QSystemTrayIcon::messageClicked, this, &Window::onClickedOK);
-//    connect(trayIcon, &QWidget::closeEvent, this, &Window::addClockToThread);
-//	addClockToThread();
-//	QFuture<void> futureClock = QtConcurrent::run(this, &Window::repeatClockRequest);
-
     QTimer *timer = new QTimer(this);
-//	std::unique_ptr<QTimer> timer = std::make_unique<QTimer>(this);
-    connect(timer, &QTimer::timeout, this, &Window::showTime);
+    connect(timer, &QTimer::timeout, this, &Window::showTime);      // evkatOnline.json başta olmadığında heralde burdan dolayı sıkıntı oluyor. yoksa oluşturması lazım
     timer->start(1000);
 
     update.setParameters("https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest", appName, "NamazVaktiHatirlatici.zip");
     update.isNewVersionAvailable();
 
-//	QTimer *timer1 = new QTimer(this);
-//	connect(timer1, &QTimer::timeout, update, &UpdateController::isNewVersionAvailable);
-//	timer1->start(1000 * 60 * 60 * 24); // günde bir yeni versiyon kontrolü
-
     ui->koordinatGroupBox->setChecked(false);
 	connect(ui->hesaplaButton, &QAbstractButton::clicked, this, &Window::downloadEvkat);
-//	connect(ui->koordinatGroupBox, &QGroupBox::toggled, this, &Window::downloadEvkat);
-//	connect(this, &QWidget::close, ui->textLabel, &QLabel::clear);	// close fonksiyonu signal değil, slot
-//    connect(ui->ulke, SIGNAL(currentTextChanged(QString)), [this](QString ulke) {fillCities(ulke);});
 	connect(ui->ulke, SIGNAL(currentIndexChanged(int)), SLOT(fillCities(int)));
 	connect(ui->sehir, SIGNAL(currentIndexChanged(int)), SLOT(fillTown(int)));
 	connect(ui->ilce, SIGNAL(currentIndexChanged(int)), SLOT(executeIlceKodu(int)));
@@ -103,58 +80,24 @@ void Window::executeFileNames()
 
 void Window::setIcon(uint8_t number)
 {
-#ifdef linux                // TODO: hoş olmadı
+#ifdef linux                // TODO: hoş olmadı. zaten sıkıntı başka yerde sanırım, ubuntuyla ilgili bişey. bazen de (çoğu zaman) ikon ve message box'lar küçük çıkıyo
 	QPixmap pixmap(35,35);
 #else
     QPixmap pixmap(16,16);
 #endif
     pixmap.fill(Qt::yellow);
     QPainter painter(&pixmap);
-//    QPainter painter;
-//	QFont font = painter.font();
-//	font.setPixelSize(28);
-//	painter.setFont(font);
 	const QString string = QString::number(number);
-//	const QRect rectangle = QRect(0, 0, 100, 50);
-//	QRect boundingRect;
-//    painter.drawText(0,0,16,16, Qt::TextDontClip, string);
     painter.drawText(pixmap.rect(), Qt::TextDontClip | Qt::AlignCenter, string);
-//    painter.drawText(pixmap.rect(), Qt::AlignCenter, string); // olmadı
-//	painter.drawText(string); // olmadı
-
-//	QPen pen = painter.pen();
-//	pen.setStyle(Qt::DotLine);
-//	painter.setPen(pen);
-//	painter.drawRect(boundingRect.adjusted(0, 0, -pen.width(), -pen.width()));
-
-//	pen.setStyle(Qt::DashLine);
-//	painter.setPen(pen);
-//	painter.drawRect(rectangle.adjusted(0, 0, -pen.width(), -pen.width()));
-
     trayIcon->setIcon(pixmap);  // QIcon(pixmap) desen de oluyor
 }
 
 void Window::showMessage()
 {
-//    qmbox.setText("حي على الصلاة");
     qmbox.setWindowTitle("حي على الصلاة");
     qmbox.setText("5 dk'dan az kaldı!");
-//    qmbox.resize(1200,12);
-//    qmbox.setInformativeText("5 dk'dan az kaldı!");
-//    qmbox.setWindowFlag(Qt::WindowStaysOnTopHint);
-//	QMessageBox::StandardButton out =
     qmbox.setWindowModality(Qt::NonModal);
-//    qmbox.information(nullptr, tr("حي على الصلاة"), QString("5 dk'dan az kaldı!"));
-//    msgBox.setWindowFlags(Qt::WindowStaysOnTopHint);
-//    msgBox->setAttribute(Qt::WA_DeleteOnClose);
-//    qmbox.exec();
-//    while (1)
-//    {
-//        QCoreApplication::processEvents();
-        qmbox.show();
-//        QCoreApplication::processEvents();
-//    }
-
+    qmbox.show();
 }
 void Window::createActions()
 {
@@ -220,8 +163,7 @@ void Window::downloadEvkat()
     QString hasOfflineDownloaded = "";
     if(ui->koordinatGroupBox->isChecked() & (boylam != 0.0) & (enlem != 0.0))
     {
-        CalcTimes calc;
-        calc.offlineVakitleriHesapla(boylam, enlem);                // TODO: CalcTimes{}.offlineVakitleriHesapla(boylam, enlem); daha mantıklı olabilir
+        CalcTimes{}.offlineVakitleriHesapla(boylam, enlem);                // TODO: CalcTimes{}.offlineVakitleriHesapla(boylam, enlem); daha mantıklı olabilir
         hasOfflineDownloaded = " ve offline vakitler hesaplandı";
     }
 //	fetchTimes.downloadSynchronous(fileName, urlSpec);

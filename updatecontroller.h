@@ -21,13 +21,8 @@ private:
     HttpManager httpManager;
     QString downloadFileName;
     bool isParametersSet = false;
-#ifdef WIN32
-    QString apiPath = "%userprofile%\\documents\\.namazVakitFiles\\api.json";
-    QString versionFileName = "%userprofile%\\documents\\.namazVakitFiles\\version.txt";
-#elif __linux__
-    QString apiPath = "~/.namazVakitFiles/api.json";
-    QString versionFileName = "~/.namazVakitFiles/version.txt";
-#endif
+    QString apiPath = "namazVakitFiles/api.json";
+    QString versionFileName = "namazVakitFiles/version.txt";
     bool compareTagVersion(const QString& tag, const QString& currentTag);
     QString openFile(const QString& fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly);
 };
