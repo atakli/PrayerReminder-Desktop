@@ -24,7 +24,7 @@ private:
     QString apiPath = "namazVakitFiles/api.json";
     QString versionFileName = "namazVakitFiles/version.txt";
     bool compareTagVersion(const QString& tag, const QString& currentTag);
-    QString openFile(const QString& fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly);
+	QString openFile(const QString& fileName, QIODevice::OpenModeFlag flag = QIODevice::ReadOnly);
 };
 
 #endif // UPDATECONTROLLER_H

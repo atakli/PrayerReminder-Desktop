@@ -20,15 +20,17 @@ public:
     explicit HttpManager(QWidget *parent = nullptr);
 	void downloadFile(const QString fileName, const QString urlSpec);
     void downloadSynchronous(QString fileName, QString urlSpec, const QString& downloadFileName);
+	bool hasError;
 private slots:
 	void httpFinished();
 	void httpReadyRead();
+	void connectionControl(QNetworkReply::NetworkError error);
 #if QT_CONFIG(ssl)
 	void sslErrors(const QList<QSslError> &errors);
 #endif
 
 private:
-    std::unique_ptr<QFile> openFileForWrite(const QString &fileName);
+	std::unique_ptr<QFile> openFileForWrite(const QString &fileName, QIODevice::OpenModeFlag flag = QIODevice::WriteOnly);
 
     void startRequest(const QUrl &requestedUrl);
 	QNetworkAccessManager qnam;

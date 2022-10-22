@@ -48,7 +48,8 @@ void UpdateController::isNewVersionAvailable()
         return;
     }
     httpManager.downloadSynchronous(apiPath, apiUrl, "");
-
+	if (httpManager.hasError)
+		return;
     const QString saveData = openFile(apiPath);
 //	QJsonDocument loadDoc = QJsonDocument::fromVariant(saveData);
     const QJsonDocument loadDoc = QJsonDocument::fromJson(QByteArray::fromStdString(saveData.toStdString()));
@@ -72,6 +73,6 @@ void UpdateController::isNewVersionAvailable()
     }
 	else
 	{
-        QMessageBox::information(nullptr, tr(appName.toStdString().c_str()), "Program güncel");
+		QMessageBox::information(nullptr, tr(appName.toStdString().c_str()), "Program güncel");
     }
 }

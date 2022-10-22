@@ -19,12 +19,19 @@ void HttpManager::startRequest(const QUrl &requestedUrl)
 //	req.setHeader(QNetworkRequest::LocationHeader, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0");
 
 	reply.reset(qnam.get(req));
-	QEventLoop eventLoop;
     connect(reply.get(), &QIODevice::readyRead, this, &HttpManager::httpReadyRead);
 #if QT_CONFIG(ssl)
-    connect(reply.get(), &QNetworkReply::sslErrors, this, &HttpManager::sslErrors);
+	connect(reply.get(), &QNetworkReply::sslErrors, this, &HttpManager::sslErrors);
 #endif
+	QEventLoop eventLoop;
+
+//	if (bytes == 0)
+//	{
+//		QMessageBox::warning(nullptr, tr("Yeni versiyon"), QString("İnternete bağlanamıyoruz"));
+//	}
 	connect(reply.get(), SIGNAL(finished()), &eventLoop, SLOT(quit()));
+//	connect(reply.get(), &QNetworkReply::error, this, &HttpManager::connectionControl);
+	connect(reply.get(), QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, &HttpManager::connectionControl);
 	eventLoop.exec();
 	httpFinished();
 }
@@ -47,7 +54,7 @@ void HttpManager::downloadSynchronous(QString fileName, QString urlSpec, const Q
 		directory = QFileDialog::getExistingDirectory(this, tr("Yeni sürümü indireceğiniz klasörü seçin"));
 		if(directory == "")
 			return;
-        fileName = directory + "/" + downloadFileName;  // TODO: burda seperator buydu neydi o hale getir
+		fileName = directory + "/" + downloadFileName;  // TODO: burda seperator muydu neydi o hale getir
 	}
 
 	QUrl url = QUrl::fromUserInput(urlSpec);
@@ -65,12 +72,12 @@ void HttpManager::downloadSynchronous(QString fileName, QString urlSpec, const Q
 	}
 }
 
-std::unique_ptr<QFile> HttpManager::openFileForWrite(const QString &fileName)
+std::unique_ptr<QFile> HttpManager::openFileForWrite(const QString &fileName, QIODevice::OpenModeFlag flag)
 {
 	std::unique_ptr<QFile> file = std::make_unique<QFile>(fileName);
-	if (!file->open(QIODevice::WriteOnly))
+	if (!file->open(flag))
 	{
-        QMessageBox::information(this, tr("Error"), tr("Dosyayı kaydedemiyoruz: %1: %2.").arg(QDir::toNativeSeparators(fileName), file->errorString()));
+		QMessageBox::information(this, tr("Hata!"), tr("Dosyayı açamıyoruz: %1: %2.").arg(QDir::toNativeSeparators(fileName), file->errorString()));
 		return nullptr;
 	}
 	return file;
@@ -88,8 +95,20 @@ void HttpManager::httpFinished()
 void HttpManager::httpReadyRead()
 {
     // This slot gets called every time the QNetworkReply has new data. We read all of its new data and write it into the file. That way we use less RAM than when reading it at the finished() signal of the QNetworkReply
+//	auto bytes = reply->bytesAvailable();
 	if (file)
 		file->write(reply->readAll());
+//	qDebug() << "bytes: " << bytes;
+}
+
+void HttpManager::connectionControl(QNetworkReply::NetworkError error)
+{
+	QMessageBox::warning(nullptr, tr("Hata!"), QString("İnternete bağlanamadık. İnternet bağlantınızı kontrol edin."));
+	hasError = true;	// internet olmadığında HostNotFoundError oldu
+//	QString logFileName = "logs.txt";
+//	std::unique_ptr<QFile> logFile = openFileForWrite(logFileName, QIODevice::Append);
+//	QString errorString = QDateTime::currentDateTime().toString() + " -> " + QVariant(error).toString();
+//	logFile->write(errorString.toStdString().c_str());
 }
 
 #if QT_CONFIG(ssl)
