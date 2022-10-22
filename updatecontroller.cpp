@@ -44,8 +44,7 @@ void UpdateController::isNewVersionAvailable()
 {
     if (!isParametersSet)
     {
-        QMessageBox qmbox;
-        qmbox.warning(nullptr, tr(appName.toStdString().c_str()), "Güncelleme Kontrolcüsüne parametreler geçilmemiş\nGüncelleme olup olmadığını kontrol edebilmek için gerekli parametreleri geçip tekrar deneyin");
+        QMessageBox::warning(nullptr, tr(appName.toStdString().c_str()), "Güncelleme Kontrolcüsüne parametreler geçilmemiş\nGüncelleme olup olmadığını kontrol edebilmek için gerekli parametreleri geçip tekrar deneyin");
         return;
     }
     httpManager.downloadSynchronous(apiPath, apiUrl, "");
@@ -73,7 +72,6 @@ void UpdateController::isNewVersionAvailable()
     }
 	else
 	{
-		QMessageBox qmbox;
-        qmbox.information(nullptr, tr(appName.toStdString().c_str()), "Program güncel");
+        QMessageBox::information(nullptr, tr(appName.toStdString().c_str()), "Program güncel");
     }
 }

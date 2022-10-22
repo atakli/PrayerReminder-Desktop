@@ -61,8 +61,7 @@ void HttpManager::downloadSynchronous(QString fileName, QString urlSpec, const Q
 
 	if(newVersion)
 	{
-		QMessageBox qmbox;
-		qmbox.information(nullptr, tr("Yeni versiyon"), QString(directory + " klasörüne indirildi."));
+        QMessageBox::information(nullptr, tr("Yeni versiyon"), QString(directory + " klasörüne indirildi."));
 	}
 }
 

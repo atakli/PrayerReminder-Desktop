@@ -37,19 +37,15 @@ private slots:
     void fillCities(int ulkeIndex);
 	void fillTown(int sehirIndex);
 	void executeIlceKodu(int ilceIndex);
-	void controlUpdate();
-public slots:
     void showMessage();
     void showTime();
 signals:
     void son5Dk();
     void sehirSec(QString sehirKodu);
 private:
-    QMessageBox qmbox;
     const char* appName = "Namaz Vakti Hatırlatıcı";
 	QString ulkeFile, sehirFile, ilceFile;
 	QString ulkeKodu, sehirKodu, ilceKodu;
-	void controlOnlineEvkatFileExistOtherwiseRequestDownload();
 	PrayerTimesParser ptp;
     UpdateController update;
     bool compareTagVersion(QString tag, QString currentTag);

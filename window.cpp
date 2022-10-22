@@ -21,7 +21,7 @@
 #include <QCoreApplication>
 #include <QtConcurrent/QtConcurrent>
 
-QString dosyayiAc(const QString& fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly)
+static QString readFile(const QString& fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly)
 {
     QFile file(fileName);
     if (!file.open(flag | QIODevice::Text))
@@ -64,7 +64,10 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 	connect(ui->sehir, SIGNAL(currentIndexChanged(int)), SLOT(fillTown(int)));
 	connect(ui->ilce, SIGNAL(currentIndexChanged(int)), SLOT(executeIlceKodu(int)));
 
-	controlOnlineEvkatFileExistOtherwiseRequestDownload();
+    if (!QFileInfo::exists(evkatOnlinePath))
+    {
+        bolgeSec();
+    }
 
 	setWindowTitle(tr("Şehir Seçimi"));
 	resize(400, 300);
@@ -94,6 +97,7 @@ void Window::setIcon(uint8_t number)
 
 void Window::showMessage()
 {
+    static QMessageBox qmbox;
     qmbox.setWindowTitle("حي على الصلاة");
     qmbox.setText("5 dk'dan az kaldı!");
     qmbox.setWindowModality(Qt::NonModal);
@@ -108,12 +112,8 @@ void Window::createActions()
 	emailAction = new QAction(tr("&Önerini Yaz"), this);
 //	connect(sehirSecimiAction, &QAction::triggered, this, &Window::bolgeSec);
 	connect(sehirSecimiAction, SIGNAL(triggered()), this, SLOT(bolgeSec()));	// sanırım this'i kaldırınca da aynı mana
-	connect(updateAction, SIGNAL(triggered()), this, SLOT(controlUpdate()));
+    connect(updateAction, &QAction::triggered, this, [this]{update.isNewVersionAvailable();});
 	connect(this, &Window::son5Dk, this, &Window::showMessage);
-}
-void Window::controlUpdate()
-{
-	update.isNewVersionAvailable();
 }
 void Window::ilkBolgeSecimi()
 {
@@ -123,9 +123,9 @@ void Window::ilkBolgeSecimi()
 void Window::fillCities(int ulkeIndex)
 {
 	executeFileNames();
-	ulkeKodu = dosyayiAc(ulkeFile).split('\n').at(ulkeIndex).split("_").last();
+    ulkeKodu = readFile(ulkeFile).split('\n').at(ulkeIndex).split("_").last();
 	executeFileNames();
-	QStringList sehirler = dosyayiAc(sehirFile).split('\n');
+    QStringList sehirler = readFile(sehirFile).split('\n');
 
 	ui->sehir->clear();
 	for(const QString& sehir : sehirler)
@@ -138,9 +138,9 @@ void Window::fillTown(int sehirIndex)
 	if(sehirIndex == -1)
 		return;
 	executeFileNames();
-	sehirKodu = dosyayiAc(sehirFile).split('\n').at(sehirIndex).split("_").last(); // 551
+    sehirKodu = readFile(sehirFile).split('\n').at(sehirIndex).split("_").last(); // 551
 	executeFileNames();
-	QStringList ilceler = dosyayiAc(ilceFile).split('\n');
+    QStringList ilceler = readFile(ilceFile).split('\n');
 
 	ui->ilce->clear();
 	for(const QString& ilce : ilceler)
@@ -153,7 +153,7 @@ void Window::executeIlceKodu(int ilceIndex)
 	if(ilceIndex == -1)
 		return;
 	executeFileNames();
-	ilceKodu = dosyayiAc(ilceFile).split('\n').at(ilceIndex).split("_").last(); // 551
+    ilceKodu = readFile(ilceFile).split('\n').at(ilceIndex).split("_").last(); // 551
 }
 void Window::downloadEvkat()
 {
@@ -163,23 +163,16 @@ void Window::downloadEvkat()
     QString hasOfflineDownloaded = "";
     if(ui->koordinatGroupBox->isChecked() & (boylam != 0.0) & (enlem != 0.0))
     {
-        CalcTimes{}.offlineVakitleriHesapla(boylam, enlem);                // TODO: CalcTimes{}.offlineVakitleriHesapla(boylam, enlem); daha mantıklı olabilir
+        CalcTimes{}.offlineVakitleriHesapla(boylam, enlem);
         hasOfflineDownloaded = " ve offline vakitler hesaplandı";
     }
 //	fetchTimes.downloadSynchronous(fileName, urlSpec);
     update.downloadFile(evkatOnlinePath, urlSpec, "");
     ui->textLabel->setText(ui->ilce->currentText() + " için bir aylık vakitler indirildi" + hasOfflineDownloaded);
 }
-
-void Window::controlOnlineEvkatFileExistOtherwiseRequestDownload()
-{
-    if(!QFileInfo::exists(evkatOnlinePath))
-		bolgeSec();
-}
-
 void Window::bolgeSec()
 {
-	QStringList ulkeler = dosyayiAc(ulkeFile).split('\n');
+    QStringList ulkeler = readFile(ulkeFile).split('\n');
 	for(const QString& ulke : ulkeler)
 	{
 		ui->ulke->addItem(ulke.split('_').at(0));
@@ -206,8 +199,7 @@ void Window::showTime()
 	int kalanVakit = ptp.nextDay();
     if (kalanVakit == -1)
     {
-        QMessageBox qmbox;
-        qmbox.warning(nullptr, tr(appName), QString("Dosya acilma hatasi!"));
+        QMessageBox::warning(nullptr, tr(appName), QString("Dosya acilma hatasi!"));
     }
     else
     {
