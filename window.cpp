@@ -1,4 +1,3 @@
-#include "util.h"
 #include "window.h"
 #include "calcTimes.h"
 #include "ui_sehirSecwindow.h"

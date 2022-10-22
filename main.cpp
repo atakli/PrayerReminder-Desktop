@@ -70,8 +70,6 @@
 
 int main(int argc, char *argv[])
 {
-    Q_INIT_RESOURCE(systray);
-
 	QApplication app(argc, argv);
 
 	if (!QSystemTrayIcon::isSystemTrayAvailable())

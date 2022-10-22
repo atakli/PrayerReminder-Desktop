@@ -11,8 +11,7 @@
 #include <QWidget>
 
 #include "prayertimesparser.h"
-#include "updatecontroller.h"
-//#include "fetchtimes.h"
+#include "../UpdateController/updatecontroller.h"
 
 #include <memory>
 

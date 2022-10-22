@@ -1,5 +1,4 @@
 #include "updatecontroller.h"
-//#include "calcTimes.h"
 
 #include <QJsonDocument>
 #include <QMessageBox>

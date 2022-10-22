@@ -1,5 +1,4 @@
 #include "calcTimes.h"
-#include "util.h"
 
 #include <iostream>
 #include <math.h>

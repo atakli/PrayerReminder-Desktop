@@ -24,13 +24,7 @@ void HttpManager::startRequest(const QUrl &requestedUrl)
 	connect(reply.get(), &QNetworkReply::sslErrors, this, &HttpManager::sslErrors);
 #endif
 	QEventLoop eventLoop;
-
-//	if (bytes == 0)
-//	{
-//		QMessageBox::warning(nullptr, tr("Yeni versiyon"), QString("İnternete bağlanamıyoruz"));
-//	}
 	connect(reply.get(), SIGNAL(finished()), &eventLoop, SLOT(quit()));
-//	connect(reply.get(), &QNetworkReply::error, this, &HttpManager::connectionControl);
 	connect(reply.get(), QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, &HttpManager::connectionControl);
 	eventLoop.exec();
 	httpFinished();
@@ -100,8 +94,7 @@ void HttpManager::httpReadyRead()
 		file->write(reply->readAll());
 //	qDebug() << "bytes: " << bytes;
 }
-
-void HttpManager::connectionControl(QNetworkReply::NetworkError error)
+void HttpManager::connectionControl(QNetworkReply::NetworkError)
 {
 	QMessageBox::warning(nullptr, tr("Hata!"), QString("İnternete bağlanamadık. İnternet bağlantınızı kontrol edin."));
 	hasError = true;	// internet olmadığında HostNotFoundError oldu
@@ -110,7 +103,6 @@ void HttpManager::connectionControl(QNetworkReply::NetworkError error)
 //	QString errorString = QDateTime::currentDateTime().toString() + " -> " + QVariant(error).toString();
 //	logFile->write(errorString.toStdString().c_str());
 }
-
 #if QT_CONFIG(ssl)
 void HttpManager::sslErrors(const QList<QSslError> &errors)
 {

@@ -1,22 +1,31 @@
 CONFIG += c++17 console
+QT += network widgets
 
 HEADERS       = window.h \
+    ../UpdateController/updatecontroller.h \
                 calcTimes.h \
-                httpmanager.h \
-                prayertimesparser.h \
-                updatecontroller.h
+#                httpmanager.h \
+                prayertimesparser.h
+#                updatecontroller.h
 #                util.h
 SOURCES       = main.cpp \
                 calcTimes.cpp \
-                httpmanager.cpp \
+#                httpmanager.cpp \
                 prayertimesparser.cpp \
-                updatecontroller.cpp \
+#                updatecontroller.cpp \
                 window.cpp \
 
-RESOURCES     = systray.qrc
+linux
+{
+INCLUDEPATH += ../build-UpdateController-Desktop_Qt_5_14_2_GCC_64bit-Release
+LIBS += -L../build-UpdateController-Desktop_Qt_5_14_2_GCC_64bit-Release -lsUpdateController
+}
+win32
+{
 
-QT += network widgets # positioning
-#requires(qtConfig(combobox))
+}
+
+
 
 ## install
 #target.path = $$[QT_INSTALL_EXAMPLES]/widgets/desktop/systray

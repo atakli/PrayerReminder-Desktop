@@ -1,5 +1,4 @@
 #include "prayertimesparser.h"
-#include "calcTimes.h"
 
 #include <QJsonObject>
 #include <QTextStream>
