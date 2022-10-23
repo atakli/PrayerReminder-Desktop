@@ -4,15 +4,11 @@ QT += network widgets
 HEADERS       = window.h \
     ../UpdateController/updatecontroller.h \
                 calcTimes.h \
-#                httpmanager.h \
                 prayertimesparser.h
-#                updatecontroller.h
-#                util.h
+
 SOURCES       = main.cpp \
                 calcTimes.cpp \
-#                httpmanager.cpp \
                 prayertimesparser.cpp \
-#                updatecontroller.cpp \
                 window.cpp \
 
 linux

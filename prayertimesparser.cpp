@@ -20,7 +20,7 @@ bool PrayerTimesParser::loadJson()
     if (!loadFile.open(QIODevice::ReadOnly))
     {
 		const QString warningStr = "Couldn't open " + loadFile.fileName() + " save file.";
-        qWarning(warningStr.toStdString().data());
+		qWarning(warningStr.toStdString().c_str());
         return false;
     }
 

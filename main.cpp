@@ -55,13 +55,8 @@
 #include <QMessageBox>
 #include <QFileInfo>
 #include "window.h"
-#include "util.h"
-//#include "fetchtimes.h"
 
-//#include <QtConcurrent/QtConcurrent>
 #include <QApplication>
-//#include <QScreen>
-//#include <QThread>
 
 #ifdef _WIN32
   #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")   // TODO: bu en iyisi mi bakmak lazım. bi de bu sadece msvc için heralde
@@ -79,17 +74,7 @@ int main(int argc, char *argv[])
     }
     QApplication::setQuitOnLastWindowClosed(false);
 
-//	HttpWindow httpWin;
     Window window;
-//	window.show();
-
-//    const QRect availableSize = httpWin.screen()->availableGeometry();
-//    httpWin.resize(availableSize.width() / 5, availableSize.height() / 5);
-//    httpWin.move((availableSize.width() - httpWin.width()) / 2, (availableSize.height() - httpWin.height()) / 2);
-//	httpWin.show();
-//	QFuture<void> future = QtConcurrent::run(window,&Window::kalanVakitDongusu);
-//	future.waitForFinished();
-//	window.kalanVakitDongusu();
 
     return app.exec();
 }
