@@ -18,7 +18,8 @@ LIBS += -L../build-UpdateController-Desktop_Qt_5_14_2_GCC_64bit-Release -lsUpdat
 }
 win32
 {
-
+INCLUDEPATH += ..\..\clones\UpdateController\include
+LIBS += -L..\..\clones\UpdateController\build-UpdateController-Desktop_Qt_6_3_1_MSVC2019_64bit-Release\release -lsUpdateController
 }
 
 
