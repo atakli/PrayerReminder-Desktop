@@ -1,8 +1,11 @@
 CONFIG += c++17 console
-QT += network widgets
+QT += network widgets           # network kullanmiyo olmaliyim sanki artik. o isleri updatemanager library'si halletmiyo mu
+
+#QMAKE_CXXFLAGS_WARN_ON += -O3
+QMAKE_CXXFLAGS_RELEASE -= -O2
+QMAKE_CXXFLAGS += -O3
 
 HEADERS       = window.h \
-    ../UpdateController/updatecontroller.h \
                 calcTimes.h \
                 prayertimesparser.h
 
@@ -11,15 +14,13 @@ SOURCES       = main.cpp \
                 prayertimesparser.cpp \
                 window.cpp \
 
-linux
-{
-INCLUDEPATH += ../build-UpdateController-Desktop_Qt_5_14_2_GCC_64bit-Release
-LIBS += -L../build-UpdateController-Desktop_Qt_5_14_2_GCC_64bit-Release -lsUpdateController
+win32 { # vay be. bu curly brace burda olmaliymis muhakkak. asagida olmuyormus.
+    INCLUDEPATH += ..\..\clones\UpdateController\include
+    LIBS += -L..\..\clones\UpdateController\build-UpdateController-Desktop_Qt_6_3_1_MSVC2019_64bit-Release\release -lsUpdateController
 }
-win32
-{
-INCLUDEPATH += ..\..\clones\UpdateController\include
-LIBS += -L..\..\clones\UpdateController\build-UpdateController-Desktop_Qt_6_3_1_MSVC2019_64bit-Release\release -lsUpdateController
+unix {
+    INCLUDEPATH += ../UpdateController
+    LIBS += -L../build-UpdateController-Desktop_Qt_5_14_2_GCC_64bit-Release -lsUpdateController
 }
 
 
@@ -30,6 +31,19 @@ LIBS += -L..\..\clones\UpdateController\build-UpdateController-Desktop_Qt_6_3_1_
 
 FORMS += \
     sehirSecwindow.ui
+
+#-O3'u eklemem gereken yerin QMAKE_CXXFLAGS degil QMAKE_CXXFLAGS_RELEASE olmasi gerektigini anladim hele sukur
+
+message("$$QMAKE_CXXFLAGS")                         # -pipe
+#message("$$QMAKE_CXXFLAGS_WARN_ON")                 # -Wall -Wextra
+#message("$$QMAKE_CXXFLAGS_WARN_OFF")                # -w
+#message("$$QMAKE_CXXFLAGS_RELEASE_WITH_DEBUGINFO")  # -O2 -g
+message($$QMAKE_CXXFLAGS_RELEASE)                 # -O2
+#message("$$QMAKE_CXXFLAGS_DEBUG")                   # -g
+#message("$$QMAKE_CXXFLAGS_SHLIB")                   # -fPIC
+#message("$$QMAKE_CXXFLAGS_THREAD")                  # -D_REENTRANT
+message("$$QMAKE_LIBDIR")
+# la olum tam benin aradigim sey: QMAKE_RPATHDIR. ama gel gor ki sadece unix'te gecerliymis
 
 # --no-plugins deyince çalışmıyor. ama --no-plugins demeyince üretilen klasörlerden bi tek platforms klasörünü silince sıkıntı oluyor (içinde de sadece qwindows.dll var)
 # C:\Qt-mingw\6.3.1\msvc2019_64\bin\windeployqt systray.exe --libdir . --plugindir . -no-translations --no-opengl-sw --no-system-d3d-compiler

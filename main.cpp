@@ -54,6 +54,9 @@
 
 #include <QMessageBox>
 #include <QFileInfo>
+#include <QDebug>
+#include <QDir>
+
 #include "window.h"
 
 #include <QApplication>
@@ -66,6 +69,11 @@
 int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
+
+	QFileInfo fileInfo(argv[0]);
+	const QString path = fileInfo.dir().path();
+	qDebug() << "path:" << path;
+	QDir::setCurrent(path);
 
 	if (!QSystemTrayIcon::isSystemTrayAvailable())
 	{

@@ -192,13 +192,17 @@ void Window::createTrayIcon()
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setContextMenu(trayIconMenu);
 }
-
+#include <unistd.h>
 void Window::showTime()
 {
+	char cwd[1024];
+	if (getcwd(cwd, sizeof(cwd)) == NULL)
+	  qDebug() << "Error getting current working directory";
+
 	int kalanVakit = ptp.nextDay();
     if (kalanVakit == -1)
     {
-        QMessageBox::warning(nullptr, tr(appName), QString("Dosya acilma hatasi!"));
+		QMessageBox::warning(nullptr, tr(appName), QString("Dosya acilma hatasi!") + cwd);
     }
     else
     {
