@@ -14,6 +14,12 @@ bool PrayerTimesParser::loadJson()
 {
     QFile loadFile(evkatOnlinePath);
 
+    if (!QFileInfo::exists(evkatOnlinePath) && !QFileInfo::exists(evkatOfflinePath))
+    {
+        evkatFilesExist = false;
+        return false;
+    }
+
     if(!loadFile.exists())
         loadFile.setFileName(evkatOfflinePath);
 
@@ -57,7 +63,7 @@ int PrayerTimesParser::kalan(QStringList&& list)				// TODO: doğru mu
 	int sonuc = enUfagi - now;
 	if(sonuc < 0)
 		sonuc += 60 * 24;
-	return sonuc;
+    return sonuc;
 }
 
 int PrayerTimesParser::vakitleriCikar(QJsonValue value)
@@ -75,6 +81,8 @@ int PrayerTimesParser::nextDay()
 {
     if (!loadJson())
     {
+        if (!evkatFilesExist)
+            return -2;
         return -1;
     }
 	const QDate dt = QDateTime::currentDateTime().date();

@@ -16,7 +16,7 @@
 //#include <QGeoCoordinate>
 
 const static int number_of_days_to_calculate = 30;
-QString evkatOfflinePath = "namazVakitFiles/evkatOnline.json";
+QString evkatOfflinePath = "evkatOnline.json";
 
 void CalcTimes::calcPrayerTimes(const int year, const int month, const int day,
 					 const double longitude, const double latitude, const int timeZone,
@@ -156,8 +156,8 @@ void CalcTimes::offlineVakitleriHesapla(const double boylam, const double enlem)
     QFile jsonFile(evkatOfflinePath);				// TODO: bütün qfile'lara bak close etmiş miyim
     if (!jsonFile.open(QFile::WriteOnly))
     {
-        std::cout << "cannot open " << evkatOfflinePath.toStdString() << std::endl;
-		QMessageBox::critical(nullptr, "", "cannot open " + evkatOfflinePath);		// TODO: buraya programın ismi gelsin
+        std::cout << "cannot write " << evkatOfflinePath.toStdString() << std::endl;
+        QMessageBox::critical(nullptr, "", "cannot write " + evkatOfflinePath);		// TODO: buraya programın ismi gelsin
     }
 	jsonFile.write(doc.toJson());
 	jsonFile.close();

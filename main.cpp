@@ -66,14 +66,31 @@
 //  For linux I know how to create a .desktop file so I can launch the app that does not show a terminal when it is launched.
 #endif
 
+QString exePath;
+
 int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
 
-	QFileInfo fileInfo(argv[0]);
-	const QString path = fileInfo.dir().path();
-	qDebug() << "path:" << path;
-	QDir::setCurrent(path);
+    const QString userName = QDir::home().dirName();
+    const QString saveDir = "C:/Users/" + userName + "/.namazVaktiHatirlatici";
+
+    QDir d;
+    if(!d.exists(saveDir))
+    {
+        if(!d.mkpath(saveDir))
+            qDebug() << "klasor olusturulamadi";
+        else
+        {
+//            std::vector<TCHAR> Buffer(saveDir.length() + 1);
+//            saveDir.toWCharArray(Buffer.data());
+//            Buffer[saveDir.length()] = '\0';
+//            SetCurrentDirectory(Buffer.data());
+        }
+    }
+    QDir::setCurrent(saveDir);
+
+    exePath = QFileInfo{argv[0]}.absolutePath();
 
 	if (!QSystemTrayIcon::isSystemTrayAvailable())
 	{

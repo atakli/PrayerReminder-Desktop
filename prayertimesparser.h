@@ -8,11 +8,12 @@ class PrayerTimesParser
 private:
 	bool loadJson();
 	QJsonDocument loadDoc;
+    bool evkatFilesExist = true;
 	int Min(const QString& vakit);
 	int kalan(QStringList&& list);
 public:
+    int vakitleriCikar(QJsonValue value);
 	int nextDay();
-	int vakitleriCikar(QJsonValue value);
 };
 
 #endif // PRAYERTIMESPARSER_H

@@ -20,12 +20,14 @@
 #include <QCoreApplication>
 #include <QtConcurrent/QtConcurrent>
 
-static QString readFile(const QString& fileName, QIODevice::OpenModeFlag flag=QIODevice::ReadOnly)
+extern QString exePath;
+
+static QString readFile(const QString& fileName, QIODevice::OpenModeFlag flag = QIODevice::ReadOnly)
 {
     QFile file(fileName);
     if (!file.open(flag | QIODevice::Text))
     {
-        qDebug() << "cannot open " << fileName;
+        qDebug() << "cannot read " << fileName;
         return "";							// TODO: buraya girerse ne olcak?
     }
     QString text = file.readAll();
@@ -33,7 +35,8 @@ static QString readFile(const QString& fileName, QIODevice::OpenModeFlag flag=QI
     return text;
 }
 
-QString evkatOnlinePath = "namazVakitFiles/evkatOnline.json";
+QString evkatOnlinePath = "evkatOnline.json";
+extern QString evkatOfflinePath;
 
 Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Window>())
 {
@@ -50,8 +53,11 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
     createActions();
     createTrayIcon();
 
+    if (!QFileInfo::exists(evkatOnlinePath) && !QFileInfo::exists(evkatOfflinePath))
+        bolgeSec();
+
     QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &Window::showTime);      // evkatOnline.json başta olmadığında heralde burdan dolayı sıkıntı oluyor. yoksa oluşturması lazım
+    connect(timer, &QTimer::timeout, this, &Window::showTime);
     timer->start(1000);
 
     update.setParameters("https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest", appName, "NamazVaktiHatirlatici.zip");
@@ -61,12 +67,12 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 	connect(ui->hesaplaButton, &QAbstractButton::clicked, this, &Window::downloadEvkat);
 	connect(ui->ulke, SIGNAL(currentIndexChanged(int)), SLOT(fillCities(int)));
 	connect(ui->sehir, SIGNAL(currentIndexChanged(int)), SLOT(fillTown(int)));
-	connect(ui->ilce, SIGNAL(currentIndexChanged(int)), SLOT(executeIlceKodu(int)));
+    connect(ui->ilce, SIGNAL(currentIndexChanged(int)), SLOT(executeIlceKodu(int)));
 
-    if (!QFileInfo::exists(evkatOnlinePath))
-    {
-        bolgeSec();
-    }
+//    if (!QFileInfo::exists(evkatOnlinePath))
+//    {
+//        bolgeSec();
+//    }
 
 	setWindowTitle(tr("Şehir Seçimi"));
 	resize(400, 300);
@@ -75,9 +81,9 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 }
 void Window::executeFileNames()
 {
-    ulkeFile =  "namazVakitFiles/ulkeler.txt";
-    sehirFile = "namazVakitFiles/sehirler/" + ulkeKodu + ".txt";
-    ilceFile =  "namazVakitFiles/sehirler/" + sehirKodu + ".txt";
+    ulkeFile =  exePath + "/ulkeler.txt";
+    sehirFile = exePath + "/sehirler/" + ulkeKodu + ".txt";
+    ilceFile =  exePath + "/sehirler/" + sehirKodu + ".txt";
 }
 
 void Window::setIcon(uint8_t number)
@@ -108,7 +114,7 @@ void Window::createActions()
     connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
 	sehirSecimiAction = new QAction(tr("&Şehir seç"), this);
 	updateAction = new QAction(tr("&Yeni sürüm var mı?"), this);
-	emailAction = new QAction(tr("&Önerini Yaz"), this);
+    emailAction = new QAction(tr("&Gelistiriciye Yaz"), this);
 //	connect(sehirSecimiAction, &QAction::triggered, this, &Window::bolgeSec);
 	connect(sehirSecimiAction, SIGNAL(triggered()), this, SLOT(bolgeSec()));	// sanırım this'i kaldırınca da aynı mana
     connect(updateAction, &QAction::triggered, this, [this]{update.isNewVersionAvailable();});
@@ -116,8 +122,11 @@ void Window::createActions()
 }
 void Window::ilkBolgeSecimi()
 {
-	ui->sehir->setCurrentText("KOCAELİ");
-	ui->ilce->setCurrentText("GEBZE");
+    fillCities(0);
+    ui->sehir->setCurrentText("KOCAELİ");
+    fillTown(51);
+    ui->ilce->setCurrentText("GEBZE");
+    executeIlceKodu(4);
 }
 void Window::fillCities(int ulkeIndex)
 {
@@ -156,7 +165,7 @@ void Window::executeIlceKodu(int ilceIndex)
 }
 void Window::downloadEvkat()
 {
-	QString urlSpec = "https://ezanvakti.herokuapp.com/vakitler/" + ilceKodu;	// note that times in this site are not updated everyday
+    const QString urlSpec = "https://ezanvakti.herokuapp.com/vakitler/" + ilceKodu;	// note that times in this site are not updated everyday
     double boylam = ui->boylamLineEdit->text().toDouble();
     double enlem = ui->enlemLineEdit->text().toDouble();
     QString hasOfflineDownloaded = "";
@@ -187,22 +196,23 @@ void Window::createTrayIcon()
 	trayIconMenu->addSeparator();
 	trayIconMenu->addAction(updateAction);
 //	trayIconMenu->addAction(emailAction);
-	trayIconMenu->addAction(quitAction);
+    trayIconMenu->addAction(quitAction);
+//	trayIconMenu->addAction(aboutAction);   // su yaziyi koy uygun bi yere: Icon by dDara on freeicons.io
 
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setContextMenu(trayIconMenu);
 }
-#include <unistd.h>
+
 void Window::showTime()
 {
-	char cwd[1024];
-	if (getcwd(cwd, sizeof(cwd)) == NULL)
-	  qDebug() << "Error getting current working directory";
-
 	int kalanVakit = ptp.nextDay();
+    if (kalanVakit == -2)
+    {
+        return;
+    }
     if (kalanVakit == -1)
     {
-		QMessageBox::warning(nullptr, tr(appName), QString("Dosya acilma hatasi!") + cwd);
+        QMessageBox::warning(nullptr, tr(appName), QString("Dosya acilma hatasi!\n") + QDir::currentPath());
     }
     else
     {
