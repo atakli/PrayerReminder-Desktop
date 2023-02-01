@@ -29,7 +29,8 @@ class Window : public QWidget
     Q_OBJECT
 public:
     Window(QWidget* parent = nullptr);
-
+public slots:
+    void onInstanceOpen(quint32 instanceId, QByteArray message);
 private slots:
 	void downloadEvkat();
     void bolgeSec();

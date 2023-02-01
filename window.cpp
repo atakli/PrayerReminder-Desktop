@@ -45,7 +45,7 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 #ifdef linux
     this->setMaximumHeight(200);
 #endif
-
+    setWindowIcon(QIcon{"icon.png"});
     ulkeKodu = "2";		// Türkiye
     sehirKodu = "551";	// Kocaeli
     executeFileNames();
@@ -60,7 +60,7 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
     connect(timer, &QTimer::timeout, this, &Window::showTime);
     timer->start(1000);
 
-    update.setParameters("https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest", appName, "NamazVaktiHatirlatici.zip");
+    update.setParameters("https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest", appName, "NamazVaktiHatirlatici.exe");
     update.isNewVersionAvailable();
 
     ui->koordinatGroupBox->setChecked(false);
@@ -77,7 +77,12 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 	setWindowTitle(tr("Şehir Seçimi"));
 	resize(400, 300);
 
-	trayIcon->show();
+    trayIcon->show();
+}
+
+void Window::onInstanceOpen(quint32 instanceId, QByteArray message)
+{
+    bolgeSec();
 }
 void Window::executeFileNames()
 {

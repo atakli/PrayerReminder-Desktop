@@ -1,4 +1,4 @@
-CONFIG += c++17 console
+CONFIG += c++17
 QT += network widgets           # network kullanmiyo olmaliyim sanki artik. o isleri updatemanager library'si halletmiyo mu
 
 #QMAKE_CXXFLAGS_WARN_ON += -O3
@@ -25,12 +25,27 @@ CONFIG(debug, debug|release): LIBS += -L/home/b720/qt-projects/UpdateController/
 else:CONFIG(release, debug|release): LIBS += -L/home/b720/qt-projects/UpdateController/build-UpdateController-Desktop_Qt_5_14_2_GCC_64bit-Release/release/static -lUpdateController
 }
 
+win32 {
+INCLUDEPATH += "C:\\Users\\Emre ATAKLI\\Documents\\qt\\SingleApplication\\include"
+CONFIG(release, debug|release): LIBS += -L"C:\\Users\\Emre ATAKLI\\Documents\\qt\\SingleApplication\\build-SingleApplication-Desktop_Qt_6_4_1_MSVC2019_64bit-Release\\release\\static" -lSingleApplication
+else:CONFIG(debug, debug|release): LIBS += -L"C:\\Users\\Emre ATAKLI\\Documents\\qt\\SingleApplication\\build-SingleApplication-Desktop_Qt_6_4_1_MSVC2019_64bit-Debug\\debug\\static" -lSingleApplication
+}
+unix {
+INCLUDEPATH += /home/b720/qt-projects/UpdateController/include
+CONFIG(debug, debug|release): LIBS += -L/home/b720/qt-projects/SingleApplication/build-SingleApplication-Desktop_Qt_5_14_2_GCC_64bit-Debug/debug/static -lSingleApplication
+else:CONFIG(release, debug|release): LIBS += -L/home/b720/qt-projects/SingleApplication/build-SingleApplication-Desktop_Qt_5_14_2_GCC_64bit-Release/release/static -lSingleApplication
+}
+
+win32: LIBS += -ladvapi32 # -lUser32 -lpsapi -lsetupapi -lwinusb -lgdi32 -lkernel32
+
 ## install
 #target.path = $$[QT_INSTALL_EXAMPLES]/widgets/desktop/systray
 #INSTALLS += target
 
 FORMS += \
     sehirSecwindow.ui
+
+win32:RC_ICONS += icon.ico
 
 #-O3'u eklemem gereken yerin QMAKE_CXXFLAGS degil QMAKE_CXXFLAGS_RELEASE olmasi gerektigini anladim hele sukur
 
