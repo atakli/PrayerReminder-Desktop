@@ -10,3 +10,4 @@ Kaynak kodlarından derlemek için gereken bağımlılıklar:<br>
 
 TODO:<br>
 * Şehir seçme penceresinde uygulamayı sonlandır tuşu ekle
+* Uygulama güncelleneceği zaman o sırada açıksa ordaki sondlandır'a basınca sonlandırmıyor. Task Manager'dan kapatmak gerekiyor. 
