@@ -46,6 +46,8 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
     this->setMaximumHeight(200);
 #endif
     setWindowIcon(QIcon{"icon.png"});
+    QFile::remove("version.txt");
+    QFile::copy(exePath + "/version.txt", "version.txt");
     ulkeKodu = "2";		// Türkiye
     sehirKodu = "551";	// Kocaeli
     executeFileNames();
@@ -77,7 +79,7 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 	setWindowTitle(tr("Şehir Seçimi"));
 	resize(400, 300);
 
-    trayIcon->show();
+//    trayIcon->show(); // visible'i true yapmak ile ayni seymis. buna gerek yok gibi
 }
 
 void Window::onInstanceOpen(quint32 instanceId, QByteArray message)
@@ -206,6 +208,7 @@ void Window::createTrayIcon()
 
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setContextMenu(trayIconMenu);
+    trayIcon->setVisible(true);
 }
 
 void Window::showTime()
