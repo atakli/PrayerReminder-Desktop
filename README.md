@@ -7,5 +7,4 @@ Kaynak kodlarından derlemek için gereken bağımlılıklar:<br>
 * UpdateController kütüphanesi ve updatecontroller.h başlık dosyası
 
 TODO:<br>
-* Single application ekle
-* Onunla beraber uygulamanın ikonuna tıklandığında uygulama o sırada açıksa ve sonraki vakte 1 saatten fazla varsa pencere açılsın. Yoksa 1 saatten fazla olduğunda uygulamaya ulaşmanın hiçbir yolu olmuyor.
+* Şehir seçme penceresinde uygulamayı sonlandır tuşu ekle
