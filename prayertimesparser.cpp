@@ -42,7 +42,7 @@ int PrayerTimesParser::Min(const QString& vakit)
 	return vakit.mid(0,2).toInt() * 60 + vakit.mid(3).toInt();
 }
 
-int PrayerTimesParser::kalan(QStringList&& list)				// TODO: doğru mu
+int PrayerTimesParser::kalan(QStringList list)
 {
 	const QTime time = QDateTime::currentDateTime().time();
 	const int now = time.hour() * 60 + time.minute();
@@ -57,13 +57,10 @@ int PrayerTimesParser::kalan(QStringList&& list)				// TODO: doğru mu
 	{
 		listInt.push_back(Min(l));
 	}
-	int enUfagi = *std::min_element(listInt.begin(), listInt.end());
-	if(listInt.isEmpty())
-		enUfagi = Min(listCopy.first());
+
+    const int enUfagi = listInt.isEmpty() ? Min(listCopy.first()) : *std::min_element(listInt.begin(), listInt.end());
 	int sonuc = enUfagi - now;
-	if(sonuc < 0)
-		sonuc += 60 * 24;
-    return sonuc;
+    return sonuc < 0 ? sonuc + 60 * 24 : sonuc;
 }
 
 int PrayerTimesParser::vakitleriCikar(QJsonValue value)
@@ -75,7 +72,7 @@ int PrayerTimesParser::vakitleriCikar(QJsonValue value)
 	const QString maghrib = value["Aksam"].toString();
 	const QString isha = value["Yatsi"].toString();
 
-	return kalan({fajr, sunRise, zuhr, asr, maghrib, isha});
+    return kalan({fajr, sunRise, zuhr, asr, maghrib, isha});    // yuh. bunu && ile almisim. cahillik kotu bisey.
 }
 int PrayerTimesParser::nextDay()
 {

@@ -21,6 +21,10 @@
 
 QString exePath;
 
+//mincore\com\oleaut32\dispatch\ups.cpp(2122)\OLEAUT32.dll!00007FFCBE4C9DD6: (caller: 00007FFCBE4C91E9) ReturnHr(1) tid(1278) 8002801D Library not registered.
+//QSystemTrayIcon::setVisible: No Icon set
+//onecore\windows\directx\database\helperlibrary\lib\directxdatabasehelper.cpp(652)\d3d9.dll!00007FFCA954BF45: (caller: 00007FFCA954BA4C) ReturnHr(1) tid(1278) 80004002 No such interface supported
+
 //static const QString APPLICATION_NAME = "Namaz Vakti Hatirlatici";
 //static const QString ORGANIZATION_NAME = "ATAKLI";
 //static const QString APPLICATION_VERSION = "1.5.0";

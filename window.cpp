@@ -48,6 +48,7 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
     setWindowIcon(QIcon{"icon.png"});
     QFile::remove("version.txt");
     QFile::copy(exePath + "/version.txt", "version.txt");
+
     ulkeKodu = "2";		// Türkiye
     sehirKodu = "551";	// Kocaeli
     executeFileNames();
@@ -58,12 +59,13 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
     if (!QFileInfo::exists(evkatOnlinePath) && !QFileInfo::exists(evkatOfflinePath))
         bolgeSec();
 
-    QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &Window::showTime);
-    timer->start(1000);
 
     update.setParameters("https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest", appName, "NamazVaktiHatirlatici.exe");
     update.isNewVersionAvailable();
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &Window::showTime);
+    timer->start(1000);
 
     ui->koordinatGroupBox->setChecked(false);
 	connect(ui->hesaplaButton, &QAbstractButton::clicked, this, &Window::downloadEvkat);
@@ -82,7 +84,7 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 //    trayIcon->show(); // visible'i true yapmak ile ayni seymis. buna gerek yok gibi
 }
 
-void Window::onInstanceOpen(quint32 instanceId, QByteArray message)
+void Window::onInstanceOpen(quint32 /*instanceId*/, QByteArray /*message*/)
 {
     bolgeSec();
 }
@@ -208,7 +210,6 @@ void Window::createTrayIcon()
 
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setContextMenu(trayIconMenu);
-    trayIcon->setVisible(true);
 }
 
 void Window::showTime()

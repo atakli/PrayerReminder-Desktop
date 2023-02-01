@@ -10,7 +10,7 @@ private:
 	QJsonDocument loadDoc;
     bool evkatFilesExist = true;
 	int Min(const QString& vakit);
-	int kalan(QStringList&& list);
+    int kalan(QStringList list);
 public:
     int vakitleriCikar(QJsonValue value);
 	int nextDay();
