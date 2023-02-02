@@ -9,8 +9,7 @@ Kaynak kodlarından derlemek için gereken bağımlılıklar:<br>
 * SingleApplication kütüphanesi ve singleapplication.h başlık dosyası
 
 TODO:<br>
-* Şehir seçme penceresinde uygulamayı sonlandır tuşu ekle
-* Uygulama güncelleneceği zaman o sırada açıksa ordaki sondlandır'a basınca sonlandırmıyor. Task Manager'dan kapatmak gerekiyor. 
+* Uygulama güncellendiği sırada açıksa inno setup'taki sonlandır'a basınca sonlandırmıyor. Task Manager'dan kapatmak gerekiyor. 
 
 Paketleme öncesinde yapılacaklar:
 * .exe'yi bir klasöre alıp windeploywt yap.

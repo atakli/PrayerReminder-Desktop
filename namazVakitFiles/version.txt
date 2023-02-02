@@ -1,1 +1,1 @@
-v1.7.5-Windows
+v1.8.0-Windows

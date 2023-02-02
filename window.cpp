@@ -72,6 +72,8 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 	connect(ui->ulke, SIGNAL(currentIndexChanged(int)), SLOT(fillCities(int)));
 	connect(ui->sehir, SIGNAL(currentIndexChanged(int)), SLOT(fillTown(int)));
     connect(ui->ilce, SIGNAL(currentIndexChanged(int)), SLOT(executeIlceKodu(int)));
+    connect(ui->quitButton, &QAbstractButton::clicked, []{exit(0);});
+    connect(ui->updateButton, &QAbstractButton::clicked, [this]{update.isNewVersionAvailable();});
 
 //    if (!QFileInfo::exists(evkatOnlinePath))
 //    {
