@@ -12,6 +12,7 @@
 #include <QAction>
 #include <QPainter>
 #include <QFuture>
+#include <QProcess>
 #include <QDateTime>
 #include <QJsonArray>
 #include <QJsonObject>
@@ -59,7 +60,6 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
     if (!QFileInfo::exists(evkatOnlinePath) && !QFileInfo::exists(evkatOfflinePath))
         bolgeSec();
 
-
     update.setParameters("https://api.github.com/repos/atakli/PrayerReminder-Desktop/releases/latest", appName, "NamazVaktiHatirlatici.exe");
     update.isNewVersionAvailable();
 
@@ -74,19 +74,21 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
     connect(ui->ilce, SIGNAL(currentIndexChanged(int)), SLOT(executeIlceKodu(int)));
     connect(ui->quitButton, &QAbstractButton::clicked, []{exit(0);});
     connect(ui->updateButton, &QAbstractButton::clicked, [this]{update.isNewVersionAvailable();});
-
-//    if (!QFileInfo::exists(evkatOnlinePath))
-//    {
-//        bolgeSec();
-//    }
+    connect(ui->infoButton, &QAbstractButton::clicked, this, &Window::on_infoButtonClicked);
 
 	setWindowTitle(tr("Şehir Seçimi"));
 	resize(400, 300);
-
-//    trayIcon->show(); // visible'i true yapmak ile ayni seymis. buna gerek yok gibi
 }
 
-void Window::onInstanceOpen(quint32 /*instanceId*/, QByteArray /*message*/)
+void Window::on_infoButtonClicked()
+{
+    if (QMessageBox(QMessageBox::Question, appName, "Namaz Vakti Hatırlatıcısının simgesinin sağ alt köşedeki bildirim alanında görünür olmasını isterseniz Tamam'a basıp açılan pencereden \"Select which icons appear on the taskbar\" yazısına tıklayıp prayerReminder.exe'yi etkinleştirin.", QMessageBox::Ok | QMessageBox::Abort).exec() == QMessageBox::Ok)
+    {
+        std::system("start ms-settings:taskbar");
+    }
+}
+
+void Window::on_instanceOpen(quint32 /*instanceId*/, QByteArray /*message*/)
 {
     bolgeSec();
 }

@@ -208,12 +208,31 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QPushButton" name="infoButton">
+         <property name="maximumSize">
+          <size>
+           <width>25</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="infoIcon.qrc">
+           <normaloff>:/info_blue.png</normaloff>:/info_blue.png</iconset>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
     </layout>
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="infoIcon.qrc"/>
+ </resources>
  <connections/>
 </ui>

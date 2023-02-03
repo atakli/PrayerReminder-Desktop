@@ -10,6 +10,7 @@ Kaynak kodlarından derlemek için gereken bağımlılıklar:<br>
 
 TODO:<br>
 * Uygulama güncellendiği sırada açıksa inno setup'taki sonlandır'a basınca sonlandırmıyor. Task Manager'dan kapatmak gerekiyor. 
+* start ms-settings:taskbar
 
 Paketleme öncesinde yapılacaklar:
 * .exe'yi bir klasöre alıp windeploywt yap.

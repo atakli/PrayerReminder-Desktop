@@ -30,7 +30,7 @@ class Window : public QWidget
 public:
     Window(QWidget* parent = nullptr);
 public slots:
-    void onInstanceOpen(quint32 instanceId, QByteArray message);
+    void on_instanceOpen(quint32 instanceId, QByteArray message);
 private slots:
 	void downloadEvkat();
     void bolgeSec();
@@ -57,6 +57,7 @@ private:
 	void setIcon(uint8_t number);    // önceden slot'tu
     void createActions();
     void createTrayIcon();
+    void on_infoButtonClicked();
 
     QElapsedTimer timer;
 

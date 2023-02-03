@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
     QApplication::setQuitOnLastWindowClosed(false);
 
     Window window;
-    QObject::connect(&app, &SingleApplication::receivedMessage, &window, &Window::onInstanceOpen);
+    QObject::connect(&app, &SingleApplication::receivedMessage, &window, &Window::on_instanceOpen);
 
     return app.exec();
 }

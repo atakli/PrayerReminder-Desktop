@@ -47,6 +47,9 @@ FORMS += \
 
 win32:RC_ICONS += icon.ico
 
+RESOURCES += \
+    infoIcon.qrc
+
 #-O3'u eklemem gereken yerin QMAKE_CXXFLAGS degil QMAKE_CXXFLAGS_RELEASE olmasi gerektigini anladim hele sukur
 
 #message("$$QMAKE_CXXFLAGS")                         # -pipe
