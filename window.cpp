@@ -219,21 +219,23 @@ void Window::createTrayIcon()
 void Window::showTime()
 {
 	int kalanVakit = ptp.nextDay();
-    if (kalanVakit == -2)
+	if (kalanVakit == ptp.EvkatFilesDoesNotExist)
     {
-        return;
+		QMessageBox::critical(nullptr, appName, QString("Both Prayer Times Files Do Not Exist!\n"));
+		return;		// TODO: iki dosyanin da olmamasi soz konusu olmamali. burda o durumu kurtaralim
     }
-    if (kalanVakit == -1)
+	if (kalanVakit == ptp.FileOpeningError)
     {
-        QMessageBox::warning(nullptr, tr(appName), QString("Dosya acilma hatasi!\n") + QDir::currentPath());
+		QMessageBox::critical(nullptr, appName, QString("Dosya acilma hatasi!\n") + QDir::currentPath());
+		exit(EXIT_FAILURE);
     }
     else
     {
-        if(kalanVakit <= 60)			// 60 dk'dan az kalmadıysa gösterme. bi de zaten ikiden fazla basamak göstermeye uygun değil ve gerek de yok
+		if(kalanVakit <= 60)		// 60 dk'dan az kalmadıysa gösterme. bi de zaten ikiden fazla basamak göstermeye uygun değil ve gerek de yok
         {
             trayIcon->setVisible(true);
             setIcon(kalanVakit);
-            if((kalanVakit <= 5) & (!kalanVakitBesOldu))
+			if((kalanVakit <= 5) && (!kalanVakitBesOldu))
             {
                 kalanVakitBesOldu = true;
                 emit son5Dk();

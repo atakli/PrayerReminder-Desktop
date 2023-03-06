@@ -1,5 +1,5 @@
 #include <QtWidgets/QApplication>
-#include <Windows.h>
+//#include <Windows.h>
 #ifndef QT_NO_SYSTEMTRAYICON
 
 #include <iostream>

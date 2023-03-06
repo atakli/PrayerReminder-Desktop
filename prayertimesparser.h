@@ -3,17 +3,16 @@
 
 #include <QJsonDocument>
 
+enum LoadJsonSuccess {GoodJson = 0, EvkatFilesDoesNotExist = -1, FileOpeningError = -2};
+
 class PrayerTimesParser
 {
-private:
-	bool loadJson();
-	QJsonDocument loadDoc;
-    bool evkatFilesExist = true;
-	int Min(const QString& vakit);
-    int kalan(QStringList list);
 public:
     int vakitleriCikar(QJsonValue value);
 	int nextDay();
+private:
+	std::pair<QJsonDocument, LoadJsonSuccess> loadJson();
+	int kalan(QStringList list);
 };
 
 #endif // PRAYERTIMESPARSER_H
