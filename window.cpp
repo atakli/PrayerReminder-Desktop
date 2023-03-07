@@ -23,6 +23,8 @@
 
 extern QString exePath;
 
+const char* appName = "Namaz Vakti Hatırlatıcı";
+
 static QString readFile(const QString& fileName, QIODevice::OpenModeFlag flag = QIODevice::ReadOnly)
 {
     QFile file(fileName);
@@ -218,24 +220,16 @@ void Window::createTrayIcon()
 
 void Window::showTime()
 {
-	int kalanVakit = ptp.nextDay();
-	if (kalanVakit == ptp.EvkatFilesDoesNotExist)
+    const auto result = ptp.kalanVakit();
+
+    if (result)
     {
-		QMessageBox::critical(nullptr, appName, QString("Both Prayer Times Files Do Not Exist!\n"));
-		return;		// TODO: iki dosyanin da olmamasi soz konusu olmamali. burda o durumu kurtaralim
-    }
-	if (kalanVakit == ptp.FileOpeningError)
-    {
-		QMessageBox::critical(nullptr, appName, QString("Dosya acilma hatasi!\n") + QDir::currentPath());
-		exit(EXIT_FAILURE);
-    }
-    else
-    {
-		if(kalanVakit <= 60)		// 60 dk'dan az kalmadıysa gösterme. bi de zaten ikiden fazla basamak göstermeye uygun değil ve gerek de yok
+        const auto kalanVakit = result.value();
+        if(kalanVakit <= 60)		// 60 dk'dan az kalmadıysa gösterme. bi de zaten ikiden fazla basamak göstermeye uygun değil ve gerek de yok
         {
             trayIcon->setVisible(true);
             setIcon(kalanVakit);
-			if((kalanVakit <= 5) && (!kalanVakitBesOldu))
+            if((kalanVakit <= 5) && (!kalanVakitBesOldu))
             {
                 kalanVakitBesOldu = true;
                 emit son5Dk();
@@ -245,6 +239,18 @@ void Window::showTime()
             trayIcon->setVisible(false);
         if(kalanVakit > 5)
             kalanVakitBesOldu = false;
+    }
+    else
+    {
+        if (result.error() == EvkatFilesDoesNotExist)
+        {
+            QMessageBox::critical(nullptr, appName, QString("Both Prayer Times Files Do Not Exist!\n"));
+            return;		// TODO: iki dosyanin da olmamasi soz konusu olmamali. burda o durumu kurtaralim. edit: niye burda kurtariyoruz? yerinde kurtaralim.
+        }
+        if (result.error() == OnlineJsonFileIsOutOfDate)
+        {
+            // TODO: offline'a yonlendir. ama yine de uyari cikar. o da yoksa X isareti koy. edit: bunu program ilk acildiginda da yapmaliyim.
+        }
     }
 }
 

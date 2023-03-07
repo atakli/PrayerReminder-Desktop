@@ -3,15 +3,20 @@
 
 #include <QJsonDocument>
 
-enum LoadJsonSuccess {GoodJson = 0, EvkatFilesDoesNotExist = -1, FileOpeningError = -2};
+#include <expected>
 
-class PrayerTimesParser
+enum JsonSuccess {EvkatFilesDoesNotExist, OnlineJsonFileIsOutOfDate};
+
+class PrayerTimesParser : public QObject
 {
+    Q_OBJECT
 public:
+    PrayerTimesParser(QObject *parent = nullptr);
+    std::expected<int, JsonSuccess> kalanVakit();
     int vakitleriCikar(QJsonValue value);
-	int nextDay();
 private:
-	std::pair<QJsonDocument, LoadJsonSuccess> loadJson();
+    std::pair<int, bool> loopOverJson(const QJsonDocument& loadedJson);
+    std::expected<QJsonDocument, JsonSuccess> loadJson();
 	int kalan(QStringList list);
 };
 

@@ -1,5 +1,6 @@
 #include "prayertimesparser.h"
 
+#include <QMessageBox>
 #include <QJsonObject>
 #include <QTextStream>
 #include <QDateTime>
@@ -10,13 +11,17 @@
 extern QString evkatOnlinePath;
 extern QString evkatOfflinePath;
 
-std::pair<QJsonDocument, LoadJsonSuccess> PrayerTimesParser::loadJson()
+extern const char* appName;
+
+PrayerTimesParser::PrayerTimesParser(QObject* parent) : QObject(parent) {}
+
+std::expected<QJsonDocument, JsonSuccess> PrayerTimesParser::loadJson()
 {
     QFile loadFile(evkatOnlinePath);
 
     if (!QFileInfo::exists(evkatOnlinePath) && !QFileInfo::exists(evkatOfflinePath))
 	{
-		return {{}, EvkatFilesDoesNotExist};
+        return std::unexpected {EvkatFilesDoesNotExist};
 	}
 	else if (!QFileInfo::exists(evkatOnlinePath))
 	{
@@ -25,14 +30,14 @@ std::pair<QJsonDocument, LoadJsonSuccess> PrayerTimesParser::loadJson()
 
     if (!loadFile.open(QIODevice::ReadOnly))
     {
-		qWarning() << "Couldn't open " + loadFile.fileName() + " save file.";
-		return {{}, FileOpeningError};
+        QMessageBox::critical(nullptr, appName, QString("Dosya acilamadi -> %1\n").arg(loadFile.fileName()) + QDir::currentPath());
+        exit(EXIT_FAILURE);
     }
 
 	const QByteArray saveData = loadFile.readAll();
     loadFile.close();
 
-	return {QJsonDocument::fromJson(saveData), GoodJson};
+    return QJsonDocument::fromJson(saveData);
 }
 
 int PrayerTimesParser::kalan(QStringList list)
@@ -72,34 +77,40 @@ int PrayerTimesParser::vakitleriCikar(QJsonValue value)
 
     return kalan({fajr, sunRise, zuhr, asr, maghrib, isha});    // yuh. bunu && ile almisim. cahillik kotu bisey.
 }
-int PrayerTimesParser::nextDay()
+std::pair<int, bool> PrayerTimesParser::loopOverJson(const QJsonDocument& loadedJson)
 {
-	const auto [loadedJson, jsonSuccess] = loadJson();
-	if (jsonSuccess != GoodJson)
-		return jsonSuccess;
+    uint8_t index = 0;
+    QJsonValue next;
+    int kalanVakit = 0;
+    bool isJsonUpToDate = false;
 
-	const QDate date = QDateTime::currentDateTime().date();
+    const QDate date = QDateTime::currentDateTime().date();
+    const QString dayWith0 = QString("0" + QString::number(date.day())).right(2);
+    const QString monthWith0 = QString("0" + QString::number(date.month())).right(2);
+    const QString bugun = dayWith0 + "." + monthWith0 + "." + QString::number(date.year());
 
-	const int year = date.year();
-	const int month = date.month();
-	const int day = date.day();
+    while(!next.isUndefined())
+    {
+        next = loadedJson[index];
+        if(bugun == next["MiladiTarihKisa"].toString()) // TODO: dongu yerine direk o girdiye de gidilebilir belki
+        {
+            kalanVakit = vakitleriCikar(next);
+            isJsonUpToDate = true;
+            break;
+        }
+        ++index;
+    }
+    return {kalanVakit, isJsonUpToDate};
+}
+std::expected<int, JsonSuccess> PrayerTimesParser::kalanVakit()
+{
+    const auto loadedJsonResult = loadJson();
+    if (!loadedJsonResult.has_value())
+        return std::unexpected {(JsonSuccess)loadedJsonResult.error()};
 
-	const QString dayWith0 = QString("0" + QString::number(day)).right(2);
-	const QString monthWith0 = QString("0" + QString::number(month)).right(2);
-	const QString bugun = dayWith0 + "." + monthWith0 + "." + QString::number(year);
+    const auto [kalanVakit, isJsonUpToDate] = loopOverJson(loadedJsonResult.value());
 
-	uint8_t index = 0;
-	QJsonValue next;
-	int kalanVakit = 0;
-	while(!next.isUndefined())
-	{
-		next = loadedJson[index];
-		if(bugun == next["MiladiTarihKisa"].toString())
-		{
-			kalanVakit = vakitleriCikar(next);
-			break;
-		}
-		++index;
-	}
+    if (!isJsonUpToDate)
+        return std::unexpected {OnlineJsonFileIsOutOfDate};
 	return kalanVakit;
 }

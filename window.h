@@ -43,7 +43,6 @@ signals:
     void son5Dk();
     void sehirSec(QString sehirKodu);
 private:
-    const char* appName = "Namaz Vakti Hatırlatıcı";
 	QString ulkeFile, sehirFile, ilceFile;
 	QString ulkeKodu, sehirKodu, ilceKodu;
 	PrayerTimesParser ptp;
