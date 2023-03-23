@@ -49,7 +49,10 @@ int main(int argc, char *argv[])
     if(!d.exists(saveDir))
     {
         if(!d.mkpath(saveDir))
-            qDebug() << "klasor olusturulamadi";
+        {
+            qDebug() << saveDir << "klasoru olusturulamadi";
+            exit(EXIT_FAILURE);
+        }
         else
         {
 //            std::vector<TCHAR> Buffer(saveDir.length() + 1);

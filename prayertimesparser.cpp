@@ -39,30 +39,44 @@ std::expected<QJsonDocument, JsonSuccess> PrayerTimesParser::loadJson()
 
     return QJsonDocument::fromJson(saveData);
 }
-
+template<typename InputIt, typename OutputIt, typename UnaryOperation, typename UnaryPredicate>
+OutputIt transform_if(InputIt first, InputIt last, OutputIt dest, UnaryOperation op, UnaryPredicate pred)
+{
+    while (first != last)
+    {
+        const auto& val = *first;                                            // TODO: && olmasi dogru mu tam anlamadim ???
+        if (pred(val))
+            *dest++ = op(val);
+        ++first;
+    }
+    return dest;
+}
 int PrayerTimesParser::kalan(QStringList list)
 {
-	auto Min = [](const QString& vakit)
+    auto toMinutes = [](const QString& vakit)
 	{
-		return vakit.mid(0,2).toInt() * 60 + vakit.mid(3).toInt();
+//		return vakit.mid(0,2).toInt() * 60 + vakit.mid(3).toInt();
+        const auto time = QTime::fromString(vakit, "HH:mm");
+        return time.hour() * 60 + time.minute();
 	};
-	const QTime time = QDateTime::currentDateTime().time();
+    const QTime time = QTime::currentTime();
 	const int now_as_minutes = time.hour() * 60 + time.minute();
-	const QStringList listCopy = list;
-    for(const QString& l : list)
-	{
-		if((Min(l) - now_as_minutes) < 0)
-			list.removeOne(l);
-	}
-	QVector<int> listInt;
-    for(const QString& l : list)
-	{
-		listInt.push_back(Min(l));
-	}
-	std::transform(list.begin(), list.end(), std::back_inserter(listInt), [Min](const QString& l){return Min(l);});
+//	const QStringList listCopy = list;
 
-    const int enUfagi = listInt.isEmpty() ? Min(listCopy.first()) : *std::min_element(listInt.begin(), listInt.end());
-	int sonuc = enUfagi - now_as_minutes;
+    QVector<int> listInt;
+//    bool isIcerde = false;
+//    for(const QString& l : list)
+//	{
+//        const int min = toMinutes(l);
+//		if(min >= now_as_minutes)
+//			listInt.emplaceBack(std::move(min));
+//        else
+//	}
+
+    transform_if(list.begin(), list.end(), std::back_inserter(listInt), toMinutes, [&toMinutes, &now_as_minutes](const QString& l){return toMinutes(l) >= now_as_minutes;});
+
+    const int enUfagi = listInt.isEmpty() ? toMinutes(list.first()) : *std::min_element(listInt.begin(), listInt.end());
+    const int sonuc = enUfagi - now_as_minutes;
     return sonuc < 0 ? sonuc + 60 * 24 : sonuc;
 }
 
@@ -84,15 +98,12 @@ std::pair<int, bool> PrayerTimesParser::loopOverJson(const QJsonDocument& loaded
     int kalanVakit = 0;
     bool isJsonUpToDate = false;
 
-    const QDate date = QDateTime::currentDateTime().date();
-    const QString dayWith0 = QString("0" + QString::number(date.day())).right(2);
-    const QString monthWith0 = QString("0" + QString::number(date.month())).right(2);
-    const QString bugun = dayWith0 + "." + monthWith0 + "." + QString::number(date.year());
+    const QString date = QDate::currentDate().toString("dd.MM.yyyy");
 
     while(!next.isUndefined())
     {
         next = loadedJson[index];
-        if(bugun == next["MiladiTarihKisa"].toString()) // TODO: dongu yerine direk o girdiye de gidilebilir belki
+        if(date == next["MiladiTarihKisa"].toString()) // TODO: dongu yerine direk o girdiye de gidilebilir belki
         {
             kalanVakit = vakitleriCikar(next);
             isJsonUpToDate = true;

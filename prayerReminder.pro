@@ -29,8 +29,8 @@ else:CONFIG(release, debug|release): LIBS += -L/home/b720/qt-projects/UpdateCont
 
 win32 {
 INCLUDEPATH += "C:\\Users\\Emre ATAKLI\\Documents\\qt\\SingleApplication\\include"
-CONFIG(release, debug|release): LIBS += -L"C:\\Users\\Emre ATAKLI\\Documents\\qt\\SingleApplication\\build-SingleApplication-Desktop_Qt_6_4_1_MSVC2019_64bit-Release\\release\\static" -lSingleApplication
-else:CONFIG(debug, debug|release): LIBS += -L"C:\\Users\\Emre ATAKLI\\Documents\\qt\\SingleApplication\\build-SingleApplication-Desktop_Qt_6_4_1_MSVC2019_64bit-Debug\\debug\\static" -lSingleApplication
+CONFIG(release, debug|release): LIBS += -L"C:\\Users\\Emre ATAKLI\\Documents\\clones\\Small-works\\qt\\SingleApplication\\build-SingleApplication-Desktop_Qt_6_4_1_MSVC2019_64bit-Release\\release\\static" -lSingleApplication
+else:CONFIG(debug, debug|release): LIBS += -L"C:\\Users\\Emre ATAKLI\\Documents\\clones\\Small-works\\qt\\SingleApplication\\build-SingleApplication-Desktop_Qt_6_4_1_MSVC2019_64bit-Debug\\debug\\static" -lSingleApplication
 }
 unix {
 INCLUDEPATH += /home/b720/qt-projects/UpdateController/include

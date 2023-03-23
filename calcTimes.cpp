@@ -16,11 +16,11 @@
 //#include <QGeoCoordinate>
 
 const static int number_of_days_to_calculate = 30;
-QString evkatOfflinePath = "evkatOnline.json";
+QString evkatOfflinePath = "evkatOffline.json";
 
-const static int timeZone = 3;
-const static double fajrTwilight = -18;
-const static double ishaTwilight = -17;
+constexpr int timeZone = 3;
+constexpr double fajrTwilight = -18;
+constexpr double ishaTwilight = -17;
 
 std::array<double, 6> CalcTimes::calcPrayerTimes(const QDate& date, const double longitude, const double latitude)
 {
@@ -30,7 +30,7 @@ std::array<double, 6> CalcTimes::calcPrayerTimes(const QDate& date, const double
 
     auto degToRad = [](double degree)
     {
-		return ((M_PI / 180) * degree);
+        return ((M_PI / 180) * degree);
     };
     auto radToDeg = [](double radian)
     {
@@ -94,35 +94,31 @@ void CalcTimes::offlineVakitleriHesapla(const double boylam, const double enlem)
     {
         const int hours = floor(moreLess24(number));
         const int minutes = floor(moreLess24(number - hours) * 60);
-        return QString("0" + QString::number(hours)).right(2) + ":" + QString("0" + QString::number(minutes)).right(2);
+        return QTime{hours, minutes}.toString("HH:mm");
     };
 
-	QDate date = QDateTime::currentDateTime().date();
+    QJsonObject vakitObject;
+    QJsonArray vakitArray;
 
-	QJsonObject vakitObject;
-	QJsonArray vakitArray;
+    const static std::array<QString, 6> vakitNames = {"Imsak", "Gunes", "Ogle", "Ikindi", "Aksam", "Yatsi"};
+    const QDate startingDate = QDate::currentDate();
 
-    for(int i = 0; i < number_of_days_to_calculate; ++i)
-	{
-		date = date.addDays(1);
-		const auto vakitler = calcPrayerTimes(date, boylam, enlem);
+    for(int i = 0; i <= number_of_days_to_calculate; ++i)
+    {
+        const QDate date = startingDate.addDays(i);
+        const auto vakitler = calcPrayerTimes(date, boylam, enlem);
 
-		const QString dayWith0 = QString("0" + QString::number(date.day())).right(2);
-		const QString monthWith0 = QString("0" + QString::number(date.month())).right(2);
+        vakitObject.insert("MiladiTarihKisa", QJsonValue::fromVariant(date.toString("dd.MM.yyyy")));
 
-		const QString toBeInserted = dayWith0 + "." + monthWith0 + "." + QString::number(date.year());
-		vakitObject.insert("MiladiTarihKisa", QJsonValue::fromVariant(toBeInserted));
-
-		const std::array<QString, 6> vakitNames = {"Imsak", "Gunes", "Ogle", "Ikindi", "Aksam", "Yatsi"};
-		for (size_t i = 0; i < vakitler.size(); ++i)
+        for (size_t i = 0; i < vakitler.size(); ++i)
         {
-			const QString toBeInserted = doubleToHrMin(vakitler[i]);
+            const QString toBeInserted = doubleToHrMin(vakitler[i]);
             vakitObject.insert(vakitNames[i], QJsonValue::fromVariant(toBeInserted));
         }
-		vakitArray.push_back(vakitObject);
+        vakitArray.push_back(vakitObject);
 	}
 	QJsonDocument doc(vakitArray);
-    QFile jsonFile(evkatOfflinePath);				// TODO: bütün qfile'lara bak close etmiş miyim
+    QFile jsonFile(evkatOfflinePath);				// TODO: bütün qfile'lara bak close etmiş miyim. edit: ama çoğunda veya tamamında gerek yok zaten
     if (!jsonFile.open(QFile::WriteOnly))
     {
         std::cout << "cannot write " << evkatOfflinePath.toStdString() << std::endl;
@@ -131,13 +127,3 @@ void CalcTimes::offlineVakitleriHesapla(const double boylam, const double enlem)
 	jsonFile.write(doc.toJson());
 	jsonFile.close();
 }
-/*
- Personal code. Calculating for Cairo.
-
-Date: 18-1-2012
-Longitude: 30.2
-Latitude: 30
-Time Zone: +2
-Fajr Twilight: -19.5
-Esha Twilight: -17.5
-*/

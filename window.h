@@ -51,12 +51,15 @@ private:
 //    HttpWindow fetchTimes;	// TODO: önceki hali gibi olup da signal slot ile filan HttpWindow'dan Window'a sinyal gönderip indirme işlemi bitmeden fetchTimes objesinin ömrünü doldurmasını men edebilirim
     std::shared_ptr<Ui::Window> ui;
     bool kalanVakitBesOldu = false;
+    bool isInformationDialogClosed = false;
 	void executeFileNames();
 	void ilkBolgeSecimi();
-	void setIcon(uint8_t number);    // önceden slot'tu
+    enum VakitStatus {VakitError = -1};
+    void setIcon(std::expected<int, VakitStatus> kalanVakit);    // önceden slot'tu
     void createActions();
     void createTrayIcon();
     void on_infoButtonClicked();
+
 
     QElapsedTimer timer;
 
