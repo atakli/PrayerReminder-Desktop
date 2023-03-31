@@ -15,13 +15,13 @@ extern const char* appName;
 
 PrayerTimesParser::PrayerTimesParser(QObject* parent) : QObject(parent) {}
 
-std::expected<QJsonDocument, JsonSuccess> PrayerTimesParser::loadJson()
+std::variant<QJsonDocument, JsonSuccess> PrayerTimesParser::loadJson()
 {
     QFile loadFile(evkatOnlinePath);
 
     if (!QFileInfo::exists(evkatOnlinePath) && !QFileInfo::exists(evkatOfflinePath))
 	{
-        return std::unexpected {EvkatFilesDoesNotExist};
+        return EvkatFilesDoesNotExist;
 	}
 	else if (!QFileInfo::exists(evkatOnlinePath))
 	{
@@ -113,15 +113,18 @@ std::pair<int, bool> PrayerTimesParser::loopOverJson(const QJsonDocument& loaded
     }
     return {kalanVakit, isJsonUpToDate};
 }
-std::expected<int, JsonSuccess> PrayerTimesParser::kalanVakit()
+std::variant<int, JsonSuccess> PrayerTimesParser::kalanVakit()
 {
-    const auto loadedJsonResult = loadJson();
-    if (!loadedJsonResult.has_value())
-        return std::unexpected {(JsonSuccess)loadedJsonResult.error()};
+    QJsonDocument loadedJsonResult;
+    try {
+        loadedJsonResult = std::get<QJsonDocument>(loadJson());
+    } catch (const std::bad_variant_access&) {
+        return std::get<JsonSuccess>(loadJson());
+    }
 
-    const auto [kalanVakit, isJsonUpToDate] = loopOverJson(loadedJsonResult.value());
+    const auto [kalanVakit, isJsonUpToDate] = loopOverJson(loadedJsonResult);
 
     if (!isJsonUpToDate)
-        return std::unexpected {OnlineJsonFileIsOutOfDate};
+        return OnlineJsonFileIsOutOfDate;
 	return kalanVakit;
 }

@@ -55,7 +55,7 @@ private:
 	void executeFileNames();
 	void ilkBolgeSecimi();
     enum VakitStatus {VakitError = -1};
-    void setIcon(std::expected<int, VakitStatus> kalanVakit);    // önceden slot'tu
+    void setIcon(std::variant<int, VakitStatus> kalanVakit);    // önceden slot'tu
     void createActions();
     void createTrayIcon();
     void on_infoButtonClicked();

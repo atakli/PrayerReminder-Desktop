@@ -4,8 +4,6 @@
 
 #ifndef QT_NO_SYSTEMTRAYICON
 
-#include <expected>
-
 #include <QDir>
 #include <QFile>
 #include <QMenu>
@@ -49,7 +47,7 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 #ifdef linux
     this->setMaximumHeight(200);
 #endif
-    setWindowIcon(QIcon{"icon.png"});
+//    setWindowIcon(QIcon{"icon.png"});
     QFile::remove("version.txt");
     QFile::copy(exePath + "/version.txt", "version.txt");
 
@@ -105,7 +103,7 @@ void Window::executeFileNames()
     ilceFile =  exePath + "/sehirler/" + sehirKodu + ".txt";
 }
 
-void Window::setIcon(std::expected<int, VakitStatus> kalanVakit)
+void Window::setIcon(std::variant<int, VakitStatus> kalanVakit)
 {
 #ifdef linux                // TODO: hoş olmadı. zaten sıkıntı başka yerde sanırım, ubuntuyla ilgili bişey. bazen de (çoğu zaman) ikon ve message box'lar küçük çıkıyo
 	QPixmap pixmap(35,35);
@@ -114,7 +112,18 @@ void Window::setIcon(std::expected<int, VakitStatus> kalanVakit)
 #endif
     pixmap.fill(Qt::yellow);
     QPainter painter(&pixmap);
-    const QString string =  kalanVakit ? QString::number(kalanVakit.value()) : "X";
+//    const QString string =  kalanVakit ? QString::number(kalanVakit.value()) : "X";
+    const QString string = [&kalanVakit]
+    {
+        try
+        {
+            return QString::number(std::get<int>(kalanVakit));
+        }
+        catch (const std::bad_variant_access&)
+        {
+            return QString("X");
+        }
+    }();
     painter.drawText(pixmap.rect(), Qt::TextDontClip | Qt::AlignCenter, string);
     trayIcon->setIcon(pixmap);  // QIcon(pixmap) desen de oluyor
 }
@@ -216,7 +225,7 @@ void Window::createTrayIcon()
 	trayIconMenu->addAction(updateAction);
 //	trayIconMenu->addAction(emailAction);
     trayIconMenu->addAction(quitAction);
-//	trayIconMenu->addAction(aboutAction);   // su yaziyi koy uygun bi yere: Icon by dDara on freeicons.io
+//	trayIconMenu->addAction(aboutAction);   // su yaziyi koy uygun bi yere: Icon by dDara on freeicons.io (credits: diyerek)
 
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setContextMenu(trayIconMenu);
@@ -226,9 +235,9 @@ void Window::showTime()
 {
     const auto result = ptp.kalanVakit();   // TODO: ayni isler her saniye yapiliyor! duzelt
 
-    if (result)
+    try
     {
-        const auto kalanVakit = result.value();
+        const auto kalanVakit = std::get<int>(result);
         if(kalanVakit <= 60)		// 60 dk'dan az kalmadıysa gösterme. bi de zaten ikiden fazla basamak göstermeye uygun değil ve gerek de yok
         {
             trayIcon->setVisible(true);
@@ -244,23 +253,23 @@ void Window::showTime()
         if(kalanVakit > 5)
             kalanVakitBesOldu = false;
     }
-    else
+    catch (const std::bad_variant_access&)
     {
-        if (result.error() == EvkatFilesDoesNotExist)
+        if (std::get<JsonSuccess>(result) == EvkatFilesDoesNotExist)
         {
 //            QMessageBox::critical(nullptr, appName, QString("Hem online hem offline namaz vakti dosyasi yok!\n"));
-            setIcon(std::unexpected {VakitError});
+            setIcon(VakitError);
             trayIcon->setVisible(true);
             bolgeSec();
 //            return;		// TODO: iki dosyanin da olmamasi soz konusu olmamali. burda o durumu kurtaralim. edit: niye burda kurtariyoruz? yerinde kurtaralim.
         }
-        else if (result.error() == OnlineJsonFileIsOutOfDate && !isInformationDialogClosed)
+        else if (std::get<JsonSuccess>(result) == OnlineJsonFileIsOutOfDate && !isInformationDialogClosed)
         {
             // TODO: offline'a yonlendir. ama yine de uyari cikar. o da yoksa X isareti koy. edit: bunu program ilk acildiginda da yapmaliyim.
             /*const auto res = */QMessageBox::information(nullptr, appName, QString("Online namaz vakit dosyası eski veya yok. Offline'dan devam edilecek.\n"));
 //            if (res == QMessageBox::Ok || res == QMessageBox::Escape || res == QMessageBox::Close) // edit: nedense buraya girdi
             isInformationDialogClosed = true;
-            setIcon(std::unexpected {VakitError});
+            setIcon(VakitError);
             trayIcon->setVisible(true);
             bolgeSec();
         }

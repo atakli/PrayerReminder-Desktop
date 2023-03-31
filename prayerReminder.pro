@@ -5,7 +5,12 @@ QT += network widgets           # network kullanmiyo olmaliyim sanki artik. o is
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS += -O3
 
-QMAKE_CXXFLAGS_WARN_ON += /std:c++latest
+unix{
+    QMAKE_CXXFLAGS += -std=c++2a
+}
+win32{
+    QMAKE_CXXFLAGS_WARN_ON += /std:c++latest
+}
 
 HEADERS       = window.h \
                 calcTimes.h \
