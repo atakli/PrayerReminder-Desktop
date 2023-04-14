@@ -31,6 +31,7 @@ QString exePath;
 
 int main(int argc, char *argv[])
 {
+    exePath = QFileInfo{argv[0]}.absolutePath();
     SingleApplication app(argc, argv, true);
     if (app.isSecondary())
     {
@@ -42,8 +43,7 @@ int main(int argc, char *argv[])
 //    app.setApplicationVersion(APPLICATION_VERSION);
 //    app.setOrganizationName(ORGANIZATION_NAME);
 
-    const QString userName = QDir::home().dirName();
-    const QString saveDir = "C:/Users/" + userName + "/.namazVaktiHatirlatici";
+    const QString saveDir = QDir::home().filePath(".namazVaktiHatirlatici");
 
     QDir d;
     if(!d.exists(saveDir))
@@ -63,9 +63,7 @@ int main(int argc, char *argv[])
     }
     QDir::setCurrent(saveDir);
 
-    exePath = QFileInfo{argv[0]}.absolutePath();
-
-	if (!QSystemTrayIcon::isSystemTrayAvailable())
+    if (!QSystemTrayIcon::isSystemTrayAvailable())
 	{
 		QMessageBox::critical(nullptr, QObject::tr("Systray"), QObject::tr("I couldn't detect any system tray on this system."));
         return 1;

@@ -75,7 +75,11 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
     connect(ui->ilce, SIGNAL(currentIndexChanged(int)), SLOT(executeIlceKodu(int)));
     connect(ui->quitButton, &QAbstractButton::clicked, []{exit(EXIT_SUCCESS);});
     connect(ui->updateButton, &QAbstractButton::clicked, [this]{update.isNewVersionAvailable();});
+#ifdef win32
     connect(ui->infoButton, &QAbstractButton::clicked, this, &Window::on_infoButtonClicked);
+#elif linux
+    ui->infoButton->setHidden(true);
+#endif
 
 	setWindowTitle(tr("Şehir Seçimi"));
 	resize(400, 300);
@@ -99,14 +103,15 @@ void Window::on_instanceOpen(quint32 /*instanceId*/, QByteArray /*message*/)
 void Window::executeFileNames()
 {
     ulkeFile =  exePath + "/ulkeler.txt";
-    sehirFile = exePath + "/sehirler/" + ulkeKodu + ".txt";
+    sehirFile = exePath + "/sehirler/" + ulkeKodu + ".txt";   // rastgele azerbaycani secmistim, cannot read sehirler/11639.txt falan dedi.
     ilceFile =  exePath + "/sehirler/" + sehirKodu + ".txt";
+    // ayrica bi yeri sectikten sonra pencereyi kapatip tekrar acinca soyle oluyor, mesela: bermuda -> kocaeli -> gebze. yani ilki ayni kaliyor, diger ikisi degisiyor.
 }
 
-void Window::setIcon(std::variant<int, VakitStatus> kalanVakit)
+void Window::setIcon(std::variant<int, VakitStatus> kalanVakit) // bu fonsiyonun bir kisminin her saniye set edilmesi gereksiz sanki. o kisimlari static omurlu olabilir.
 {
 #ifdef linux                // TODO: hoş olmadı. zaten sıkıntı başka yerde sanırım, ubuntuyla ilgili bişey. bazen de (çoğu zaman) ikon ve message box'lar küçük çıkıyo
-	QPixmap pixmap(35,35);
+    QPixmap pixmap(25,25);
 #else
     QPixmap pixmap(16,16);
 #endif

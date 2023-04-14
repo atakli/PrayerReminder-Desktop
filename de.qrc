@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/namazVakitFiles">
+        <file>sehirler</file>
+	<file>ornek.txt</file>
+	<file>ornek.txt</file>
+    </qresource>
+</RCC>

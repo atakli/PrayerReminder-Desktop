@@ -27,9 +27,9 @@ CONFIG(release, debug|release): LIBS += -L"C:\\Users\\Emre ATAKLI\\Documents\\qt
 else:CONFIG(debug, debug|release): LIBS += -L"C:\\Users\\Emre ATAKLI\\Documents\\qt\\UpdateController\\build-UpdateController-Desktop_Qt_6_4_1_MSVC2019_64bit-Debug\\debug\\static" -lupdatecontroller
 }
 unix {
-INCLUDEPATH += /home/b720/qt-projects/UpdateController/include
-CONFIG(debug, debug|release): LIBS += -L/home/b720/qt-projects/UpdateController/build-UpdateController-Desktop_Qt_5_14_2_GCC_64bit-Debug/debug/static -lUpdateController
-else:CONFIG(release, debug|release): LIBS += -L/home/b720/qt-projects/UpdateController/build-UpdateController-Desktop_Qt_5_14_2_GCC_64bit-Release/release/static -lUpdateController
+INCLUDEPATH += /home/emre/qtprojects/UpdateController/include
+CONFIG(debug, debug|release): LIBS += -L/home/emre/qtprojects/UpdateController/build-UpdateController-Desktop_Qt_6_4_3_GCC_64bit-Debug/debug/static -lUpdateController
+else:CONFIG(release, debug|release): LIBS += -L/home/emre/qtprojects/UpdateController/build-UpdateController-Desktop_Qt_6_4_3_GCC_64bit-Release/release/static -lUpdateController
 }
 
 win32 {
@@ -38,9 +38,9 @@ CONFIG(release, debug|release): LIBS += -L"C:\\Users\\Emre ATAKLI\\Documents\\cl
 else:CONFIG(debug, debug|release): LIBS += -L"C:\\Users\\Emre ATAKLI\\Documents\\clones\\Small-works\\qt\\SingleApplication\\build-SingleApplication-Desktop_Qt_6_4_1_MSVC2019_64bit-Debug\\debug\\static" -lSingleApplication
 }
 unix {
-INCLUDEPATH += /home/b720/qt-projects/UpdateController/include
-CONFIG(debug, debug|release): LIBS += -L/home/b720/qt-projects/SingleApplication/build-SingleApplication-Desktop_Qt_5_14_2_GCC_64bit-Debug/debug/static -lSingleApplication
-else:CONFIG(release, debug|release): LIBS += -L/home/b720/qt-projects/SingleApplication/build-SingleApplication-Desktop_Qt_5_14_2_GCC_64bit-Release/release/static -lSingleApplication
+INCLUDEPATH += /home/emre/Small-works/qt/SingleApplication/include
+CONFIG(debug, debug|release): LIBS += -L/home/emre/Small-works/qt/SingleApplication/build-SingleApplication-Desktop_Qt_6_4_3_GCC_64bit-Debug/debug/static -lSingleApplication
+else:CONFIG(release, debug|release): LIBS += -L/home/emre/Small-works/qt/SingleApplication/build-SingleApplication-Desktop_Qt_6_4_3_GCC_64bit-Release/release/static -lSingleApplication
 }
 
 win32: LIBS += -ladvapi32 # -lUser32 -lpsapi -lsetupapi -lwinusb -lgdi32 -lkernel32
