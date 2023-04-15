@@ -107,10 +107,11 @@ std::pair<int, bool> PrayerTimesParser::loopOverJson(const QJsonDocument& loaded
 std::variant<int, JsonSuccess> PrayerTimesParser::kalanVakit()
 {
     QJsonDocument loadedJsonResult;
+    const auto loadedJson = loadJson();
     try {
-        loadedJsonResult = std::get<QJsonDocument>(loadJson());
+        loadedJsonResult = std::get<QJsonDocument>(loadedJson);
     } catch (const std::bad_variant_access&) {
-        return std::get<JsonSuccess>(loadJson());
+        return std::get<JsonSuccess>(loadedJson);
     }
 
     const auto [kalanVakit, isJsonUpToDate] = loopOverJson(loadedJsonResult);

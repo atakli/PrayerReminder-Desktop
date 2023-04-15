@@ -52,6 +52,7 @@ private:
     std::shared_ptr<Ui::Window> ui;
     bool kalanVakitBesOldu = false;
     bool isInformationDialogClosed = false;
+    bool bolgeSecShowed = false;
 	void executeFileNames();
 	void ilkBolgeSecimi();
     enum VakitStatus {VakitError = -1};

@@ -120,12 +120,9 @@ void Window::setIcon(std::variant<int, VakitStatus> kalanVakit) // bu fonsiyonun
 //    const QString string =  kalanVakit ? QString::number(kalanVakit.value()) : "X";
     const QString string = [&kalanVakit]
     {
-        try
-        {
+        try {
             return QString::number(std::get<int>(kalanVakit));
-        }
-        catch (const std::bad_variant_access&)
-        {
+        } catch (const std::bad_variant_access&) {
             return QString("X");
         }
     }();
@@ -260,11 +257,12 @@ void Window::showTime()
     }
     catch (const std::bad_variant_access&)
     {
-        if (std::get<JsonSuccess>(result) == EvkatFilesDoesNotExist)
+        if (std::get<JsonSuccess>(result) == EvkatFilesDoesNotExist && !bolgeSecShowed)
         {
 //            QMessageBox::critical(nullptr, appName, QString("Hem online hem offline namaz vakti dosyasi yok!\n"));
             setIcon(VakitError);
             trayIcon->setVisible(true);
+            bolgeSecShowed = true;
             bolgeSec();
 //            return;		// TODO: iki dosyanin da olmamasi soz konusu olmamali. burda o durumu kurtaralim. edit: niye burda kurtariyoruz? yerinde kurtaralim.
         }
