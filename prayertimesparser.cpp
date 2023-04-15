@@ -55,25 +55,16 @@ int PrayerTimesParser::kalan(QStringList list)
 {
     auto toMinutes = [](const QString& vakit)
 	{
-//		return vakit.mid(0,2).toInt() * 60 + vakit.mid(3).toInt();
         const auto time = QTime::fromString(vakit, "HH:mm");
         return time.hour() * 60 + time.minute();
 	};
     const QTime time = QTime::currentTime();
 	const int now_as_minutes = time.hour() * 60 + time.minute();
-//	const QStringList listCopy = list;
 
     QVector<int> listInt;
-//    bool isIcerde = false;
-//    for(const QString& l : list)
-//	{
-//        const int min = toMinutes(l);
-//		if(min >= now_as_minutes)
-//			listInt.emplaceBack(std::move(min));
-//        else
-//	}
 
-    transform_if(list.begin(), list.end(), std::back_inserter(listInt), toMinutes, [&toMinutes, &now_as_minutes](const QString& l){return toMinutes(l) >= now_as_minutes;});
+    auto f = [&toMinutes, &now_as_minutes](const QString& l){return toMinutes(l) >= now_as_minutes;};
+    transform_if(list.begin(), list.end(), std::back_inserter(listInt), toMinutes, f);
 
     const int enUfagi = listInt.isEmpty() ? toMinutes(list.first()) : *std::min_element(listInt.begin(), listInt.end());
     const int sonuc = enUfagi - now_as_minutes;
