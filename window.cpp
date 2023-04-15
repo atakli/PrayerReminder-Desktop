@@ -74,7 +74,7 @@ Window::Window(QWidget* parent) : QWidget(parent), ui(std::make_shared<Ui::Windo
 	connect(ui->sehir, SIGNAL(currentIndexChanged(int)), SLOT(fillTown(int)));
     connect(ui->ilce, SIGNAL(currentIndexChanged(int)), SLOT(executeIlceKodu(int)));
     connect(ui->quitButton, &QAbstractButton::clicked, []{exit(EXIT_SUCCESS);});
-    connect(ui->updateButton, &QAbstractButton::clicked, [this]{update.isNewVersionAvailable();});
+    connect(ui->updateButton, &QAbstractButton::clicked, [this]{update.isNewVersionAvailable(true);});
 #ifdef win32
     connect(ui->infoButton, &QAbstractButton::clicked, this, &Window::on_infoButtonClicked);
 #elif linux
@@ -150,7 +150,7 @@ void Window::createActions()
     emailAction = new QAction(tr("&Gelistiriciye Yaz"), this);
 //	connect(sehirSecimiAction, &QAction::triggered, this, &Window::bolgeSec);
 	connect(sehirSecimiAction, SIGNAL(triggered()), this, SLOT(bolgeSec()));	// sanırım this'i kaldırınca da aynı mana
-    connect(updateAction, &QAction::triggered, this, [this]{update.isNewVersionAvailable();});
+    connect(updateAction, &QAction::triggered, this, [this]{update.isNewVersionAvailable(true);});
 	connect(this, &Window::son5Dk, this, &Window::showMessage);
 }
 void Window::ilkBolgeSecimi()
@@ -208,7 +208,7 @@ void Window::downloadEvkat()
         hasOfflineDownloaded = " ve offline vakitler hesaplandı";
     }
 //	fetchTimes.downloadSynchronous(fileName, urlSpec);
-    update.downloadFile(evkatOnlinePath, urlSpec, "");
+    update.downloadFile(evkatOnlinePath, urlSpec);
     ui->textLabel->setText(ui->ilce->currentText() + " için bir aylık vakitler indirildi" + hasOfflineDownloaded);
 }
 void Window::bolgeSec()
