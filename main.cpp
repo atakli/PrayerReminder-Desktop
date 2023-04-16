@@ -25,13 +25,25 @@ QString exePath;
 //QSystemTrayIcon::setVisible: No Icon set
 //onecore\windows\directx\database\helperlibrary\lib\directxdatabasehelper.cpp(652)\d3d9.dll!00007FFCA954BF45: (caller: 00007FFCA954BA4C) ReturnHr(1) tid(1278) 80004002 No such interface supported
 
-//static const QString APPLICATION_NAME = "Namaz Vakti Hatirlatici";
-//static const QString ORGANIZATION_NAME = "ATAKLI";
-//static const QString APPLICATION_VERSION = "1.5.0";
+QFile file("log.txt");
+void myMessageHandler(QtMsgType type, const QMessageLogContext&, const QString &message)
+{
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
+        return;
+    QTextStream out(&file);
+    out << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz ");
+    switch (type) {
+    case QtDebugMsg:
+        out << message << "\n";
+        out.flush();
+        break;
+    }
+}
 
 int main(int argc, char *argv[])
 {
     exePath = QFileInfo{argv[0]}.absolutePath();
+    qInstallMessageHandler(myMessageHandler);
     SingleApplication app(argc, argv, true);
     if (app.isSecondary())
     {
@@ -53,25 +65,19 @@ int main(int argc, char *argv[])
             qDebug() << saveDir << "klasoru olusturulamadi";
             exit(EXIT_FAILURE);
         }
-        else
-        {
-//            std::vector<TCHAR> Buffer(saveDir.length() + 1);
-//            saveDir.toWCharArray(Buffer.data());
-//            Buffer[saveDir.length()] = '\0';
-//            SetCurrentDirectory(Buffer.data());
-        }
     }
     QDir::setCurrent(saveDir);
 
     if (!QSystemTrayIcon::isSystemTrayAvailable())
 	{
-		QMessageBox::critical(nullptr, QObject::tr("Systray"), QObject::tr("I couldn't detect any system tray on this system."));
+        QMessageBox::critical(nullptr, QObject::tr("Namaz Vakti Hatırlatıcı"), QObject::tr("I couldn't detect any system tray on this system."));
         return 1;
     }
     QApplication::setQuitOnLastWindowClosed(false);
 
     Window window;
     QObject::connect(&app, &SingleApplication::receivedMessage, &window, &Window::on_instanceOpen);
+    QObject::connect(&app, &QCoreApplication::aboutToQuit, []{file.close();});
 
     return app.exec();
 }
