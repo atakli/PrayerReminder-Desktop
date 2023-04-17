@@ -12,9 +12,9 @@ private:
     {
         sunRise = -7, zuhr = 5, asr = 4, maghrib = 7
 	};
-	std::array<double, 6> calcPrayerTimes(const QDate& date, const double longitude, const double latitude);
+    static std::array<double, 6> calcPrayerTimes(const QDate& date, const double longitude, const double latitude);
 public:
-    void offlineVakitleriHesapla(const double boylam = 29.43333330, const double enlem = 40.80000000);
+    static void offlineVakitleriHesapla(const double boylam = 29.43333330, const double enlem = 40.80000000);
 };
 
 #endif // CALCTIMES_H
