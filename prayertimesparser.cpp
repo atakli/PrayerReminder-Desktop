@@ -51,7 +51,7 @@ OutputIt transform_if(InputIt first, InputIt last, OutputIt dest, UnaryOperation
     }
     return dest;
 }
-int PrayerTimesParser::kalan(QStringList list)
+int PrayerTimesParser::kalan(QStringList&& list)
 {
     auto toMinutes = [](const QString& vakit)
 	{
@@ -71,7 +71,7 @@ int PrayerTimesParser::kalan(QStringList list)
     return sonuc < 0 ? sonuc + 60 * 24 : sonuc;
 }
 
-int PrayerTimesParser::vakitleriCikar(QJsonValue value)
+int PrayerTimesParser::vakitleriCikar(const QJsonValue& value)
 {
 	const QString fajr = value["Imsak"].toString();
 	const QString sunRise = value["Gunes"].toString();
@@ -80,7 +80,7 @@ int PrayerTimesParser::vakitleriCikar(QJsonValue value)
 	const QString maghrib = value["Aksam"].toString();
 	const QString isha = value["Yatsi"].toString();
 
-    return kalan({fajr, sunRise, zuhr, asr, maghrib, isha});    // yuh. bunu && ile almisim. cahillik kotu bisey.
+    return kalan({fajr, sunRise, zuhr, asr, maghrib, isha});    // yuh. bunu && ile almisim. cahillik kotu bisey. edit: yanlis degilmis sanirim. life extension diye bisey varmis. edit: ama galiba performans açısından bisey degismiyor cunku &&'e bagladigimda life extension oluyor olmasi aslinda orda yeni bir nesne olustugu anlamina geliyor. edit: ismi de ogrenmistim aslinda: geçici nesne referansa baglandiginda temporary materialization oluyor.
 }
 std::pair<int, bool> PrayerTimesParser::loopOverJson(const QJsonDocument& loadedJson)
 {
@@ -94,7 +94,7 @@ std::pair<int, bool> PrayerTimesParser::loopOverJson(const QJsonDocument& loaded
     while(!next.isUndefined())
     {
         next = loadedJson[index];
-        if(date == next["MiladiTarihKisa"].toString()) // TODO: dongu yerine direk o girdiye de gidilebilir belki
+        if(date == next["MiladiTarihKisa"].toString())
         {
             kalanVakit = vakitleriCikar(next);
             isJsonUpToDate = true;
