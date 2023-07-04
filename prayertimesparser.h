@@ -11,11 +11,11 @@ class PrayerTimesParser : public QObject
 public:
     PrayerTimesParser(QObject *parent = nullptr);
     std::variant<int, JsonSuccess> kalanVakit();
-    int vakitleriCikar(QJsonValue value);
+    int vakitleriCikar(const QJsonValue& value);
 private:
     std::pair<int, bool> loopOverJson(const QJsonDocument& loadedJson);
     std::variant<QJsonDocument, JsonSuccess> loadJson();
-	int kalan(QStringList list);
+    int kalan(QStringList&& list);
 };
 
 #endif // PRAYERTIMESPARSER_H

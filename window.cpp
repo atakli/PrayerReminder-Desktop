@@ -201,7 +201,7 @@ void Window::downloadEvkat()
     {
         const double boylam = ui->boylamLineEdit->text().toDouble();
         const double enlem = ui->enlemLineEdit->text().toDouble();
-        CalcTimes{}.offlineVakitleriHesapla(boylam, enlem);
+        CalcTimes::offlineVakitleriHesapla(boylam, enlem);
         hasOfflineDownloaded = " ve offline vakitler hesaplandı";
     }
 //	fetchTimes.downloadSynchronous(fileName, urlSpec);

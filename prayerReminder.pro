@@ -1,4 +1,3 @@
-CONFIG += c++17
 QT += network widgets           # network kullanmiyo olmaliyim sanki artik. o isleri updatemanager library'si halletmiyo mu
 
 #QMAKE_CXXFLAGS_WARN_ON += -O3
@@ -9,7 +8,8 @@ unix{
     QMAKE_CXXFLAGS += -std=c++2a
 }
 win32{
-    QMAKE_CXXFLAGS_WARN_ON += /std:c++latest
+#    QMAKE_CXXFLAGS_WARN_ON += /std:c++latest
+    CONFIG += c++2b
 }
 
 HEADERS       = window.h \

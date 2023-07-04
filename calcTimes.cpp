@@ -15,7 +15,7 @@
 #include <QJsonDocument>
 //#include <QGeoCoordinate>
 
-const static int number_of_days_to_calculate = 30;
+constexpr int number_of_days_to_calculate = 30;
 QString evkatOfflinePath = "evkatOffline.json";
 
 constexpr int timeZone = 3;
@@ -58,7 +58,7 @@ std::array<double, 6> CalcTimes::calcPrayerTimes(const QDate& date, const double
     // Calculating Prayer Times Arcs & Times //
     //////////////////////////////////////////
 
-	double zuhrTime = UT_Noon / 15 + timeZone;	// 2) Zuhr Time [Local noon]
+    const double zuhrTime = UT_Noon / 15 + timeZone;	// 2) Zuhr Time [Local noon]
 
 	//double Asr_Alt = radToDeg(atan(2 + tan(degToRad(abs(latitude - Dec)))));	// Asr Hanafi
 	double Asr_Alt = radToDeg(atan(1 + tan(degToRad(abs(latitude - Dec)))));	// Asr Shafii
@@ -121,7 +121,7 @@ void CalcTimes::offlineVakitleriHesapla(const double boylam, const double enlem)
     QFile jsonFile(evkatOfflinePath);				// TODO: bütün qfile'lara bak close etmiş miyim. edit: ama çoğunda veya tamamında gerek yok zaten
     if (!jsonFile.open(QFile::WriteOnly))
     {
-        std::cout << "cannot write " << evkatOfflinePath.toStdString() << std::endl;
+        std::cerr << "cannot write " << evkatOfflinePath.toStdString() << std::endl;
         QMessageBox::critical(nullptr, "", "cannot write " + evkatOfflinePath);		// TODO: buraya programın ismi gelsin
     }
 	jsonFile.write(doc.toJson());
